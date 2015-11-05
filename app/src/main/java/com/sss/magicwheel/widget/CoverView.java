@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.sss.magicwheel.util.MagicCalculationHelper;
@@ -14,6 +15,8 @@ import com.sss.magicwheel.util.MagicCalculationHelper;
  * @since 05.11.2015
  */
 public class CoverView extends View {
+
+    private static final String TAG = CoverView.class.getCanonicalName();
 
     private static final float OVAL_DELTA = 800;
 
@@ -68,8 +71,13 @@ public class CoverView extends View {
                 calculationHelper.getCircleCenter().y, calculationHelper.getOuterRadius(), p
         );
 
+        MagicCalculationHelper.CoordinateHolder startIntercectForOuterRadius = calculationHelper.getStartIntercectForOuterRadius();
+        Log.e(TAG, "startIntercectForOuterRadius " + startIntercectForOuterRadius.toString());
         MagicCalculationHelper.CoordinateHolder innerRadInterc = calculationHelper.toScreenCoordinates(
-                calculationHelper.getStartIntercectForInnerRadius());
+                startIntercectForOuterRadius);
+
+        Log.e(TAG, "innerRadInterc " + innerRadInterc.toString());
+
 
         canvas.drawLine(calculationHelper.getCircleCenter().x, calculationHelper.getCircleCenter().y,
                 new Float(innerRadInterc.getX()), new Float(innerRadInterc.getY()), p);

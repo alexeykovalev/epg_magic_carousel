@@ -12,6 +12,8 @@ public class MagicCalculationHelper {
 
     public static final int SEGMENT_ANGULAR_HEIGHT = 30;
 
+    public static final double FROM_RADIAN_TO_GRAD_COEF = 180 / Math.PI;
+
     private static final String TAG = MagicCalculationHelper.class.getCanonicalName();
     private static MagicCalculationHelper instance;
 
@@ -21,6 +23,12 @@ public class MagicCalculationHelper {
     private int innerRadius;
     private int outerRadius;
 
+    private MagicCalculationHelper(Display display) {
+        calcScreenSize(display);
+        calcCircleDimens();
+        instance = this;
+    }
+
     public static MagicCalculationHelper getInstance() {
         if (instance == null) {
             throw new IllegalStateException("initialize() has not been invoked yet.");
@@ -28,14 +36,19 @@ public class MagicCalculationHelper {
         return instance;
     }
 
-    private MagicCalculationHelper(Display display) {
-        calcScreenSize(display);
-        calcCircleDimens();
-        instance = this;
-    }
-
     public static void initialize(Display display) {
         instance = new MagicCalculationHelper(display);
+    }
+
+
+    // ----------------------------------------------------
+
+    public static double fromRadToGrad(double valInRad) {
+        return valInRad * FROM_RADIAN_TO_GRAD_COEF;
+    }
+
+    public CoordinateHolder toScreenCoordinates(CoordinateHolder from) {
+        return new CoordinateHolder(from.getX(), screenHeight / 2 - from.getY());
     }
 
     private void calcScreenSize(Display display) {
@@ -44,6 +57,11 @@ public class MagicCalculationHelper {
         screenWidth = size.x;
         screenHeight = size.y;
         Log.e(TAG, String.format("screenWidth [%s], screenHeight [%s]", screenWidth, screenHeight));
+    }
+
+    private void calcCircleDimens() {
+        innerRadius = screenHeight / 2 + 50;
+        outerRadius = innerRadius + 200;
     }
 
     public int getScreenWidth() {
@@ -66,11 +84,6 @@ public class MagicCalculationHelper {
         return SEGMENT_ANGULAR_HEIGHT;
     }
 
-    private void calcCircleDimens() {
-        innerRadius = screenHeight / 2 + 50;
-        outerRadius = innerRadius + 200;
-    }
-
     public Point getCircleCenter() {
         return new Point(0, screenHeight / 2);
     }
@@ -78,21 +91,18 @@ public class MagicCalculationHelper {
     public double getStartAngle() {
         int halfScreen = screenHeight / 2;
         double x = Math.sqrt(innerRadius * innerRadius - halfScreen * halfScreen);
-
         return Math.atan(halfScreen/x);
     }
 
-    public CoordinateHolder getStartIntercectForInnerRadius() {
+    public CoordinateHolder getStartIntersectForInnerRadius() {
         return CoordinateHolder.ofPolar(innerRadius, getStartAngle());
     }
 
-//    public CoordinateHolder getStartIntercectForOuterRadius() {
-//
-//    }
-
-    public CoordinateHolder toScreenCoordinates(CoordinateHolder from) {
-        return new CoordinateHolder(from.getX(), from.getY() - screenHeight / 2);
+    public CoordinateHolder getStartIntercectForOuterRadius() {
+        return CoordinateHolder.ofPolar(outerRadius, getStartAngle());
     }
+
+
 
     public static class CoordinateHolder {
 
@@ -114,6 +124,11 @@ public class MagicCalculationHelper {
 
         public double getY() {
             return y;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("CoordinateHolder (x, y) [%s; %s]", x, y);
         }
     }
 }
