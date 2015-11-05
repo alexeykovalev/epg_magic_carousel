@@ -13,12 +13,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-
     <!--<TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Sample bottom text"
         android:textSize="40sp" />-->
 
+    <!--android:background="@drawable/android_icon"-->
+
+
+    <!-- <com.sss.magicwheel.widget.PathView
+        android:layout_width="300dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        android:src="@drawable/android_icon"
+        android:background="@android:color/holo_red_dark"
+         />-->
 
 </FrameLayout>

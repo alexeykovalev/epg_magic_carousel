@@ -3,6 +3,7 @@ package com.sss.magicwheel.widget;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.view.WindowManager;
 
 import com.sss.magicwheel.R;
 import com.sss.magicwheel.entity.CoordinatesHolder;
+import com.sss.magicwheel.entity.LinearClipData;
 import com.sss.magicwheel.util.MagicCalculationHelper;
 
 import java.util.Random;
@@ -44,22 +46,56 @@ public class MagicWheelView extends ViewGroup {
         calculationHelper = MagicCalculationHelper.getInstance();
     }
 
+
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         removeAllViewsInLayout();
 
-        CoordinatesHolder firstPosition = getPositionCoordinatesForAngle(MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
-        CoordinatesHolder secondPosition = getPositionCoordinatesForAngle(2 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
-        CoordinatesHolder thirdPosition = getPositionCoordinatesForAngle(3 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
+        CoordinatesHolder firstChildPosition = getPositionCoordinatesForAngleInScreenCoords(MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
+        CoordinatesHolder secondPosition = getPositionCoordinatesForAngleInScreenCoords(2 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
+        CoordinatesHolder thirdPosition = getPositionCoordinatesForAngleInScreenCoords(3 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
 
-        View firstChild = createAndMeasureNewView();
-        setupChild(firstChild, firstPosition);
+        Log.e("TAG", "First child Coords: " + firstChildPosition.toString());
 
-        View secondChild = createAndMeasureNewView();
+        ItemView firstChild = (ItemView) createAndMeasureNewView();
+        firstChild.setLinearClipData(getClipDataForChild(0, MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD));
+        setupChild(firstChild, firstChildPosition);
+
+        ItemView secondChild = (ItemView) createAndMeasureNewView();
+        secondChild.setLinearClipData(getClipDataForChild(MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD, 2 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD));
         setupChild(secondChild, secondPosition);
 
-        View thirdChild = createAndMeasureNewView();
+        ItemView thirdChild = (ItemView) createAndMeasureNewView();
+        thirdChild.setLinearClipData(getClipDataForChild(2 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD, 3 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD));
         setupChild(thirdChild, thirdPosition);
+    }
+
+
+    private LinearClipData getClipDataForChild(double prevAngleInRad, double newAngleInRad) {
+
+        CoordinatesHolder viewPosInCircCoords = calculationHelper.getViewPositionForAngle(newAngleInRad);
+
+        CoordinatesHolder first = calculationHelper.toViewCoordinate(
+                calculationHelper.getIntersectForAngle(calculationHelper.getInnerRadius(), prevAngleInRad),
+                viewPosInCircCoords
+        );
+
+        CoordinatesHolder second = calculationHelper.toViewCoordinate(
+                calculationHelper.getIntersectForAngle(calculationHelper.getOuterRadius(), prevAngleInRad),
+                viewPosInCircCoords
+        );
+
+        CoordinatesHolder third = calculationHelper.toViewCoordinate(
+                calculationHelper.getIntersectForAngle(calculationHelper.getInnerRadius(), newAngleInRad),
+                viewPosInCircCoords
+        );
+
+        CoordinatesHolder four = calculationHelper.toViewCoordinate(
+                calculationHelper.getIntersectForAngle(calculationHelper.getOuterRadius(), newAngleInRad),
+                viewPosInCircCoords
+        );
+
+        return new LinearClipData(first, second, third, four);
     }
 
     private void setupChild(View child, CoordinatesHolder childPosition) {
@@ -71,12 +107,12 @@ public class MagicWheelView extends ViewGroup {
         addView(child);
     }
 
-    private CoordinatesHolder getPositionCoordinatesForAngle(double angleInRad) {
+    private CoordinatesHolder getPositionCoordinatesForAngleInScreenCoords(double angleInRad) {
         return calculationHelper.toScreenCoordinates(calculationHelper.getViewPositionForAngle(angleInRad));
     }
 
     private View createAndMeasureNewView() {
-        View stubView = LayoutInflater.from(getContext()).inflate(R.layout.rectangle_stub_view, this, false);
+        View stubView = LayoutInflater.from(getContext()).inflate(R.layout.item_view_layout, this, false);
 
         final int childWidthSpec = MeasureSpec.makeMeasureSpec(STUB_VIEW_WIDTH, MeasureSpec.EXACTLY);
         final int childHeightSpec = MeasureSpec.makeMeasureSpec(STUB_VIEW_HEIGHT, MeasureSpec.EXACTLY);

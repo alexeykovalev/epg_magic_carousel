@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.Display;
 
 import com.sss.magicwheel.entity.CoordinatesHolder;
+import com.sss.magicwheel.entity.CustomRect;
 
 /**
  * @author Alexey
@@ -44,10 +45,15 @@ public class MagicCalculationHelper {
         instance = new MagicCalculationHelper(display);
     }
 
-
     // ----------------------------------------------------
 
-    public static double fromRadToGrad(double valInRad) {
+    public CoordinatesHolder toViewCoordinate(CoordinatesHolder inCircleCoord, CoordinatesHolder leftTopCornerViewCoord) {
+        double inViewX = inCircleCoord.getX() - leftTopCornerViewCoord.getX();
+        double inViewY = leftTopCornerViewCoord.getY() - inCircleCoord.getY();
+        return CoordinatesHolder.ofRect(inViewX, inViewY);
+    }
+
+    public static double fromRadToDegree(double valInRad) {
         return valInRad * FROM_RADIAN_TO_GRAD_COEF;
     }
 
@@ -66,6 +72,12 @@ public class MagicCalculationHelper {
     private void calcCircleDimens() {
         innerRadius = screenHeight / 2 + 50;
         outerRadius = innerRadius + 200;
+    }
+
+    public CustomRect getOvalCoordsInCircleSystem() {
+        CoordinatesHolder topLeft = CoordinatesHolder.ofRect(-outerRadius, outerRadius);
+        CoordinatesHolder bottomRight = CoordinatesHolder.ofRect(outerRadius, -outerRadius);
+        return new CustomRect(topLeft, bottomRight);
     }
 
     public int getScreenWidth() {
@@ -95,7 +107,7 @@ public class MagicCalculationHelper {
     public double getStartAngle() {
         int halfScreen = screenHeight / 2;
         double x = Math.sqrt(innerRadius * innerRadius - halfScreen * halfScreen);
-        return Math.atan(halfScreen/x);
+        return Math.atan(halfScreen / x);
     }
 
     public CoordinatesHolder getStartIntersectForInnerRadius() {

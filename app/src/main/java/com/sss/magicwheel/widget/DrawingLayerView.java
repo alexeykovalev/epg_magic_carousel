@@ -4,11 +4,13 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
 import com.sss.magicwheel.entity.CoordinatesHolder;
+import com.sss.magicwheel.entity.CustomRect;
 import com.sss.magicwheel.util.MagicCalculationHelper;
 
 /**
@@ -20,11 +22,6 @@ public class DrawingLayerView extends View {
     private static final String TAG = DrawingLayerView.class.getCanonicalName();
 
     private static final float OVAL_DELTA = 800;
-
-    private static final float OVAL_LEFT = 50;
-    private static final float OVAL_TOP = 20;
-    private static final float OVAL_RIGHT = OVAL_LEFT + OVAL_DELTA;
-    private static final float OVAL_BOTTOM = OVAL_TOP + OVAL_DELTA;
 
     private final MagicCalculationHelper calculationHelper;
     private Paint paint;
@@ -50,23 +47,6 @@ public class DrawingLayerView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-
-//        Paint p = new Paint();
-//        // smooths
-//        p.setAntiAlias(true);
-//        p.setColor(Color.RED);
-//        p.setStyle(Paint.Style.STROKE);
-//        p.setStrokeWidth(5);
-//        // opacity
-//        //p.setAlpha(0x80); //
-//
-//        RectF rectF = new RectF(OVAL_LEFT, OVAL_TOP, OVAL_RIGHT, OVAL_BOTTOM);
-//        canvas.drawOval(rectF, p);
-//        p.setColor(Color.GREEN);
-//        canvas.drawArc(rectF, 0, 45, true, p);
-
-
-
 
         final int circleCentreX = calculationHelper.getCircleCenter().x;
         final int circleCentreY = calculationHelper.getCircleCenter().y;
@@ -115,6 +95,21 @@ public class DrawingLayerView extends View {
         canvas.drawLine(circleCentreX, circleCentreY,
                 new Float(forThirdStepAngle.getX()), new Float(forThirdStepAngle.getY()), paint);
 
+        paint.setColor(Color.RED);
+        canvas.drawOval(getOuterOvalCoords(), paint);
+
     }
 
+    public RectF getOuterOvalCoords() {
+        CustomRect outOvalCor = calculationHelper.getOvalCoordsInCircleSystem();
+        CoordinatesHolder topLeftInScreen = calculationHelper.toScreenCoordinates(outOvalCor.getTopLeftCorner());
+        CoordinatesHolder rightBottomInScreen = calculationHelper.toScreenCoordinates(outOvalCor.getBottomRightCorner());
+
+        final float left = new Float(topLeftInScreen.getX());
+        final float top = new Float(topLeftInScreen.getY());
+        final float right = new Float(rightBottomInScreen.getX());
+        final float bottom = new Float(rightBottomInScreen.getY());
+
+        return new RectF(left, top, right, bottom);
+    }
 }

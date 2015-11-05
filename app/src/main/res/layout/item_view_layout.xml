@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.sss.magicwheel.widget.ItemView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="100dp"
+    android:layout_height="100dp"
+    android:scaleType="fitXY"
+    android:src="@drawable/android_icon"
+    android:background="@android:color/holo_red_dark" />

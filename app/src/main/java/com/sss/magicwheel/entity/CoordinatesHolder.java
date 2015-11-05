@@ -30,6 +30,16 @@ public class CoordinatesHolder {
         return y;
     }
 
+    public float getXAsFloat() {
+        return (float) x;
+    }
+
+    public float getYAsFloat() {
+        return (float) y;
+    }
+
+
+
     @Override
     public String toString() {
         return String.format("CoordinatesHolder (x, y) [%s; %s]", x, y);
