@@ -77,22 +77,25 @@ public class DrawingLayerView extends View {
         // draw outer circle
         canvas.drawCircle(circleCentreX, circleCentreY, calculationHelper.getOuterRadius(), paint);
 
+        // ray to top intersection
         CoordinatesHolder innerRadInterc = calculationHelper.toScreenCoordinates(
                 calculationHelper.getStartIntercectForOuterRadius()
         );
 
         CoordinatesHolder forIitialAngle = calculationHelper.toScreenCoordinates(
-                CoordinatesHolder.ofPolar(calculationHelper.getOuterRadius(), 0)
+                calculationHelper.getIntersectForAngle(calculationHelper.getOuterRadius(), 0)
         );
 
         CoordinatesHolder forFirstStepAngle = calculationHelper.toScreenCoordinates(
-                CoordinatesHolder.ofPolar(calculationHelper.getOuterRadius(),
-                        MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD)
+                calculationHelper.getIntersectForAngle(calculationHelper.getOuterRadius(), MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD)
         );
 
         CoordinatesHolder forSecondStepAngle = calculationHelper.toScreenCoordinates(
-                CoordinatesHolder.ofPolar(calculationHelper.getOuterRadius(),
-                        MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD * 2)
+                calculationHelper.getIntersectForAngle(calculationHelper.getOuterRadius(), 2 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD)
+        );
+
+        CoordinatesHolder forThirdStepAngle = calculationHelper.toScreenCoordinates(
+                calculationHelper.getIntersectForAngle(calculationHelper.getOuterRadius(), 3 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD)
         );
 
         Log.e(TAG, "innerRadInterc " + innerRadInterc.toString());
@@ -108,6 +111,9 @@ public class DrawingLayerView extends View {
 
         canvas.drawLine(circleCentreX, circleCentreY,
                 new Float(forSecondStepAngle.getX()), new Float(forSecondStepAngle.getY()), paint);
+
+        canvas.drawLine(circleCentreX, circleCentreY,
+                new Float(forThirdStepAngle.getX()), new Float(forThirdStepAngle.getY()), paint);
 
     }
 

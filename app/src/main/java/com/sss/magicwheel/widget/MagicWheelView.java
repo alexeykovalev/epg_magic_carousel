@@ -50,12 +50,16 @@ public class MagicWheelView extends ViewGroup {
 
         CoordinatesHolder firstPosition = getPositionCoordinatesForAngle(MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
         CoordinatesHolder secondPosition = getPositionCoordinatesForAngle(2 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
+        CoordinatesHolder thirdPosition = getPositionCoordinatesForAngle(3 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
 
         View firstChild = createAndMeasureNewView();
         setupChild(firstChild, firstPosition);
 
         View secondChild = createAndMeasureNewView();
         setupChild(secondChild, secondPosition);
+
+        View thirdChild = createAndMeasureNewView();
+        setupChild(thirdChild, thirdPosition);
     }
 
     private void setupChild(View child, CoordinatesHolder childPosition) {
