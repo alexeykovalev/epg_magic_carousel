@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 
 import com.sss.magicwheel.R;
 import com.sss.magicwheel.entity.CoordinatesHolder;
@@ -32,10 +31,17 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
             Color.BLUE, Color.RED, Color.YELLOW, Color.CYAN
     };
 
+    private final ITouchHandler touchHandler;
     private final MagicCalculationHelper calculationHelper;
     private final Random randomizer;
 
-    private ITouchHandler touchHandler;
+    private final double maxAngleInRad;
+    private final double minAngleInRad;
+    private double layoutStartAngleInRad;
+    private double currentAngleInRad;
+
+    private boolean isInLayoutStage;
+
 
     public MagicWheelView(Context context) {
         this(context, null);
@@ -47,10 +53,16 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
 
     public MagicWheelView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+
         randomizer = new Random();
         calculationHelper = MagicCalculationHelper.getInstance();
         touchHandler = new TouchHandler(context, this);
+
+        maxAngleInRad = calculationHelper.getStartAngle();
+        // todo: simply for now due do circle is symmetric
+        minAngleInRad = -calculationHelper.getStartAngle();
+        layoutStartAngleInRad = maxAngleInRad;
+        currentAngleInRad = layoutStartAngleInRad;
     }
 
     @Override
@@ -65,14 +77,41 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
 
     @Override
     public int scrollHorizontallyBy(int dx) {
-        Log.e("TAG", "scrollHorizontallyBy() dx [" + dx + "]");
+//        Log.e("TAG", "scrollHorizontallyBy() dx [" + dx + "]");
         return 0;
     }
 
     @Override
     public int scrollVerticallyBy(int dy) {
         Log.e("TAG", "scrollVerticallyBy() dy [" + dy + "]");
+
+        double coef = (double)dy / calculationHelper.getOuterRadius();
+        currentAngleInRad += coef;
+
+        Log.e("TAG", "scrollVerticallyBy() [" + dy + "], " +
+                "currentAngleInRad [" + MagicCalculationHelper.fromRadToDegree(currentAngleInRad) + "], " +
+                "coef [" + coef + "]");
+
+        updateAngles();
+
+        Log.e("TAG", "currentAngleInRad [" + MagicCalculationHelper.fromRadToDegree(currentAngleInRad) + "]");
+
+        requestLayout();
+
         return 0;
+    }
+
+    private void updateAngles() {
+        double calculatedAngle = currentAngleInRad;
+        while (calculatedAngle <= maxAngleInRad) {
+            calculatedAngle += MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD;
+        }
+
+        layoutStartAngleInRad = calculatedAngle;
+
+        if (currentAngleInRad < minAngleInRad) {
+            currentAngleInRad = layoutStartAngleInRad;
+        }
     }
 
     @Override
@@ -82,26 +121,42 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        if (isInLayoutStage) {
+            return;
+        }
+        isInLayoutStage = true;
         removeAllViewsInLayout();
 
-        CoordinatesHolder firstChildPosition = getPositionCoordinatesForAngleInScreenCoords(MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
-        CoordinatesHolder secondPosition = getPositionCoordinatesForAngleInScreenCoords(2 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
-        CoordinatesHolder thirdPosition = getPositionCoordinatesForAngleInScreenCoords(3 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
+        double angle = layoutStartAngleInRad;
+        while (angle > minAngleInRad) {
+            CoordinatesHolder childPositionOnScreen = getPositionCoordinatesForAngleOnScreenCoords(angle);
+            ItemView child = (ItemView) createAndMeasureNewView();
+            child.setLinearClipData(getClipDataForChild(angle, angle + MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD));
+            setupChild(child, childPositionOnScreen);
+            angle -= MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD;
+        }
 
-        Log.e("TAG", "First child Coords: " + firstChildPosition.toString());
 
-        ItemView firstChild = (ItemView) createAndMeasureNewView();
-        firstChild.setLinearClipData(getClipDataForChild(0, MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD));
-        setupChild(firstChild, firstChildPosition);
-
-        ItemView secondChild = (ItemView) createAndMeasureNewView();
-        secondChild.setLinearClipData(getClipDataForChild(MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD, 2 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD));
-        setupChild(secondChild, secondPosition);
-
-        ItemView thirdChild = (ItemView) createAndMeasureNewView();
-        thirdChild.setLinearClipData(getClipDataForChild(2 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD, 3 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD));
-        setupChild(thirdChild, thirdPosition);
+        isInLayoutStage = false;
     }
+
+//    CoordinatesHolder firstChildPosition = getPositionCoordinatesForAngleOnScreenCoords(MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
+//    CoordinatesHolder secondPosition = getPositionCoordinatesForAngleOnScreenCoords(2 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
+//    CoordinatesHolder thirdPosition = getPositionCoordinatesForAngleOnScreenCoords(3 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
+//
+//    Log.e("TAG", "First child Coords: " + firstChildPosition.toString());
+//
+//    ItemView firstChild = (ItemView) createAndMeasureNewView();
+//    firstChild.setLinearClipData(getClipDataForChild(0, MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD));
+//    setupChild(firstChild, firstChildPosition);
+//
+//    ItemView secondChild = (ItemView) createAndMeasureNewView();
+//    secondChild.setLinearClipData(getClipDataForChild(MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD, 2 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD));
+//    setupChild(secondChild, secondPosition);
+//
+//    ItemView thirdChild = (ItemView) createAndMeasureNewView();
+//    thirdChild.setLinearClipData(getClipDataForChild(2 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD, 3 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD));
+//    setupChild(thirdChild, thirdPosition);
 
 
     private LinearClipData getClipDataForChild(double prevAngleInRad, double newAngleInRad) {
@@ -140,7 +195,7 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
         addView(child);
     }
 
-    private CoordinatesHolder getPositionCoordinatesForAngleInScreenCoords(double angleInRad) {
+    private CoordinatesHolder getPositionCoordinatesForAngleOnScreenCoords(double angleInRad) {
         return calculationHelper.toScreenCoordinates(calculationHelper.getViewPositionForAngle(angleInRad));
     }
 
@@ -157,8 +212,10 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
 
 
     private int getRandomBackgroundColor() {
-        int index = randomizer.nextInt(AVAILABLE_VIEW_COLORS.length);
-        return AVAILABLE_VIEW_COLORS[index];
+//        int index = randomizer.nextInt(AVAILABLE_VIEW_COLORS.length);
+//        return AVAILABLE_VIEW_COLORS[index];
+
+        return Color.BLUE;
     }
 
 
