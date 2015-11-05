@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -12,6 +13,9 @@ import android.view.WindowManager;
 import com.sss.magicwheel.R;
 import com.sss.magicwheel.entity.CoordinatesHolder;
 import com.sss.magicwheel.entity.LinearClipData;
+import com.sss.magicwheel.motion.TouchHandler;
+import com.sss.magicwheel.motion.IScrollable;
+import com.sss.magicwheel.motion.ITouchHandler;
 import com.sss.magicwheel.util.MagicCalculationHelper;
 
 import java.util.Random;
@@ -20,7 +24,7 @@ import java.util.Random;
  * @author Alexey
  * @since 05.11.2015
  */
-public class MagicWheelView extends ViewGroup {
+public class MagicWheelView extends ViewGroup implements IScrollable {
 
     private static final int STUB_VIEW_WIDTH = 400;
     private static final int STUB_VIEW_HEIGHT = 200;
@@ -30,6 +34,8 @@ public class MagicWheelView extends ViewGroup {
 
     private final MagicCalculationHelper calculationHelper;
     private final Random randomizer;
+
+    private ITouchHandler touchHandler;
 
     public MagicWheelView(Context context) {
         this(context, null);
@@ -44,8 +50,35 @@ public class MagicWheelView extends ViewGroup {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         randomizer = new Random();
         calculationHelper = MagicCalculationHelper.getInstance();
+        touchHandler = new TouchHandler(context, this);
     }
 
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        return touchHandler.onInterceptTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return touchHandler.onTouchEvent(event);
+    }
+
+    @Override
+    public int scrollHorizontallyBy(int dx) {
+        Log.e("TAG", "scrollHorizontallyBy() dx [" + dx + "]");
+        return 0;
+    }
+
+    @Override
+    public int scrollVerticallyBy(int dy) {
+        Log.e("TAG", "scrollVerticallyBy() dy [" + dy + "]");
+        return 0;
+    }
+
+    @Override
+    public View getContentView() {
+        return this;
+    }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
