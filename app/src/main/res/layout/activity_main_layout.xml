@@ -4,12 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.sss.magicwheel.widget.MagicCarouselView
+    <com.sss.magicwheel.widget.MagicWheelView
         android:id="@+id/magic_carousel"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.sss.magicwheel.widget.CoverView
+    <com.sss.magicwheel.widget.DrawingLayerView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

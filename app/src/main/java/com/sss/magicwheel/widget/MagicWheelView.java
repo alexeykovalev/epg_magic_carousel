@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.sss.magicwheel.R;
+import com.sss.magicwheel.entity.CoordinatesHolder;
 import com.sss.magicwheel.util.MagicCalculationHelper;
 
 import java.util.Random;
@@ -17,27 +18,26 @@ import java.util.Random;
  * @author Alexey
  * @since 05.11.2015
  */
-public class MagicCarouselView extends ViewGroup {
+public class MagicWheelView extends ViewGroup {
 
     private static final int STUB_VIEW_WIDTH = 400;
     private static final int STUB_VIEW_HEIGHT = 200;
     private static final int[] AVAILABLE_VIEW_COLORS = new int[] {
-            Color.BLUE, Color.WHITE, Color.RED, Color.GREEN, Color.YELLOW, Color.CYAN
+            Color.BLUE, Color.RED, Color.YELLOW, Color.CYAN
     };
 
     private final MagicCalculationHelper calculationHelper;
     private final Random randomizer;
 
-
-    public MagicCarouselView(Context context) {
+    public MagicWheelView(Context context) {
         this(context, null);
     }
 
-    public MagicCarouselView(Context context, AttributeSet attrs) {
+    public MagicWheelView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public MagicCarouselView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public MagicWheelView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         randomizer = new Random();
@@ -48,17 +48,28 @@ public class MagicCarouselView extends ViewGroup {
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         removeAllViewsInLayout();
 
-        int curLeft = 0;
-        int curTop = 0;
+        CoordinatesHolder firstPosition = getPositionCoordinatesForAngle(MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
+        CoordinatesHolder secondPosition = getPositionCoordinatesForAngle(2 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
 
-        View child = createAndMeasureNewView();
+        View firstChild = createAndMeasureNewView();
+        setupChild(firstChild, firstPosition);
+
+        View secondChild = createAndMeasureNewView();
+        setupChild(secondChild, secondPosition);
+    }
+
+    private void setupChild(View child, CoordinatesHolder childPosition) {
+        int curLeft = (int) childPosition.getX();
+        int curTop = (int) childPosition.getY();
         int childWidth = child.getMeasuredWidth();
         int childHeight = child.getMeasuredHeight();
-
         child.layout(curLeft, curTop, curLeft + childWidth, curTop + childHeight);
         addView(child);
     }
 
+    private CoordinatesHolder getPositionCoordinatesForAngle(double angleInRad) {
+        return calculationHelper.toScreenCoordinates(calculationHelper.getViewPositionForAngle(angleInRad));
+    }
 
     private View createAndMeasureNewView() {
         View stubView = LayoutInflater.from(getContext()).inflate(R.layout.rectangle_stub_view, this, false);
@@ -67,6 +78,7 @@ public class MagicCarouselView extends ViewGroup {
         final int childHeightSpec = MeasureSpec.makeMeasureSpec(STUB_VIEW_HEIGHT, MeasureSpec.EXACTLY);
         stubView.measure(childWidthSpec, childHeightSpec);
         stubView.setBackgroundColor(getRandomBackgroundColor());
+        stubView.setAlpha(0.3f);
         return stubView;
     }
 
