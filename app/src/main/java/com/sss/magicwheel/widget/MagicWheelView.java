@@ -2,6 +2,7 @@ package com.sss.magicwheel.widget;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -129,9 +130,9 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
 
         double angle = layoutStartAngleInRad;
         while (angle > minAngleInRad) {
-            CoordinatesHolder childPositionOnScreen = getPositionCoordinatesForAngleOnScreenCoords(angle);
             ItemView child = (ItemView) createAndMeasureNewView();
             child.setLinearClipData(getClipDataForChild(angle, angle + MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD));
+            CoordinatesHolder childPositionOnScreen = getPositionCoordinatesForAngleOnScreenCoords(angle, child);
             setupChild(child, childPositionOnScreen);
             angle -= MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD;
         }
@@ -195,17 +196,33 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
         addView(child);
     }
 
-    private CoordinatesHolder getPositionCoordinatesForAngleOnScreenCoords(double angleInRad) {
-        return calculationHelper.toScreenCoordinates(calculationHelper.getViewPositionForAngle(angleInRad));
+    private CoordinatesHolder getPositionCoordinatesForAngleOnScreenCoords(double angleInRad, View child) {
+        if (angleInRad > 0) {
+            return calculationHelper.toScreenCoordinates(calculationHelper.getViewPositionForAngle(angleInRad));
+        } else {
+            return getPosOnScreenForNegativeAngle(angleInRad, child);
+        }
+    }
+
+    private CoordinatesHolder getPosOnScreenForNegativeAngle(double angleInRad, View child) {
+//        angleInRad -= MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD;
+
+        CoordinatesHolder innerIntersection = calculationHelper.getIntersectForAngle(calculationHelper.getInnerRadius(), angleInRad);
+        CoordinatesHolder outerIntersection = calculationHelper.getIntersectForAngle(calculationHelper.getOuterRadius(), angleInRad);
+        CoordinatesHolder viewCircleCoord = CoordinatesHolder.ofRect(innerIntersection.getX(), outerIntersection.getY() + child.getMeasuredHeight());
+        return calculationHelper.toScreenCoordinates(viewCircleCoord);
+//        return CoordinatesHolder.ofRect(innerIntersection.getX(), outerIntersection.getY());
     }
 
     private View createAndMeasureNewView() {
-        View stubView = LayoutInflater.from(getContext()).inflate(R.layout.item_view_layout, this, false);
+        ItemView stubView = (ItemView) LayoutInflater.from(getContext()).inflate(R.layout.item_view_layout, this, false);
 
         final int childWidthSpec = MeasureSpec.makeMeasureSpec(STUB_VIEW_WIDTH, MeasureSpec.EXACTLY);
         final int childHeightSpec = MeasureSpec.makeMeasureSpec(STUB_VIEW_HEIGHT, MeasureSpec.EXACTLY);
         stubView.measure(childWidthSpec, childHeightSpec);
-        stubView.setBackgroundColor(getRandomBackgroundColor());
+
+        stubView.setImageDrawable(new ColorDrawable(getRandomBackgroundColor()));
+//        stubView.setBackgroundColor(getRandomBackgroundColor());
         stubView.setAlpha(0.3f);
         return stubView;
     }
