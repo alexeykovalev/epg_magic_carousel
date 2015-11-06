@@ -46,7 +46,7 @@ public class ItemView extends ImageView {
     }
 
 
-    public void setLinearClipData(LinearClipData linearClipData) {
+    public void setClipArea(LinearClipData linearClipData) {
         this.linearClipData = linearClipData;
     }
 

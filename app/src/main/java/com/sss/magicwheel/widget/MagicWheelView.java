@@ -41,6 +41,8 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
 
     private final double maxAngleInRad;
     private final double minAngleInRad;
+    private final ChildViewCanvasRotationCompensator canvasRotationCompensator;
+
     private double layoutStartAngleInRad;
     private double currentAngleInRad;
 
@@ -66,9 +68,11 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
 
         maxAngleInRad = calculationHelper.getStartAngle();
         // todo: simply for now due do circle is symmetric
-        minAngleInRad = -calculationHelper.getStartAngle();
+        minAngleInRad = 0; //-calculationHelper.getStartAngle();
         layoutStartAngleInRad = maxAngleInRad;
         currentAngleInRad = layoutStartAngleInRad;
+
+        canvasRotationCompensator = new ChildViewCanvasRotationCompensator();
     }
 
     @Override
@@ -131,6 +135,7 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
             return;
         }
         isInLayoutStage = true;
+        canvasRotationCompensator.clear();
         removeAllViewsInLayout();
 
         double angleInRad = layoutStartAngleInRad;
@@ -138,12 +143,8 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
             // todo: no direct view cast. Use interface instead of.
             ItemView child = (ItemView) createAndMeasureNewView();
 
-//            LinearClipData childClipData = getClipDataForChild(
-//                    angleInRad - MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD, angleInRad /*+ MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD*/);
-//            child.setLinearClipData(childClipData);
-
-//            LinearClipData childClipArea = getClipArea(child, angleInRad, angleInRad + MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
-//            child.setLinearClipData(childClipArea);
+            LinearClipData childClipArea = getChildClipArea(child, angleInRad, angleInRad + MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
+            child.setClipArea(childClipArea);
 
             CoordinatesHolder childPositionOnScreen = getChildPositionOnScreenByLayoutAngle(child, angleInRad);
             setupChild(child, childPositionOnScreen);
@@ -160,7 +161,7 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
      *                          so we should rotate the clip area on this angle, but in revers direction
      * @param previousAngleInRad - previous layout angle
      */
-    private LinearClipData getClipArea(View child, double currentAngleInRad, double previousAngleInRad) {
+    private LinearClipData getChildClipArea(View child, double currentAngleInRad, double previousAngleInRad) {
         CoordinatesHolder childPositionInCircleSystem = getChildPositionOnCircleSystemByLayoutAngle(child, currentAngleInRad);
 
         // for bottom of the child view (bottom edge of the sector)
@@ -183,54 +184,24 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
                 childPositionInCircleSystem
         );
 
-        return new LinearClipData(first, second, third, four);
+//                return new LinearClipData(first, second, third, four);
+
+        final int childWidth = child.getMeasuredWidth();
+        final int childHeight = child.getMeasuredHeight();
+        final CoordinatesHolder rotationPivot = CoordinatesHolder.ofRect(childWidth / 2, childHeight);
+
+        canvasRotationCompensator.bottomRay = new ChildViewCanvasRotationCompensator.LineBetween(first, second);
+        canvasRotationCompensator.topRay = new ChildViewCanvasRotationCompensator.LineBetween(third, four);
+        canvasRotationCompensator.pivot = rotationPivot;
+
+        ChildViewCanvasRotationCompensator.LineBetween bottomLine =
+                canvasRotationCompensator.getCompensationForBottomRay(currentAngleInRad);
+        ChildViewCanvasRotationCompensator.LineBetween topLine =
+                canvasRotationCompensator.getCompensationForTopRay(currentAngleInRad);
+
+        return new LinearClipData(bottomLine.pointOne, bottomLine.pointTwo, topLine.pointOne, topLine.pointTwo);
     }
 
-//    CoordinatesHolder firstChildPosition = getChildPositionOnScreenByLayoutAngle(MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
-//    CoordinatesHolder secondPosition = getChildPositionOnScreenByLayoutAngle(2 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
-//    CoordinatesHolder thirdPosition = getChildPositionOnScreenByLayoutAngle(3 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
-//
-//    Log.e("TAG", "First child Coords: " + firstChildPosition.toString());
-//
-//    ItemView firstChild = (ItemView) createAndMeasureNewView();
-//    firstChild.setLinearClipData(getClipDataForChild(0, MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD));
-//    setupChild(firstChild, firstChildPosition);
-//
-//    ItemView secondChild = (ItemView) createAndMeasureNewView();
-//    secondChild.setLinearClipData(getClipDataForChild(MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD, 2 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD));
-//    setupChild(secondChild, secondPosition);
-//
-//    ItemView thirdChild = (ItemView) createAndMeasureNewView();
-//    thirdChild.setLinearClipData(getClipDataForChild(2 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD, 3 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD));
-//    setupChild(thirdChild, thirdPosition);
-
-
-    private LinearClipData getClipDataForChild(double prevAngleInRad, double newAngleInRad) {
-
-        CoordinatesHolder viewPosInCircCoords = calculationHelper.getViewPositionForAngle(newAngleInRad);
-
-        CoordinatesHolder first = calculationHelper.toViewCoordinateSystem(
-                calculationHelper.getIntersectionByAngle(calculationHelper.getInnerRadius(), prevAngleInRad),
-                viewPosInCircCoords
-        );
-
-        CoordinatesHolder second = calculationHelper.toViewCoordinateSystem(
-                calculationHelper.getIntersectionByAngle(calculationHelper.getOuterRadius(), prevAngleInRad),
-                viewPosInCircCoords
-        );
-
-        CoordinatesHolder third = calculationHelper.toViewCoordinateSystem(
-                calculationHelper.getIntersectionByAngle(calculationHelper.getInnerRadius(), newAngleInRad),
-                viewPosInCircCoords
-        );
-
-        CoordinatesHolder four = calculationHelper.toViewCoordinateSystem(
-                calculationHelper.getIntersectionByAngle(calculationHelper.getOuterRadius(), newAngleInRad),
-                viewPosInCircCoords
-        );
-
-        return new LinearClipData(first, second, third, four);
-    }
 
     private void setupChild(View child, CoordinatesHolder childPosition) {
         int curLeft = (int) childPosition.getX();
@@ -317,36 +288,104 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
     private static class ChildViewCanvasRotationCompensator {
 
         /**
-         * Base on this line child's bottom will be aligned.
+         * // todo: not anymore
+         * Base on this line child's bottom will be aligned
+         * Points specified in view's system coordinate.
          */
         LineBetween bottomRay;
 
         LineBetween topRay;
 
-        public ChildViewCanvasRotationCompensator(LineBetween bottomRay, LineBetween topRay) {
-            this.bottomRay = bottomRay;
-            this.topRay = topRay;
+        /**
+         * Rotation pivot in view's sytem of coordinates.
+         */
+        CoordinatesHolder pivot;
+
+        // todo: consider moving pivot here
+
+        public ChildViewCanvasRotationCompensator() {
+        }
+
+        public void clear() {
+            bottomRay = null;
+            topRay = null;
+            pivot = null;
         }
 
         public LineBetween getCompensationForBottomRay(double compensationAngleInRad) {
-            return null;
+
+            if (bottomRay == null || pivot == null) {
+                throw new RuntimeException("bottomRay == null || pivot == null");
+            }
+
+            CoordinatesHolder firstPointInRotationSystemCoordinates = toRotationCoordinateSystem(bottomRay.pointOne, pivot);
+            CoordinatesHolder firstPoint = CoordinatesHolder.ofPolar(
+                    firstPointInRotationSystemCoordinates.getRadius(),
+                    firstPointInRotationSystemCoordinates.getAngleInRad() - compensationAngleInRad
+            );
+
+            CoordinatesHolder secondPointInRotationSystemCoordinate = toRotationCoordinateSystem(bottomRay.pointTwo, pivot);
+            CoordinatesHolder secondPoint = CoordinatesHolder.ofPolar(
+                    secondPointInRotationSystemCoordinate.getRadius(),
+                    secondPointInRotationSystemCoordinate.getAngleInRad() + compensationAngleInRad
+            );
+
+            return new LineBetween(
+                    fromRotationToViewCoordinateSystem(firstPoint, pivot),
+                    fromRotationToViewCoordinateSystem(secondPoint, pivot)
+            );
         }
 
         public LineBetween getCompensationForTopRay(double compensationAngleInRad) {
-            return null;
+
+            if (topRay == null || pivot == null) {
+                throw new RuntimeException("bottomRay == null || pivot == null");
+            }
+
+            CoordinatesHolder firstPointInRotationSystemCoordinates = toRotationCoordinateSystem(topRay.pointOne, pivot);
+            CoordinatesHolder firstPoint = CoordinatesHolder.ofPolar(
+                    firstPointInRotationSystemCoordinates.getRadius(),
+                    firstPointInRotationSystemCoordinates.getAngleInRad() - compensationAngleInRad
+            );
+
+            CoordinatesHolder secondPointInRotationSystemCoordinate = toRotationCoordinateSystem(topRay.pointTwo, pivot);
+            CoordinatesHolder secondPoint = CoordinatesHolder.ofPolar(
+                    secondPointInRotationSystemCoordinate.getRadius(),
+                    secondPointInRotationSystemCoordinate.getAngleInRad() + compensationAngleInRad
+            );
+
+            return new LineBetween(
+                    fromRotationToViewCoordinateSystem(firstPoint, pivot),
+                    fromRotationToViewCoordinateSystem(secondPoint, pivot)
+            );
         }
 
+        private CoordinatesHolder toRotationCoordinateSystem(CoordinatesHolder inViewSystem, CoordinatesHolder pivot) {
+            return CoordinatesHolder.ofRect(
+                    inViewSystem.getX() - pivot.getX(),
+                    pivot.getY() - inViewSystem.getY()
+            );
+        }
+
+        private CoordinatesHolder fromRotationToViewCoordinateSystem(CoordinatesHolder inRotationSystem, CoordinatesHolder pivot) {
+            return CoordinatesHolder.ofRect(
+                    inRotationSystem.getX() + pivot.getX(),
+                    pivot.getY() - inRotationSystem.getY()
+            );
+        }
+
+        // todo: create pool of reusable objects with clear method
         private static class LineBetween {
 
             /**
              * The one closer to the circle's center.
              */
-            CoordinatesHolder pointOne;
+            final CoordinatesHolder pointOne;
 
             /**
              * The one farther of the circle's center.
              */
-            CoordinatesHolder pointTwo;
+            final CoordinatesHolder pointTwo;
 
             public LineBetween(CoordinatesHolder pointOne, CoordinatesHolder pointTwo) {
                 this.pointOne = pointOne;

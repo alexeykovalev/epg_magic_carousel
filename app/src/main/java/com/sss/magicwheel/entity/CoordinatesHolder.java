@@ -30,6 +30,7 @@ public class CoordinatesHolder {
         return y;
     }
 
+    // todo: consider the enum Unit {Double, Float, Integer} strategy value for return types.
     public float getXAsFloat() {
         return (float) x;
     }
@@ -38,7 +39,13 @@ public class CoordinatesHolder {
         return (float) y;
     }
 
+    public double getAngleInRad() {
+        return Math.atan(y/x);
+    }
 
+    public double getRadius() {
+        return Math.sqrt(x * x + y * y);
+    }
 
     @Override
     public String toString() {
