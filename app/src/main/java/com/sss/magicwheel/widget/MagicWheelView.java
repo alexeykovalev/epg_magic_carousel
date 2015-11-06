@@ -2,7 +2,6 @@ package com.sss.magicwheel.widget;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,8 +25,12 @@ import java.util.Random;
  */
 public class MagicWheelView extends ViewGroup implements IScrollable {
 
+    private static final int NOT_DEFINED_VALUE = Integer.MIN_VALUE;
+
+    // todo: has to be calculated based on sector dimensions. Don't hardcode this values.
     private static final int STUB_VIEW_WIDTH = 400;
-    private static final int STUB_VIEW_HEIGHT = 200;
+    private static final int STUB_VIEW_HEIGHT = 250;
+
     private static final int[] AVAILABLE_VIEW_COLORS = new int[] {
             Color.BLUE, Color.RED, Color.YELLOW, Color.CYAN
     };
@@ -42,6 +45,8 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
     private double currentAngleInRad;
 
     private boolean isInLayoutStage;
+
+    private int middleRadius = NOT_DEFINED_VALUE;
 
 
     public MagicWheelView(Context context) {
@@ -131,9 +136,10 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
         double angle = layoutStartAngleInRad;
         while (angle > minAngleInRad) {
             ItemView child = (ItemView) createAndMeasureNewView();
-            child.setLinearClipData(getClipDataForChild(angle, angle + MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD));
-            CoordinatesHolder childPositionOnScreen = getPositionCoordinatesForAngleOnScreenCoords(angle, child);
+//            child.setLinearClipData(getClipDataForChild(angle, angle + MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD));
+            CoordinatesHolder childPositionOnScreen = getChildPositionOnScreenForAngle(angle, child);
             setupChild(child, childPositionOnScreen);
+            rotateChild(angle, child);
             angle -= MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD;
         }
 
@@ -141,9 +147,9 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
         isInLayoutStage = false;
     }
 
-//    CoordinatesHolder firstChildPosition = getPositionCoordinatesForAngleOnScreenCoords(MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
-//    CoordinatesHolder secondPosition = getPositionCoordinatesForAngleOnScreenCoords(2 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
-//    CoordinatesHolder thirdPosition = getPositionCoordinatesForAngleOnScreenCoords(3 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
+//    CoordinatesHolder firstChildPosition = getChildPositionOnScreenForAngle(MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
+//    CoordinatesHolder secondPosition = getChildPositionOnScreenForAngle(2 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
+//    CoordinatesHolder thirdPosition = getChildPositionOnScreenForAngle(3 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
 //
 //    Log.e("TAG", "First child Coords: " + firstChildPosition.toString());
 //
@@ -165,22 +171,22 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
         CoordinatesHolder viewPosInCircCoords = calculationHelper.getViewPositionForAngle(newAngleInRad);
 
         CoordinatesHolder first = calculationHelper.toViewCoordinate(
-                calculationHelper.getIntersectForAngle(calculationHelper.getInnerRadius(), prevAngleInRad),
+                calculationHelper.getIntersectionByAngle(calculationHelper.getInnerRadius(), prevAngleInRad),
                 viewPosInCircCoords
         );
 
         CoordinatesHolder second = calculationHelper.toViewCoordinate(
-                calculationHelper.getIntersectForAngle(calculationHelper.getOuterRadius(), prevAngleInRad),
+                calculationHelper.getIntersectionByAngle(calculationHelper.getOuterRadius(), prevAngleInRad),
                 viewPosInCircCoords
         );
 
         CoordinatesHolder third = calculationHelper.toViewCoordinate(
-                calculationHelper.getIntersectForAngle(calculationHelper.getInnerRadius(), newAngleInRad),
+                calculationHelper.getIntersectionByAngle(calculationHelper.getInnerRadius(), newAngleInRad),
                 viewPosInCircCoords
         );
 
         CoordinatesHolder four = calculationHelper.toViewCoordinate(
-                calculationHelper.getIntersectForAngle(calculationHelper.getOuterRadius(), newAngleInRad),
+                calculationHelper.getIntersectionByAngle(calculationHelper.getOuterRadius(), newAngleInRad),
                 viewPosInCircCoords
         );
 
@@ -196,19 +202,57 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
         addView(child);
     }
 
-    private CoordinatesHolder getPositionCoordinatesForAngleOnScreenCoords(double angleInRad, View child) {
+    private CoordinatesHolder getChildPositionOnScreenForAngle(double angleInRad, View child) {
+        return calculationHelper.toScreenCoordinates( getChildPositionForPositiveAngle(angleInRad, child) );
+
+/*
         if (angleInRad > 0) {
             return calculationHelper.toScreenCoordinates(calculationHelper.getViewPositionForAngle(angleInRad));
         } else {
             return getPosOnScreenForNegativeAngle(angleInRad, child);
         }
+*/
+    }
+
+    /**
+     * Position in circle's coordinate system.
+     */
+    private CoordinatesHolder getChildPositionForPositiveAngle(double angleInRad, View child) {
+        final int childWidth = child.getMeasuredWidth();
+        final int childHeight = child.getMeasuredHeight();
+        int middleRadius = getMiddleRadius();
+        CoordinatesHolder middleCoordinates = calculationHelper.getIntersectionByAngle(middleRadius, angleInRad);
+
+        double childX = middleCoordinates.getX() - childWidth / 2;
+        double childY = middleCoordinates.getY() + childHeight;
+        return CoordinatesHolder.ofRect(childX, childY);
+    }
+
+    private int getMiddleRadius() {
+        if (middleRadius == NOT_DEFINED_VALUE) {
+            middleRadius = calculationHelper.getInnerRadius()
+                    + (calculationHelper.getOuterRadius() - calculationHelper.getInnerRadius()) / 2;
+        }
+        return middleRadius;
+    }
+
+    private void rotateChild(double currentLayoutAngleInRad, View child) {
+        final int childWidth = child.getMeasuredWidth();
+        final int childHeight = child.getMeasuredHeight();
+
+        child.setPivotX(childWidth / 2);
+        child.setPivotY(childHeight);
+
+
+        double angleToRotate = -MagicCalculationHelper.fromRadToDegree(currentLayoutAngleInRad);
+        child.setRotation((float)angleToRotate);
     }
 
     private CoordinatesHolder getPosOnScreenForNegativeAngle(double angleInRad, View child) {
 //        angleInRad -= MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD;
 
-        CoordinatesHolder innerIntersection = calculationHelper.getIntersectForAngle(calculationHelper.getInnerRadius(), angleInRad);
-        CoordinatesHolder outerIntersection = calculationHelper.getIntersectForAngle(calculationHelper.getOuterRadius(), angleInRad);
+        CoordinatesHolder innerIntersection = calculationHelper.getIntersectionByAngle(calculationHelper.getInnerRadius(), angleInRad);
+        CoordinatesHolder outerIntersection = calculationHelper.getIntersectionByAngle(calculationHelper.getOuterRadius(), angleInRad);
         CoordinatesHolder viewCircleCoord = CoordinatesHolder.ofRect(innerIntersection.getX(), outerIntersection.getY() + child.getMeasuredHeight());
         return calculationHelper.toScreenCoordinates(viewCircleCoord);
 //        return CoordinatesHolder.ofRect(innerIntersection.getX(), outerIntersection.getY());
@@ -221,8 +265,8 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
         final int childHeightSpec = MeasureSpec.makeMeasureSpec(STUB_VIEW_HEIGHT, MeasureSpec.EXACTLY);
         stubView.measure(childWidthSpec, childHeightSpec);
 
-        stubView.setImageDrawable(new ColorDrawable(getRandomBackgroundColor()));
-//        stubView.setBackgroundColor(getRandomBackgroundColor());
+//        stubView.setImageDrawable(new ColorDrawable(getRandomBackgroundColor()));
+        stubView.setBackgroundColor(getRandomBackgroundColor());
         stubView.setAlpha(0.3f);
         return stubView;
     }

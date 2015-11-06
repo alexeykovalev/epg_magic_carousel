@@ -111,21 +111,21 @@ public class MagicCalculationHelper {
     }
 
     public CoordinatesHolder getStartIntersectForInnerRadius() {
-        return getIntersectForAngle(innerRadius, getStartAngle());
+        return getIntersectionByAngle(innerRadius, getStartAngle());
     }
 
     public CoordinatesHolder getStartIntercectForOuterRadius() {
-        return getIntersectForAngle(outerRadius, getStartAngle());
+        return getIntersectionByAngle(outerRadius, getStartAngle());
     }
 
-    public CoordinatesHolder getIntersectForAngle(int radius, double angleInRad) {
+    public CoordinatesHolder getIntersectionByAngle(int radius, double angleInRad) {
         return CoordinatesHolder.ofPolar(radius, angleInRad);
     }
 
 
     public CoordinatesHolder getViewPositionForAngle(double angleInRad) {
-        CoordinatesHolder innerIntersection = getIntersectForAngle(innerRadius, angleInRad);
-        CoordinatesHolder outerIntersection = getIntersectForAngle(outerRadius, angleInRad);
+        CoordinatesHolder innerIntersection = getIntersectionByAngle(innerRadius, angleInRad);
+        CoordinatesHolder outerIntersection = getIntersectionByAngle(outerRadius, angleInRad);
         return CoordinatesHolder.ofRect(innerIntersection.getX(), outerIntersection.getY());
     }
 

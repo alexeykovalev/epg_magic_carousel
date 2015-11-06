@@ -63,19 +63,19 @@ public class DrawingLayerView extends View {
         );
 
         CoordinatesHolder forIitialAngle = calculationHelper.toScreenCoordinates(
-                calculationHelper.getIntersectForAngle(calculationHelper.getOuterRadius(), 0)
+                calculationHelper.getIntersectionByAngle(calculationHelper.getOuterRadius(), 0)
         );
 
         CoordinatesHolder forFirstStepAngle = calculationHelper.toScreenCoordinates(
-                calculationHelper.getIntersectForAngle(calculationHelper.getOuterRadius(), MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD)
+                calculationHelper.getIntersectionByAngle(calculationHelper.getOuterRadius(), MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD)
         );
 
         CoordinatesHolder forSecondStepAngle = calculationHelper.toScreenCoordinates(
-                calculationHelper.getIntersectForAngle(calculationHelper.getOuterRadius(), 2 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD)
+                calculationHelper.getIntersectionByAngle(calculationHelper.getOuterRadius(), 2 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD)
         );
 
         CoordinatesHolder forThirdStepAngle = calculationHelper.toScreenCoordinates(
-                calculationHelper.getIntersectForAngle(calculationHelper.getOuterRadius(), 3 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD)
+                calculationHelper.getIntersectionByAngle(calculationHelper.getOuterRadius(), 3 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD)
         );
 
         Log.e(TAG, "innerRadInterc " + innerRadInterc.toString());
