@@ -13,13 +13,13 @@ public class ClipData {
     private final RectF outerOvalForArc;
     private final RectF innerOvalForArc;
 
-    private final LineBetween sectorBorderOne;
-    private final LineBetween sectorBorderTwo;
+    private final LineTo sectorBorderOne;
+    private final LineTo sectorBorderTwo;
 
     public ClipData(RectF outerOvalForArc,
                     RectF innerOvalForArc,
-                    LineBetween sectorBorderOne,
-                    LineBetween sectorBorderTwo) {
+                    LineTo sectorBorderOne,
+                    LineTo sectorBorderTwo) {
         this.outerOvalForArc = outerOvalForArc;
         this.innerOvalForArc = innerOvalForArc;
         this.sectorBorderOne = sectorBorderOne;
@@ -35,28 +35,29 @@ public class ClipData {
         return innerOvalForArc;
     }
 
-    public LineBetween getSectorBorderOne() {
+    public LineTo getSectorBorderOne() {
         return sectorBorderOne;
     }
 
-    public LineBetween getSectorBorderTwo() {
+    public LineTo getSectorBorderTwo() {
         return sectorBorderTwo;
     }
 
 
 
-    public static class LineBetween {
+    @Deprecated
+    public static class LineTo {
 
         private final PointF first;
         private final PointF second;
 
-        public LineBetween(PointF first, PointF second) {
+        public LineTo(PointF first, PointF second) {
             this.first = first;
             this.second = second;
         }
 
-        public static LineBetween ofStub() {
-            return new LineBetween(null, null);
+        public static LineTo ofStub() {
+            return new LineTo(null, null);
         }
 
         public PointF getFirst() {

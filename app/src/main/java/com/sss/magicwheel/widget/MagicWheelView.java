@@ -133,23 +133,62 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
         isInLayoutStage = true;
         removeAllViewsInLayout();
 
-        double angle = layoutStartAngleInRad;
-        while (angle > minAngleInRad) {
+        double angleInRad = layoutStartAngleInRad;
+        while (angleInRad > minAngleInRad) {
+            // todo: no direct view cast. Use interface instead of.
             ItemView child = (ItemView) createAndMeasureNewView();
-//            child.setLinearClipData(getClipDataForChild(angle, angle + MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD));
-            CoordinatesHolder childPositionOnScreen = getChildPositionOnScreenForAngle(angle, child);
-            setupChild(child, childPositionOnScreen);
-            rotateChild(angle, child);
-            angle -= MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD;
-        }
 
+//            LinearClipData childClipData = getClipDataForChild(
+//                    angleInRad - MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD, angleInRad /*+ MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD*/);
+//            child.setLinearClipData(childClipData);
+
+//            LinearClipData childClipArea = getClipArea(child, angleInRad, angleInRad + MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
+//            child.setLinearClipData(childClipArea);
+
+            CoordinatesHolder childPositionOnScreen = getChildPositionOnScreenByLayoutAngle(child, angleInRad);
+            setupChild(child, childPositionOnScreen);
+            rotateChild(angleInRad, child);
+            angleInRad -= MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD;
+        }
 
         isInLayoutStage = false;
     }
 
-//    CoordinatesHolder firstChildPosition = getChildPositionOnScreenForAngle(MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
-//    CoordinatesHolder secondPosition = getChildPositionOnScreenForAngle(2 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
-//    CoordinatesHolder thirdPosition = getChildPositionOnScreenForAngle(3 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
+
+    /**
+     * @param currentAngleInRad - current layout angle. Also on this angle child will be rotated
+     *                          so we should rotate the clip area on this angle, but in revers direction
+     * @param previousAngleInRad - previous layout angle
+     */
+    private LinearClipData getClipArea(View child, double currentAngleInRad, double previousAngleInRad) {
+        CoordinatesHolder childPositionInCircleSystem = getChildPositionOnCircleSystemByLayoutAngle(child, currentAngleInRad);
+
+        // for bottom of the child view (bottom edge of the sector)
+        CoordinatesHolder first = calculationHelper.toViewCoordinateSystem(
+                calculationHelper.getIntersectionByAngle(calculationHelper.getInnerRadius(), currentAngleInRad),
+                childPositionInCircleSystem
+        );
+        CoordinatesHolder second = calculationHelper.toViewCoordinateSystem(
+                calculationHelper.getIntersectionByAngle(calculationHelper.getOuterRadius(), currentAngleInRad),
+                childPositionInCircleSystem
+        );
+
+        // top edge of the sector
+        CoordinatesHolder third = calculationHelper.toViewCoordinateSystem(
+                calculationHelper.getIntersectionByAngle(calculationHelper.getInnerRadius(), previousAngleInRad),
+                childPositionInCircleSystem
+        );
+        CoordinatesHolder four = calculationHelper.toViewCoordinateSystem(
+                calculationHelper.getIntersectionByAngle(calculationHelper.getOuterRadius(), previousAngleInRad),
+                childPositionInCircleSystem
+        );
+
+        return new LinearClipData(first, second, third, four);
+    }
+
+//    CoordinatesHolder firstChildPosition = getChildPositionOnScreenByLayoutAngle(MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
+//    CoordinatesHolder secondPosition = getChildPositionOnScreenByLayoutAngle(2 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
+//    CoordinatesHolder thirdPosition = getChildPositionOnScreenByLayoutAngle(3 * MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD);
 //
 //    Log.e("TAG", "First child Coords: " + firstChildPosition.toString());
 //
@@ -170,22 +209,22 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
 
         CoordinatesHolder viewPosInCircCoords = calculationHelper.getViewPositionForAngle(newAngleInRad);
 
-        CoordinatesHolder first = calculationHelper.toViewCoordinate(
+        CoordinatesHolder first = calculationHelper.toViewCoordinateSystem(
                 calculationHelper.getIntersectionByAngle(calculationHelper.getInnerRadius(), prevAngleInRad),
                 viewPosInCircCoords
         );
 
-        CoordinatesHolder second = calculationHelper.toViewCoordinate(
+        CoordinatesHolder second = calculationHelper.toViewCoordinateSystem(
                 calculationHelper.getIntersectionByAngle(calculationHelper.getOuterRadius(), prevAngleInRad),
                 viewPosInCircCoords
         );
 
-        CoordinatesHolder third = calculationHelper.toViewCoordinate(
+        CoordinatesHolder third = calculationHelper.toViewCoordinateSystem(
                 calculationHelper.getIntersectionByAngle(calculationHelper.getInnerRadius(), newAngleInRad),
                 viewPosInCircCoords
         );
 
-        CoordinatesHolder four = calculationHelper.toViewCoordinate(
+        CoordinatesHolder four = calculationHelper.toViewCoordinateSystem(
                 calculationHelper.getIntersectionByAngle(calculationHelper.getOuterRadius(), newAngleInRad),
                 viewPosInCircCoords
         );
@@ -202,22 +241,12 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
         addView(child);
     }
 
-    private CoordinatesHolder getChildPositionOnScreenForAngle(double angleInRad, View child) {
-        return calculationHelper.toScreenCoordinates( getChildPositionForPositiveAngle(angleInRad, child) );
-
-/*
-        if (angleInRad > 0) {
-            return calculationHelper.toScreenCoordinates(calculationHelper.getViewPositionForAngle(angleInRad));
-        } else {
-            return getPosOnScreenForNegativeAngle(angleInRad, child);
-        }
-*/
+    private CoordinatesHolder getChildPositionOnScreenByLayoutAngle(View child, double angleInRad) {
+        return calculationHelper.toScreenCoordinates(getChildPositionOnCircleSystemByLayoutAngle(child, angleInRad));
     }
 
-    /**
-     * Position in circle's coordinate system.
-     */
-    private CoordinatesHolder getChildPositionForPositiveAngle(double angleInRad, View child) {
+    // todo: calculations has to be cached in layout level Map and cleared on next layout stage
+    private CoordinatesHolder getChildPositionOnCircleSystemByLayoutAngle(View child, double angleInRad) {
         final int childWidth = child.getMeasuredWidth();
         final int childHeight = child.getMeasuredHeight();
         int middleRadius = getMiddleRadius();
@@ -266,8 +295,9 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
         stubView.measure(childWidthSpec, childHeightSpec);
 
 //        stubView.setImageDrawable(new ColorDrawable(getRandomBackgroundColor()));
-        stubView.setBackgroundColor(getRandomBackgroundColor());
-        stubView.setAlpha(0.3f);
+        stubView.setImageDrawable(getResources().getDrawable(R.drawable.second_cover));
+//        stubView.setBackgroundColor(getRandomBackgroundColor());
+//        stubView.setAlpha(0.3f);
         return stubView;
     }
 
@@ -277,6 +307,52 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
 //        return AVAILABLE_VIEW_COLORS[index];
 
         return Color.BLUE;
+    }
+
+
+    /**
+     * In order to compensate view's rotation we have
+     * to rotate clip area in opposite direction.
+     */
+    private static class ChildViewCanvasRotationCompensator {
+
+        /**
+         * Base on this line child's bottom will be aligned.
+         */
+        LineBetween bottomRay;
+
+        LineBetween topRay;
+
+        public ChildViewCanvasRotationCompensator(LineBetween bottomRay, LineBetween topRay) {
+            this.bottomRay = bottomRay;
+            this.topRay = topRay;
+        }
+
+        public LineBetween getCompensationForBottomRay(double compensationAngleInRad) {
+            return null;
+        }
+
+        public LineBetween getCompensationForTopRay(double compensationAngleInRad) {
+            return null;
+        }
+
+        private static class LineBetween {
+
+            /**
+             * The one closer to the circle's center.
+             */
+            CoordinatesHolder pointOne;
+
+            /**
+             * The one farther of the circle's center.
+             */
+            CoordinatesHolder pointTwo;
+
+            public LineBetween(CoordinatesHolder pointOne, CoordinatesHolder pointTwo) {
+                this.pointOne = pointOne;
+                this.pointTwo = pointTwo;
+            }
+        }
     }
 
 

@@ -47,10 +47,12 @@ public class MagicCalculationHelper {
 
     // ----------------------------------------------------
 
-    public CoordinatesHolder toViewCoordinate(CoordinatesHolder inCircleCoord, CoordinatesHolder leftTopCornerViewCoord) {
-        double inViewX = inCircleCoord.getX() - leftTopCornerViewCoord.getX();
-        double inViewY = leftTopCornerViewCoord.getY() - inCircleCoord.getY();
-        return CoordinatesHolder.ofRect(inViewX, inViewY);
+    public CoordinatesHolder toViewCoordinateSystem(CoordinatesHolder pointInCircleSystemCoord,
+                                                    CoordinatesHolder leftTopCornerViewCoordInCircleSystem) {
+
+        double inViewSystemX = pointInCircleSystemCoord.getX() - leftTopCornerViewCoordInCircleSystem.getX();
+        double inViewSystemY = leftTopCornerViewCoordInCircleSystem.getY() - pointInCircleSystemCoord.getY();
+        return CoordinatesHolder.ofRect(inViewSystemX, inViewSystemY);
     }
 
     public static double fromRadToDegree(double valInRad) {
