@@ -40,7 +40,7 @@ public class CoordinatesHolder {
     }
 
     public double getAngleInRad() {
-        return Math.atan(y/x);
+        return Math.atan2(y, x); //Math.atan(y / x);
     }
 
     public double getRadius() {
