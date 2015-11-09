@@ -23,7 +23,14 @@ import java.util.Random;
  * @author Alexey
  * @since 05.11.2015
  */
+// todo: needs to be done:
+    // 1. Add Fling action
+    // 2. Add views recycling
+    // 3. Extract views from Adapter
+    // 4. Calculate view's height and width depending on sector's configuration
 public class MagicWheelView extends ViewGroup implements IScrollable {
+
+    private static final String TAG = MagicWheelView.class.getCanonicalName();
 
     private static final int NOT_DEFINED_VALUE = Integer.MIN_VALUE;
 
@@ -47,6 +54,10 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
 
     private boolean isInLayoutStage;
 
+    /**
+     * Don't use directly (might not be initialized yet).
+     * Use {@link #getMiddleRadius()} instead of.
+     */
     private int middleRadius = NOT_DEFINED_VALUE;
 
 
@@ -65,9 +76,9 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
         calculationHelper = MagicCalculationHelper.getInstance();
         touchHandler = new TouchHandler(context, this);
 
-        maxAngleInRad = calculationHelper.getStartAngle();
-        // todo: simply for now due do circle is symmetric
-        minAngleInRad = -calculationHelper.getStartAngle();
+        maxAngleInRad = calculationHelper.getStartAngle() + MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD;
+        // todo: simple for now due do circle is symmetric
+        minAngleInRad = -calculationHelper.getStartAngle() - MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD;
         layoutStartAngleInRad = maxAngleInRad;
         currentAngleInRad = layoutStartAngleInRad;
     }
@@ -84,27 +95,20 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
 
     @Override
     public int scrollHorizontallyBy(int dx) {
-//        Log.e("TAG", "scrollHorizontallyBy() dx [" + dx + "]");
         return 0;
     }
 
     @Override
     public int scrollVerticallyBy(int dy) {
-        Log.e("TAG", "scrollVerticallyBy() dy [" + dy + "]");
+        Log.i(TAG, "scrollVerticallyBy() dy [" + dy + "]");
 
-        double coef = (double)dy / calculationHelper.getOuterRadius();
-        currentAngleInRad += coef;
-
-        Log.e("TAG", "scrollVerticallyBy() [" + dy + "], " +
-                "currentAngleInRad [" + MagicCalculationHelper.fromRadToDegree(currentAngleInRad) + "], " +
-                "coef [" + coef + "]");
+        double angleDeltaValue = (double)dy / calculationHelper.getOuterRadius();
+        currentAngleInRad += angleDeltaValue;
 
         updateAngles();
-
-        Log.e("TAG", "currentAngleInRad [" + MagicCalculationHelper.fromRadToDegree(currentAngleInRad) + "]");
-
         requestLayout();
 
+        // todo:
         return 0;
     }
 
@@ -139,11 +143,7 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
             // todo: no direct view cast. Use interface instead of.
             ItemView child = (ItemView) createAndMeasureNewView();
 
-            LinearClipData childClipArea = getChildClipArea(
-                    child,
-                    angleInRad,
-                    angleInRad + MagicCalculationHelper.TEST_ANGLE_STEP_IN_RAD
-            );
+            LinearClipData childClipArea = getChildClipArea(child, angleInRad);
             child.setClipArea(childClipArea);
 
             CoordinatesHolder childPositionOnScreen = getChildPositionOnScreenByLayoutAngle(child, angleInRad);
@@ -158,19 +158,23 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
     /**
      * @param currentAngleInRad - current layout angle. Also on this angle child will be rotated
      *                          so we should rotate the clip area on this angle, but in revers direction
-     * @param previousAngleInRad - previous layout angle
      */
-    private LinearClipData getChildClipArea(View child, double currentAngleInRad, double previousAngleInRad) {
+    private LinearClipData getChildClipArea(View child, double currentAngleInRad) {
         CoordinatesHolder childPositionInCircleSystem = getChildPositionOnCircleSystemByLayoutAngle(child, currentAngleInRad);
+
+        double topAngle = getSectorTopEdgeAngle(child, currentAngleInRad);
+        double bottomAngle = getSectorBottomEdgeAngle(child, currentAngleInRad);
+
         CoordinatesHolder pivot = calculationHelper.getIntersectionByAngle(getMiddleRadius(), currentAngleInRad);
+
         CoordinatesHolder rotatedTopLeftCorner = getRotatedViewTopLeftCornerInCircleSystem(
                 childPositionInCircleSystem, pivot, currentAngleInRad
         );
 
-        CoordinatesHolder firstInCircle = calculationHelper.getIntersectionByAngle(calculationHelper.getInnerRadius(), currentAngleInRad);
-        CoordinatesHolder secondInCircle = calculationHelper.getIntersectionByAngle(calculationHelper.getOuterRadius(), currentAngleInRad);
-        CoordinatesHolder thirdInCircle = calculationHelper.getIntersectionByAngle(calculationHelper.getInnerRadius(), previousAngleInRad);
-        CoordinatesHolder fourthInCircle = calculationHelper.getIntersectionByAngle(calculationHelper.getOuterRadius(), previousAngleInRad);
+        CoordinatesHolder firstInCircle = calculationHelper.getIntersectionByAngle(calculationHelper.getInnerRadius(), bottomAngle);
+        CoordinatesHolder secondInCircle = calculationHelper.getIntersectionByAngle(calculationHelper.getOuterRadius(), bottomAngle);
+        CoordinatesHolder thirdInCircle = calculationHelper.getIntersectionByAngle(calculationHelper.getInnerRadius(), topAngle);
+        CoordinatesHolder fourthInCircle = calculationHelper.getIntersectionByAngle(calculationHelper.getOuterRadius(), topAngle);
 
         return new LinearClipData(
                 getPointRelativeToRotatedViewInViewSystem(firstInCircle, rotatedTopLeftCorner, currentAngleInRad),
@@ -178,6 +182,28 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
                 getPointRelativeToRotatedViewInViewSystem(thirdInCircle, rotatedTopLeftCorner, currentAngleInRad),
                 getPointRelativeToRotatedViewInViewSystem(fourthInCircle, rotatedTopLeftCorner, currentAngleInRad)
         );
+    }
+
+    /**
+     * Returns sector's top edge angle.
+     */
+    private double getSectorTopEdgeAngle(View child, double currentAngleInRad) {
+        final double halfWidth = (double) child.getMeasuredWidth() / 2;
+        final double halfHeight = (double) child.getMeasuredHeight() / 2;
+        final double torRightCornerPos = getMiddleRadius() + halfWidth;
+
+        return currentAngleInRad + Math.atan2(halfHeight, torRightCornerPos);
+    }
+
+    /**
+     * Returns sector's bottom edge angle.
+     */
+    private double getSectorBottomEdgeAngle(View child, double currentAngleInRad) {
+        final double halfWidth = (double) child.getMeasuredWidth() / 2;
+        final double halfHeight = (double) child.getMeasuredHeight() / 2;
+        final double torRightCornerPos = getMiddleRadius() + halfWidth;
+
+        return currentAngleInRad - Math.atan2(halfHeight, torRightCornerPos);
     }
 
     private CoordinatesHolder getRotatedViewTopLeftCornerInCircleSystem(CoordinatesHolder cornerInCircleSystem,
@@ -235,7 +261,7 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
         CoordinatesHolder middleCoordinates = calculationHelper.getIntersectionByAngle(middleRadius, angleInRad);
 
         double childX = middleCoordinates.getX() - childWidth / 2;
-        double childY = middleCoordinates.getY() + childHeight;
+        double childY = middleCoordinates.getY() + childHeight / 2;
         return CoordinatesHolder.ofRect(childX, childY);
     }
 
@@ -252,8 +278,7 @@ public class MagicWheelView extends ViewGroup implements IScrollable {
         final int childHeight = child.getMeasuredHeight();
 
         child.setPivotX(childWidth / 2);
-        child.setPivotY(childHeight);
-
+        child.setPivotY(childHeight / 2);
 
         double angleToRotate = -MagicCalculationHelper.fromRadToDegree(currentLayoutAngleInRad);
         child.setRotation((float)angleToRotate);
