@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.sss.magicwheel.manager.WheelSectorWrapperView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/sector_wrapper_view"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_vertical|right"
+    android:scaleType="fitXY"
+    android:src="@drawable/second_cover" />

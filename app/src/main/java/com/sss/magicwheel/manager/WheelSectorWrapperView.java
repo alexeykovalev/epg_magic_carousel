@@ -1,41 +1,37 @@
-package com.sss.magicwheel.widget;
+package com.sss.magicwheel.manager;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.ImageView;
 
 import com.sss.magicwheel.entity.CoordinatesHolder;
-import com.sss.magicwheel.entity.CustomRect;
 import com.sss.magicwheel.entity.LinearClipData;
 import com.sss.magicwheel.util.MagicCalculationHelper;
 
 /**
  * @author Alexey Kovalev
- * @since 05.11.2015.
+ * @since 04.12.2015.
  */
-public class ItemView extends ImageView {
+public class WheelSectorWrapperView extends ImageView {
 
-    private static final String TAG = ItemView.class.getCanonicalName();
+    private static final String TAG = WheelSectorWrapperView.class.getCanonicalName();
 
     private final Paint paint;
-    private final MagicCalculationHelper calculationHelper;
     private Path path;
     private LinearClipData linearClipData;
 
 
-    public ItemView(Context context) {
+    public WheelSectorWrapperView(Context context) {
         this(context, null);
     }
 
-    public ItemView(Context context, AttributeSet attrs) {
+    public WheelSectorWrapperView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        calculationHelper = MagicCalculationHelper.getInstance();
 
         paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
@@ -46,7 +42,7 @@ public class ItemView extends ImageView {
     }
 
 
-    public void setClipArea(LinearClipData linearClipData) {
+    public void setSectorClipArea(LinearClipData linearClipData) {
         this.linearClipData = linearClipData;
     }
 
@@ -57,6 +53,8 @@ public class ItemView extends ImageView {
             super.onDraw(canvas);
             return;
         }
+
+        Log.e(TAG, "Clip area " + linearClipData);
 
         Path pathToClip = createPathForClip(linearClipData, canvas);
         canvas.clipPath(pathToClip);

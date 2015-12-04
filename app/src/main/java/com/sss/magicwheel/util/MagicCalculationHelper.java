@@ -82,14 +82,6 @@ public class MagicCalculationHelper {
         return new CustomRect(topLeft, bottomRight);
     }
 
-    public int getScreenWidth() {
-        return screenWidth;
-    }
-
-    public int getScreenHeight() {
-        return screenHeight;
-    }
-
     public int getInnerRadius() {
         return innerRadius;
     }

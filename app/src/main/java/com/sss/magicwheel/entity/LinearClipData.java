@@ -33,4 +33,14 @@ public class LinearClipData {
     public CoordinatesHolder getFourth() {
         return fourth;
     }
+
+    @Override
+    public String toString() {
+        return "LinearClipData{" +
+                "first=" + first +
+                ", second=" + second +
+                ", third=" + third +
+                ", fourth=" + fourth +
+                '}';
+    }
 }
