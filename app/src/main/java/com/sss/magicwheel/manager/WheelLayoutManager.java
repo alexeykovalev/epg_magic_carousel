@@ -31,7 +31,15 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
 
         removeAndRecycleAllViews(recycler);
 
-        final WheelBigWrapperView bigWrapperView = (WheelBigWrapperView) recycler.getViewForPosition(0);
+        addViewForPosition(recycler, 0, -circleConfig.getSectorAngleInRad());
+        addViewForPosition(recycler, 1, 0);
+        addViewForPosition(recycler, 2, circleConfig.getSectorAngleInRad());
+
+
+    }
+
+    private void addViewForPosition(RecyclerView.Recycler recycler, int position, double angleInRad) {
+        final WheelBigWrapperView bigWrapperView = (WheelBigWrapperView) recycler.getViewForPosition(position);
 
         measureBigWrapperView(bigWrapperView);
 
@@ -48,7 +56,7 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
 
         bigWrapperView.layout(wrTransformedCoords.left, wrTransformedCoords.top, wrTransformedCoords.right, wrTransformedCoords.bottom);
 
-        rotateBigWraperViewToAngle(bigWrapperView, -Math.PI / 12);
+        rotateBigWraperViewToAngle(bigWrapperView, angleInRad);
 
         bigWrapperView.setSectorWrapperViewSize(
                 computationHelper.getSectorWrapperViewWidth(),
@@ -58,11 +66,6 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
         bigWrapperView.setSectorClipArea(computationHelper.createSectorClipArea());
 
         addView(bigWrapperView);
-
-
-//        layoutDecorated(view, left + params.leftMargin, top + params.topMargin,
-//                right - params.rightMargin, bottom - params.bottomMargin);
-
     }
 
     private Rect getWrapperViewCoordsInCircleSystem(int wrapperViewWidth) {
