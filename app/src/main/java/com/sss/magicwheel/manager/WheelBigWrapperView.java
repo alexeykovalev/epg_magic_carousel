@@ -43,6 +43,8 @@ public final class WheelBigWrapperView extends FrameLayout {
         titleView = (TextView) rootView.findViewById(R.id.big_wrapper_text);
     }
 
+    @Deprecated
+    // TODO: 07.12.2015 don't compute every time use CalculationHelper directly from this class
     public void setSectorWrapperViewSize(int width, int height) {
         sectorWrapperView = (WheelSectorWrapperView) LayoutInflater.from(getContext()).inflate(R.layout.sector_wrapper_view_layout, this, false);
 
@@ -54,6 +56,8 @@ public final class WheelBigWrapperView extends FrameLayout {
         addView(sectorWrapperView, lp);
     }
 
+    @Deprecated
+    // TODO: 07.12.2015 don't compute every time use CalculationHelper directly from this class
     public void setSectorClipArea(LinearClipData sectorClipArea) {
         sectorWrapperView.setSectorClipArea(sectorClipArea);
     }
