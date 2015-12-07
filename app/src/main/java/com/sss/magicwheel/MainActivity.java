@@ -14,6 +14,7 @@ import com.sss.magicwheel.manager.CircleConfig;
 import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelDataItem;
 import com.sss.magicwheel.manager.WheelLayoutManager;
+import com.sss.magicwheel.manager.WheelUtils;
 import com.sss.magicwheel.util.MagicCalculationHelper;
 
 import java.util.ArrayList;
@@ -56,6 +57,7 @@ public class MainActivity extends Activity {
         items.add(new WheelDataItem("second"));
         items.add(new WheelDataItem("third"));
         items.add(new WheelDataItem("fourth"));
+        items.add(new WheelDataItem("fifth"));
 
         return new WheelAdapter(this, items);
     }
@@ -80,7 +82,13 @@ public class MainActivity extends Activity {
         final int innerRadius = screenHeight / 2 + 50;
         final int outerRadius = innerRadius + 400;
 
-        return new CircleConfig(circleCenter, outerRadius, innerRadius, DEFAULT_SECTOR_ANGLE_IN_DEGREE);
+        CircleConfig.AngularRestrictions angularRestrictions = new CircleConfig.AngularRestrictions(
+                WheelUtils.degreeToRadian(DEFAULT_SECTOR_ANGLE_IN_DEGREE),
+                Math.PI / 2,
+                -Math.PI / 2
+        );
+
+        return new CircleConfig(circleCenter, outerRadius, innerRadius, angularRestrictions);
     }
 
     // TODO: 03.12.2015 Wheel boundaries might be not restricted by screen but by custom rectangle instead

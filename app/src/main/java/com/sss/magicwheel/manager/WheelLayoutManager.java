@@ -3,7 +3,9 @@ package com.sss.magicwheel.manager;
 import android.content.Context;
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.sss.magicwheel.entity.CoordinatesHolder;
 import com.sss.magicwheel.entity.LinearClipData;
@@ -31,11 +33,12 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
 
         removeAndRecycleAllViews(recycler);
 
-        addViewForPosition(recycler, 0, -circleConfig.getSectorAngleInRad());
-        addViewForPosition(recycler, 1, 0);
-        addViewForPosition(recycler, 2, circleConfig.getSectorAngleInRad());
-
-
+        final double sectorAngleInRad = circleConfig.getAngularRestrictions().getSectorAngleInRad();
+        addViewForPosition(recycler, 0, -2 * sectorAngleInRad);
+        addViewForPosition(recycler, 1, -sectorAngleInRad);
+        addViewForPosition(recycler, 2, 0);
+        addViewForPosition(recycler, 3, sectorAngleInRad);
+        addViewForPosition(recycler, 4, 2 * sectorAngleInRad);
     }
 
     private void addViewForPosition(RecyclerView.Recycler recycler, int position, double angleInRad) {
@@ -112,12 +115,11 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
 
     @Override
     public RecyclerView.LayoutParams generateDefaultLayoutParams() {
-        return new RecyclerView.LayoutParams(
+        return new LayoutParams(
                 RecyclerView.LayoutParams.WRAP_CONTENT,
                 RecyclerView.LayoutParams.WRAP_CONTENT
         );
     }
-
 
 
     private static final class ComputationHelper {
@@ -144,7 +146,7 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
         }
 
         private int computeViewWidth() {
-            final double delta = circleConfig.getInnerRadius() * Math.cos(circleConfig.getSectorAngleInRad() / 2);
+            final double delta = circleConfig.getInnerRadius() * Math.cos(circleConfig.getAngularRestrictions().getSectorAngleInRad() / 2);
             return (int) (circleConfig.getOuterRadius() - delta);
         }
 
@@ -159,7 +161,7 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
         }
 
         private int computeViewHeight() {
-            final double halfHeight = circleConfig.getOuterRadius() * Math.sin(circleConfig.getSectorAngleInRad() / 2);
+            final double halfHeight = circleConfig.getOuterRadius() * Math.sin(circleConfig.getAngularRestrictions().getSectorAngleInRad() / 2);
             return (int) (2 * halfHeight);
         }
 
@@ -168,8 +170,8 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
             final int viewWidth = getSectorWrapperViewWidth();
             final int viewHalfHeight = getSectorWrapperViewHeight() / 2;
 
-            final double leftBaseDelta = circleConfig.getInnerRadius() * Math.sin(circleConfig.getSectorAngleInRad() / 2);
-            final double rightBaseDelta = circleConfig.getOuterRadius() * Math.sin(circleConfig.getSectorAngleInRad() / 2);
+            final double leftBaseDelta = circleConfig.getInnerRadius() * Math.sin(circleConfig.getAngularRestrictions().getSectorAngleInRad() / 2);
+            final double rightBaseDelta = circleConfig.getOuterRadius() * Math.sin(circleConfig.getAngularRestrictions().getSectorAngleInRad() / 2);
 
             final CoordinatesHolder first = CoordinatesHolder.ofRect(0, viewHalfHeight + leftBaseDelta);
             final CoordinatesHolder third = CoordinatesHolder.ofRect(0, viewHalfHeight - leftBaseDelta);
@@ -178,6 +180,31 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
             final CoordinatesHolder forth = CoordinatesHolder.ofRect(viewWidth, viewHalfHeight - rightBaseDelta);
 
             return new LinearClipData(first, second, third, forth);
+        }
+    }
+
+    public static final class LayoutParams extends RecyclerView.LayoutParams {
+
+        double bigWrapperRotationAngleInRad;
+
+        public LayoutParams(Context c, AttributeSet attrs) {
+            super(c, attrs);
+        }
+
+        public LayoutParams(int width, int height) {
+            super(width, height);
+        }
+
+        public LayoutParams(ViewGroup.MarginLayoutParams source) {
+            super(source);
+        }
+
+        public LayoutParams(ViewGroup.LayoutParams source) {
+            super(source);
+        }
+
+        public LayoutParams(RecyclerView.LayoutParams source) {
+            super(source);
         }
     }
 }

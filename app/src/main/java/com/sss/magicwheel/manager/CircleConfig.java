@@ -3,13 +3,48 @@ package com.sss.magicwheel.manager;
 import android.graphics.Point;
 import android.graphics.Rect;
 
-import com.sss.magicwheel.entity.CoordinatesHolder;
-
 /**
  * @author Alexey Kovalev
  * @since 04.12.2015.
  */
 public final class CircleConfig {
+
+    public static final class AngularRestrictions {
+
+        private final double sectorAngleInRad;
+        private final double topEdgeAngleRestrictionInRad;
+        private final double bottomEdgeAngleRestrictionInRad;
+
+        public AngularRestrictions(double sectorAngleInRad,
+                                   double topEdgeAngleRestrictionInRad,
+                                   double bottomEdgeAngleRestrictionInRad) {
+            this.sectorAngleInRad = sectorAngleInRad;
+            this.topEdgeAngleRestrictionInRad = topEdgeAngleRestrictionInRad;
+            this.bottomEdgeAngleRestrictionInRad = bottomEdgeAngleRestrictionInRad;
+        }
+
+        public double getSectorAngleInRad() {
+            return sectorAngleInRad;
+        }
+
+        public double getTopEdgeAngleRestrictionInRad() {
+            return topEdgeAngleRestrictionInRad;
+        }
+
+        public double getBottomEdgeAngleRestrictionInRad() {
+            return bottomEdgeAngleRestrictionInRad;
+        }
+
+        @Override
+        public String toString() {
+            return "AngularRestrictions{" +
+                    "sectorAngleInRad=" + sectorAngleInRad +
+                    ", topEdgeAngleRestrictionInRad=" + topEdgeAngleRestrictionInRad +
+                    ", bottomEdgeAngleRestrictionInRad=" + bottomEdgeAngleRestrictionInRad +
+                    '}';
+        }
+    }
+
 
     /**
      * Relative to Recycler view top left corner.
@@ -22,14 +57,13 @@ public final class CircleConfig {
 
     private final int innerRadius;
 
-    private final int sectorAngleInDegree;
+    private final AngularRestrictions angularRestrictions;
 
-
-    public CircleConfig(Point circleCenter, int outerRadius, int innerRadius, int sectorAngleInDegree) {
+    public CircleConfig(Point circleCenter, int outerRadius, int innerRadius, AngularRestrictions angularRestrictions) {
         this.circleCenter = circleCenter;
         this.outerRadius = outerRadius;
         this.innerRadius = innerRadius;
-        this.sectorAngleInDegree = sectorAngleInDegree;
+        this.angularRestrictions = angularRestrictions;
         this.circleBoundaries = computeCircleBoundariesRelativeToCircleCenter();
     }
 
@@ -49,13 +83,14 @@ public final class CircleConfig {
         return innerRadius;
     }
 
-    public double getSectorAngleInRad() {
-        return WheelUtils.degreeToRadian(sectorAngleInDegree);
+    public AngularRestrictions getAngularRestrictions() {
+        return angularRestrictions;
     }
 
-    public Rect getCircleBoundariesRelativeToCircleCenter() {
-        return circleBoundaries;
-    }
+    @Deprecated
+//    public Rect getCircleBoundariesRelativeToCircleCenter() {
+//        return safeRectCopy(circleBoundaries);
+//    }
 
     private static Point safePointCopy(Point source) {
         return new Point(source);
@@ -72,7 +107,7 @@ public final class CircleConfig {
                 ", circleBoundaries=" + circleBoundaries.toShortString() +
                 ", outerRadius=" + outerRadius +
                 ", innerRadius=" + innerRadius +
-                ", sectorAngleInDegree=" + sectorAngleInDegree +
+                ", angularRestrictions=" + angularRestrictions.toString() +
                 '}';
     }
 }
