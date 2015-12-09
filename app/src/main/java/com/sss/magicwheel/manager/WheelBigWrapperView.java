@@ -3,6 +3,8 @@ package com.sss.magicwheel.manager;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,23 +41,29 @@ public final class WheelBigWrapperView extends FrameLayout {
     public WheelBigWrapperView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         final View rootView = inflate(context, R.layout.wheel_big_wrapper_view_layout, this);
-//        sectorWrapperView = rootView.findViewById(R.id.sector_wrapper_view);
+        sectorWrapperView = (WheelSectorWrapperView) rootView.findViewById(R.id.sector_wrapper_view);
         titleView = (TextView) rootView.findViewById(R.id.big_wrapper_text);
     }
 
-    @Deprecated
-    // TODO: 07.12.2015 don't compute every time use CalculationHelper directly from this class
     public void setSectorWrapperViewSize(int width, int height, LinearClipData sectorClipArea) {
-        sectorWrapperView = (WheelSectorWrapperView) LayoutInflater.from(getContext())
-                .inflate(R.layout.sector_wrapper_view_layout, this, false);
-        sectorWrapperView.setSectorClipArea(sectorClipArea);
 
-        final ViewGroup.MarginLayoutParams lp = (MarginLayoutParams) sectorWrapperView.getLayoutParams();
+//        Log.e("TAG", "mW " + getMeasuredWidth() + " mH " + getMeasuredHeight());
+
+//        Log.e("TAG", "width [" + WheelUtils.pixelsToDp(getContext(), width) + "], h [" + WheelUtils.pixelsToDp(getContext(), height) + "]");
+
+//        sectorWrapperView = (WheelSectorWrapperView) LayoutInflater.from(getContext()).inflate(R.layout.sector_wrapper_view_layout, this, false);
+
+/*
+        final FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) sectorWrapperView.getLayoutParams();
         lp.width = width;
         lp.height = height;
+        lp.gravity = Gravity.CENTER;
+        sectorWrapperView.setLayoutParams(lp);
+*/
+
+        sectorWrapperView.setSectorClipArea(sectorClipArea);
 
 //        brushWithRandomColor(sectorWrapperView);
-        addView(sectorWrapperView, lp);
     }
 
     public void updateText(String text) {
@@ -67,4 +75,5 @@ public final class WheelBigWrapperView extends FrameLayout {
         int colorToBrush = SECTOR_WRAPPER_VIEW_BG_COLORS[index];
         sectorWrapperView.setBackgroundColor(colorToBrush);
     }
+
 }

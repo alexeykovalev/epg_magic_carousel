@@ -1,5 +1,6 @@
 package com.sss.magicwheel.manager;
 
+import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
 
@@ -47,5 +48,9 @@ public final class WheelUtils {
                 circleCenterRelToRecyclerView.x + pointToTransform.x,
                 circleCenterRelToRecyclerView.y - pointToTransform.y
         );
+    }
+
+    public static float pixelsToDp(Context context, final float px) {
+        return px / context.getResources().getDisplayMetrics().density;
     }
 }

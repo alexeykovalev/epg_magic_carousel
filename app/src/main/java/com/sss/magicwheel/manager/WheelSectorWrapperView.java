@@ -49,6 +49,8 @@ public class WheelSectorWrapperView extends ImageView {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        Log.e(TAG, "onDraw()");
+
         if (linearClipData == null) {
             super.onDraw(canvas);
             return;

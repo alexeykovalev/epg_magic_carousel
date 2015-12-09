@@ -208,17 +208,12 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
         double angleToCompensate = layoutState.mRequestedScrollAngle;
         double accumulatedRecycleAngle = 0;
 
-        LayoutChunkResult layoutChunkResult = new LayoutChunkResult();
         while (angleToCompensate > 0 && layoutState.hasMore(state)) {
-            layoutChunkResult.resetInternal();
-            layoutCircleChunk(recycler, state, layoutState, layoutChunkResult);
-            if (layoutChunkResult.mFinished) {
-                break;
-            }
+            final double consumedAngle = layoutCircleChunk(recycler, state, layoutState);
 
-            layoutState.mAngleToStartLayout -= layoutState.mRotationDirection.direction * layoutChunkResult.mConsumedAngle;
-            angleToCompensate -= layoutChunkResult.mConsumedAngle;
-            accumulatedRecycleAngle += layoutChunkResult.mConsumedAngle;
+            layoutState.mAngleToStartLayout -= layoutState.mRotationDirection.direction * consumedAngle;
+            angleToCompensate -= consumedAngle;
+            accumulatedRecycleAngle += consumedAngle;
 
             recycleUnnecessaryViews(recycler, accumulatedRecycleAngle, layoutState.mRotationDirection);
         }
@@ -226,68 +221,55 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
         return accumulatedRecycleAngle;
     }
 
-    private void recycleUnnecessaryViews(RecyclerView.Recycler recycler,
-                                         double accumulatedRecycleAngle,
-                                         CircleRotationDirection rotationDirection) {
-        // TODO: 08.12.2015 recycling implementation here
-    }
-
-    private void layoutCircleChunk(RecyclerView.Recycler recycler, RecyclerView.State state,
-                           LayoutState layoutState, LayoutChunkResult result) {
+    private double layoutCircleChunk(RecyclerView.Recycler recycler, RecyclerView.State state, LayoutState layoutState) {
 
         View view = layoutState.next(recycler);
-//        if (view == null) {
-//            // if we are laying out views in scrap, this may return null which means there is
-//            // no more items to layout.
-//            result.mFinished = true;
-//            return;
-//        }
 
-        layoutViewFromChunk(view, layoutState);
+        WheelBigWrapperView bigWrapperView = (WheelBigWrapperView) view;
 
-//        if (layoutState.mScrapList == null) {
-            if (layoutState.mRotationDirection == CircleRotationDirection.Anticlockwise) {
-                addView(view);
-            } else {
-                addView(view, 0);
-            }
-//        }
+        measureBigWrapperView(view);
 
-        result.mConsumedAngle = circleConfig.getAngularRestrictions().getSectorAngleInRad();
-    }
-
-    private void layoutViewFromChunk(View viewToAdd, LayoutState layoutState) {
-
-        WheelBigWrapperView bigWrapperView = (WheelBigWrapperView) viewToAdd;
-
-        measureBigWrapperView(viewToAdd);
-
-        Rect wrViewCoordsInCircleSystem = getWrapperViewCoordsInCircleSystem(viewToAdd.getMeasuredWidth());
+        Rect wrViewCoordsInCircleSystem = getWrapperViewCoordsInCircleSystem(view.getMeasuredWidth());
 
         Rect wrTransformedCoords = WheelUtils.fromCircleCoordsSystemToRecyclerViewCoordsSystem(
                 circleConfig.getCircleCenterRelToRecyclerView(),
                 wrViewCoordsInCircleSystem
         );
 
-        viewToAdd.layout(
+        view.layout(
                 wrTransformedCoords.left,
                 wrTransformedCoords.top,
                 wrTransformedCoords.right,
                 wrTransformedCoords.bottom
         );
 
-//        rotateBigWraperViewToAngle(viewToAdd, -layoutState.mAngleToStartLayout);
+        final double rotationAngle = layoutState.mRotationDirection == CircleRotationDirection.Anticlockwise ?
+                -layoutState.mAngleToStartLayout : layoutState.mAngleToStartLayout;
+
+        rotateBigWraperViewToAngle(view, rotationAngle);
 
         bigWrapperView.setSectorWrapperViewSize(
                 computationHelper.getSectorWrapperViewWidth(),
                 computationHelper.getSectorWrapperViewHeight(),
-                null
-//                computationHelper.createSectorClipArea()
+                computationHelper.createSectorClipArea()
         );
 
-        LayoutParams lp = (LayoutParams) viewToAdd.getLayoutParams();
+        LayoutParams lp = (LayoutParams) view.getLayoutParams();
         lp.rotationAngleInRad = layoutState.mAngleToStartLayout;
 
+        if (layoutState.mRotationDirection == CircleRotationDirection.Anticlockwise) {
+            addView(view);
+        } else {
+            addView(view, 0);
+        }
+
+        return circleConfig.getAngularRestrictions().getSectorAngleInRad();
+    }
+
+    private void recycleUnnecessaryViews(RecyclerView.Recycler recycler,
+                                         double accumulatedRecycleAngle,
+                                         CircleRotationDirection rotationDirection) {
+        // TODO: 08.12.2015 recycling implementation here
     }
 
     @Override
@@ -470,16 +452,6 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
             return closest;
         }
 
-    }
-
-    private static class LayoutChunkResult {
-        double mConsumedAngle;
-        boolean mFinished;
-
-        void resetInternal() {
-            mConsumedAngle = 0;
-            mFinished = false;
-        }
     }
 
     private static final class ComputationHelper {
