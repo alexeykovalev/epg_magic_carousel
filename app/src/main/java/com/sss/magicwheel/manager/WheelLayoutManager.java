@@ -46,7 +46,7 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
 
         addViewForPosition(recycler, 2, 0);
 
-//        addViewForPosition(recycler, 3, sectorAngleInRad);
+        addViewForPosition(recycler, 3, sectorAngleInRad);
 //        addViewForPosition(recycler, 4, 2 * sectorAngleInRad);
     }
 
@@ -70,7 +70,7 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
 
         bigWrapperView.layout(wrTransformedCoords.left, wrTransformedCoords.top, wrTransformedCoords.right, wrTransformedCoords.bottom);
 
-        rotateBigWraperViewToAngle(bigWrapperView, angleInRad);
+        rotateBigWrapperViewToAngle(bigWrapperView, angleInRad);
 
         bigWrapperView.setSectorWrapperViewSize(
                 computationHelper.getSectorWrapperViewWidth(),
@@ -89,10 +89,10 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
         return new Rect(0, topEdge, wrapperViewWidth, -topEdge);
     }
 
-    private void rotateBigWraperViewToAngle(View bigWrapperView, double angleToRotateInRad) {
+    private void rotateBigWrapperViewToAngle(View bigWrapperView, double angleToRotateInRad) {
         bigWrapperView.setPivotX(0);
         bigWrapperView.setPivotY(bigWrapperView.getMeasuredHeight() / 2);
-        bigWrapperView.setRotation((int) WheelUtils.radToDegree(angleToRotateInRad));
+        bigWrapperView.setRotation((float) WheelUtils.radToDegree(angleToRotateInRad));
     }
 
     private void measureBigWrapperView(View bigWrapperView) {
@@ -132,7 +132,7 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
         final double actualRotationAngle = angleToScrollInRad > consumedAngle ?
                 circleRotationDirection.direction * consumedAngle : circleRotationDirection.direction * angleToScrollInRad;
 
-//        doChildrenRotationByAngle(angleToScrollInRad, circleRotationDirection);
+        doChildrenRotationByAngle(angleToScrollInRad, circleRotationDirection);
 
         // TODO: 07.12.2015 most probably this computation is not correct
         return (int) (circleConfig.getOuterRadius() * Math.sin(actualRotationAngle));
@@ -141,14 +141,11 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
     private void doChildrenRotationByAngle(double angleToScrollInRad, CircleRotationDirection circleRotationDirection) {
         // TODO: 07.12.2015 Big wrappers rotation logic here
         if (circleRotationDirection == CircleRotationDirection.Anticlockwise) {
-            double angleDeltaInDegree = -WheelUtils.radToDegree(angleToScrollInRad);
+            final double angleDeltaInDegree = -angleToScrollInRad;
             for (int i = 0; i < getChildCount(); i++) {
                 View child = getChildAt(i);
-
-                child.setPivotX(0);
-                child.setPivotY(child.getMeasuredHeight() / 2);
-                double resAngle = child.getRotation() + angleDeltaInDegree;
-                child.setRotation((int)resAngle);
+                double resAngle = WheelUtils.degreeToRadian(child.getRotation()) + angleDeltaInDegree;
+                rotateBigWrapperViewToAngle(child, resAngle);
             }
         }
     }
@@ -246,7 +243,7 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
         final double rotationAngle = layoutState.mRotationDirection == CircleRotationDirection.Anticlockwise ?
                 -layoutState.mAngleToStartLayout : layoutState.mAngleToStartLayout;
 
-        rotateBigWraperViewToAngle(view, rotationAngle);
+        rotateBigWrapperViewToAngle(view, rotationAngle);
 
         bigWrapperView.setSectorWrapperViewSize(
                 computationHelper.getSectorWrapperViewWidth(),

@@ -18,7 +18,7 @@ public final class WheelUtils {
     private WheelUtils() {
     }
 
-    public static double degreeToRadian(int angleInDegree) {
+    public static double degreeToRadian(double angleInDegree) {
         return angleInDegree * DEGREE_TO_RAD_COEF;
     }
 
