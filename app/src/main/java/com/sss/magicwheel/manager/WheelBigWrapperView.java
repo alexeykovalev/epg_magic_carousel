@@ -45,8 +45,10 @@ public final class WheelBigWrapperView extends FrameLayout {
 
     @Deprecated
     // TODO: 07.12.2015 don't compute every time use CalculationHelper directly from this class
-    public void setSectorWrapperViewSize(int width, int height) {
-        sectorWrapperView = (WheelSectorWrapperView) LayoutInflater.from(getContext()).inflate(R.layout.sector_wrapper_view_layout, this, false);
+    public void setSectorWrapperViewSize(int width, int height, LinearClipData sectorClipArea) {
+        sectorWrapperView = (WheelSectorWrapperView) LayoutInflater.from(getContext())
+                .inflate(R.layout.sector_wrapper_view_layout, this, false);
+        sectorWrapperView.setSectorClipArea(sectorClipArea);
 
         final ViewGroup.MarginLayoutParams lp = (MarginLayoutParams) sectorWrapperView.getLayoutParams();
         lp.width = width;
@@ -54,12 +56,6 @@ public final class WheelBigWrapperView extends FrameLayout {
 
 //        brushWithRandomColor(sectorWrapperView);
         addView(sectorWrapperView, lp);
-    }
-
-    @Deprecated
-    // TODO: 07.12.2015 don't compute every time use CalculationHelper directly from this class
-    public void setSectorClipArea(LinearClipData sectorClipArea) {
-        sectorWrapperView.setSectorClipArea(sectorClipArea);
     }
 
     public void updateText(String text) {

@@ -21,8 +21,8 @@ public final class WheelUtils {
         return angleInDegree * DEGREE_TO_RAD_COEF;
     }
 
-    public static int radToDegree(double angleInRad) {
-        return (int) (angleInRad * RAD_TO_DEGREE_COEF);
+    public static double radToDegree(double angleInRad) {
+        return angleInRad * RAD_TO_DEGREE_COEF;
     }
 
     public static Rect fromCircleCoordsSystemToRecyclerViewCoordsSystem(Point circleCenterRelToRecyclerView,
