@@ -110,8 +110,8 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
     @Override
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
         double angleToScrollInRad = Math.asin((double) Math.abs(dy) / circleConfig.getOuterRadius());
-        Log.e(TAG, "dy = [" + dy + "], outerRadius [" + circleConfig.getOuterRadius() + "], " +
-                "rotateCircleByAngle rotationAngle [" + WheelUtils.radToDegree(angleToScrollInRad) + "]");
+//        Log.e(TAG, "dy = [" + dy + "], outerRadius [" + circleConfig.getOuterRadius() + "], " +
+//                "rotateCircleByAngle rotationAngle [" + WheelUtils.radToDegree(angleToScrollInRad) + "]");
         return rotateCircleByAngle(angleToScrollInRad, CircleRotationDirection.of(dy), recycler, state);
     }
 
@@ -147,6 +147,9 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
             final double angleDeltaInDegree = -angleToScrollInRad;
             for (int i = 0; i < getChildCount(); i++) {
                 View child = getChildAt(i);
+                final LayoutParams childLp = (LayoutParams) child.getLayoutParams();
+                childLp.rotationAngleInRad += angleToScrollInRad;
+
                 double resAngle = WheelUtils.degreeToRadian(child.getRotation()) + angleDeltaInDegree;
                 rotateBigWrapperViewToAngle(child, resAngle);
             }
@@ -158,21 +161,22 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
                                    /*int layoutDirection, int requiredSpace,*/ boolean canUseExistingSpace) {
 
         mLayoutState.mRotationDirection = circleRotationDirection;
-        int fastScrollSpace;
+        double fastScrollSpace = LayoutState.FAST_SCROLL_ANGLE_NOT_DEFINED;
         if (circleRotationDirection == CircleRotationDirection.Anticlockwise) {
             // get the first child in the direction we are going
-            final View child = getChildClosestToEnd();
+            final View child = getChildClosestToBottom();
             final LayoutParams childLp = (LayoutParams) child.getLayoutParams();
 
             mLayoutState.mCurrentPosition = getPosition(child) + 1;
             // here we need to calculate angular position of the sector's bottom edge because in LP
-            // we remember only top edge angular pos
+            // we remember only top edge angular pos.
             mLayoutState.mAngleToStartLayout = childLp.rotationAngleInRad - circleConfig.getAngularRestrictions().getSectorAngleInRad();
 
+            // TODO: 10.12.2015 move outside the embracing if statement
             // calculate how much we can scroll without adding new children (independent of layout)
-//            fastScrollSpace = mOrientationHelper.getDecoratedEnd(child)
-//                    - mOrientationHelper.getEndAfterPadding();
-
+            if (isEdgeLimitReached(mLayoutState.mAngleToStartLayout, circleRotationDirection)) {
+                fastScrollSpace = Math.abs(mLayoutState.mAngleToStartLayout) - Math.abs(circleConfig.getAngularRestrictions().getBottomEdgeAngleRestrictionInRad());
+            }
         } else {
 
             // TODO: 07.12.2015 add implementation
@@ -187,7 +191,10 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
             fastScrollSpace = -mOrientationHelper.getDecoratedStart(child)
                     + mOrientationHelper.getStartAfterPadding();*/
         }
+
         mLayoutState.mRequestedScrollAngle = angleToScrollInRad;
+        mLayoutState.mFastScrollAngleInRad = fastScrollSpace;
+
 //        if (canUseExistingSpace) {
 //            mLayoutState.mAvailable -= fastScrollSpace;
 //        }
@@ -195,7 +202,7 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
     }
 
 
-    private View getChildClosestToEnd() {
+    private View getChildClosestToBottom() {
         return getChildAt(getChildCount() - 1);
     }
 
@@ -207,19 +214,30 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
 
         double angleToCompensate = layoutState.mRequestedScrollAngle;
         double accumulatedRecycleAngle = 0;
+        double virtualStartLayoutAngle = layoutState.mAngleToStartLayout;
 
+        // examine if we can fill layout possibly without creating additional sectors
+        if (layoutState.isFastScrollDefined()) {
+            angleToCompensate -= layoutState.mFastScrollAngleInRad;
+            accumulatedRecycleAngle += layoutState.mFastScrollAngleInRad;
+            virtualStartLayoutAngle -= layoutState.mFastScrollAngleInRad;
+        }
+
+        // we don't need to create new sectors if we can simply fast scroll and this fast scrolling
+        // compensates requested angle
         while (angleToCompensate > 0
-                && !isEdgeLimitReached(layoutState.mAngleToStartLayout, layoutState.mRotationDirection)
+                && !isEdgeLimitReached(virtualStartLayoutAngle, layoutState.mRotationDirection)
                 && !Double.isNaN(angleToCompensate) // todo: judicious
                 && layoutState.hasMore(state)) {
 
             Log.e(TAG, layoutState.toString());
 
             final double consumedAngle = layoutCircleChunk(recycler, state, layoutState);
+            final double angleDelta = layoutState.mRotationDirection == CircleRotationDirection.Anticlockwise ?
+                    -consumedAngle : consumedAngle;
 
-            layoutState.mAngleToStartLayout +=
-                    layoutState.mRotationDirection == CircleRotationDirection.Anticlockwise ?
-                            -consumedAngle : consumedAngle;
+            layoutState.mAngleToStartLayout += angleDelta;
+            virtualStartLayoutAngle += angleDelta;
 
             angleToCompensate -= Math.abs(consumedAngle);
 
@@ -231,13 +249,13 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
         return accumulatedRecycleAngle;
     }
 
-    private boolean isEdgeLimitReached(double angleToStartLayout, CircleRotationDirection rotationDirection) {
-//        Log.e(TAG, "angleToStartLayout [" + angleToStartLayout + "], " +
+    private boolean isEdgeLimitReached(double angleToExamine, CircleRotationDirection rotationDirection) {
+//        Log.e(TAG, "angleToExamine [" + angleToExamine + "], " +
 //                "bottomEdge [" + circleConfig.getAngularRestrictions().getBottomEdgeAngleRestrictionInRad() + "]");
         if (rotationDirection == CircleRotationDirection.Anticlockwise) {
-            return angleToStartLayout < circleConfig.getAngularRestrictions().getBottomEdgeAngleRestrictionInRad();
+            return angleToExamine < circleConfig.getAngularRestrictions().getBottomEdgeAngleRestrictionInRad();
         } else {
-            return angleToStartLayout > circleConfig.getAngularRestrictions().getTopEdgeAngleRestrictionInRad();
+            return angleToExamine > circleConfig.getAngularRestrictions().getTopEdgeAngleRestrictionInRad();
         }
     }
 
@@ -350,9 +368,7 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
      */
     private static class LayoutState {
 
-        final static int INVALID_LAYOUT = Integer.MIN_VALUE;
-
-        final static int SCOLLING_OFFSET_NaN = Integer.MIN_VALUE;
+        final static double FAST_SCROLL_ANGLE_NOT_DEFINED = Double.MIN_VALUE;
 
         /**
          * We may not want to recycle children in some cases (e.g. layout)
@@ -367,6 +383,13 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
          */
         double mAngleToStartLayout;
 
+        double mFastScrollAngleInRad;
+
+        /**
+         * Current position on the adapter to get the next item.
+         */
+        int mCurrentPosition;
+
         /**
          * Used when LayoutState is constructed in a scrolling state.
          * It should be set the amount of scrolling we can make without creating a new view.
@@ -376,17 +399,15 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
         int mRecycleSweepAngle;
 
         /**
-         * Current position on the adapter to get the next item.
-         */
-        int mCurrentPosition;
-
-        /**
          * When LLM needs to layout particular views, it sets this list in which case, LayoutState
          * will only return views from this list and return null if it cannot find an item.
          */
+        @Deprecated
         List<RecyclerView.ViewHolder> mScrapList = null;
 
-
+        public boolean isFastScrollDefined() {
+            return mFastScrollAngleInRad != FAST_SCROLL_ANGLE_NOT_DEFINED;
+        }
 
         /**
          * @return true if there are more items in the data adapter
@@ -475,7 +496,8 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
         @Override
         public String toString() {
             return "LayoutState{" +
-                    "mRequestedScrollAngle=" + WheelUtils.radToDegree(mRequestedScrollAngle) +
+                    "mFastScrollAngle=" + WheelUtils.radToDegree(mFastScrollAngleInRad) +
+                    ", mRequestedScrollAngle=" + WheelUtils.radToDegree(mRequestedScrollAngle) +
                     ", mAngleToStartLayout=" + WheelUtils.radToDegree(mAngleToStartLayout) +
                     ", mCurrentPosition=" + mCurrentPosition +
                     '}';
