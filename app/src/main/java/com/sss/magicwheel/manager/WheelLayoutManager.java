@@ -48,7 +48,7 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
         addViewForPosition(recycler, 0, 0);
 
         addViewForPosition(recycler, 1, sectorAngleInRad);
-//        addViewForPosition(recycler, 4, 2 * sectorAngleInRad);
+        addViewForPosition(recycler, 2, 2 * sectorAngleInRad);
     }
 
 
@@ -214,6 +214,7 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
 
         double angleToCompensate = layoutState.mRequestedScrollAngle;
         double accumulatedRecycleAngle = 0;
+        // takes into account fast scrolling region
         double virtualStartLayoutAngle = layoutState.mAngleToStartLayout;
 
         // examine if we can fill layout possibly without creating additional sectors
@@ -226,9 +227,9 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
         // we don't need to create new sectors if we can simply fast scroll and this fast scrolling
         // compensates requested angle
         while (angleToCompensate > 0
+                && layoutState.hasMore(state)
                 && !isEdgeLimitReached(virtualStartLayoutAngle, layoutState.mRotationDirection)
-                && !Double.isNaN(angleToCompensate) // todo: judicious
-                && layoutState.hasMore(state)) {
+                && !Double.isNaN(angleToCompensate)) { // todo: judicious
 
             Log.e(TAG, layoutState.toString());
 
@@ -307,7 +308,62 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
     private void recycleUnnecessaryViews(RecyclerView.Recycler recycler,
                                          double accumulatedRecycleAngle,
                                          CircleRotationDirection rotationDirection) {
-        // TODO: 08.12.2015 recycling implementation here
+        if (accumulatedRecycleAngle < 0) {
+            Log.e(TAG, "No recycling for negative accumulated angle [" + accumulatedRecycleAngle + "]");
+            return;
+        }
+
+        if (rotationDirection == CircleRotationDirection.Anticlockwise) {
+            recycleViewsFromTop(recycler, accumulatedRecycleAngle);
+        } else {
+            recycleViewsFromBottom(recycler, accumulatedRecycleAngle);
+        }
+    }
+
+    private void recycleViewsFromTop(RecyclerView.Recycler recycler, double accumulatedRecycleAngle) {
+        // views that fits into the recycling area have to be recycled
+        final double recyclingAreaStartEdge = circleConfig.getAngularRestrictions().getTopEdgeAngleRestrictionInRad() - accumulatedRecycleAngle;
+        final int childCount = getChildCount();
+
+        Log.e(TAG, "recycleViewsFromTop() childCount [" + childCount + "] recyclingAreaStartEdge [" + WheelUtils.radToDegree(recyclingAreaStartEdge) + "]");
+
+        for (int i = childCount - 1; i >= 0; i--) {
+            LayoutParams childLp = (LayoutParams) getChildAt(i).getLayoutParams();
+            final double bottomSectorEdgeAngle = childLp.rotationAngleInRad - circleConfig.getAngularRestrictions().getSectorAngleInRad();
+            Log.e(TAG, "recycleViewsFromTop() bottomSectorEdgeAngle [" + WheelUtils.radToDegree(bottomSectorEdgeAngle) + "]");
+            // when bottom edge fit inside recycle area
+            if (bottomSectorEdgeAngle > recyclingAreaStartEdge) {
+                recycleChildren(recycler, 0, i);
+                return;
+            }
+        }
+    }
+
+    private void recycleViewsFromBottom(RecyclerView.Recycler recycler, double accumulatedRecycleAngle) {
+        throw new UnsupportedOperationException("Not implemented yet.");
+    }
+
+    /**
+     * Recycles children between given indices.
+     *
+     * @param startIndex inclusive
+     * @param endIndex   exclusive
+     */
+    private void recycleChildren(RecyclerView.Recycler recycler, int startIndex, int endIndex) {
+        Log.e(TAG, "Recycler children between [" + startIndex + "; " + endIndex + "]");
+        if (startIndex == endIndex) {
+            return;
+        }
+
+        if (endIndex > startIndex) {
+            for (int i = endIndex - 1; i >= startIndex; i--) {
+                removeAndRecycleViewAt(i, recycler);
+            }
+        } else {
+            for (int i = startIndex; i > endIndex; i--) {
+                removeAndRecycleViewAt(i, recycler);
+            }
+        }
     }
 
     @Override
