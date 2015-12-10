@@ -38,21 +38,20 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
 
     @Override
     public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
-
         removeAndRecycleAllViews(recycler);
 
         final double sectorAngleInRad = circleConfig.getAngularRestrictions().getSectorAngleInRad();
-//        addViewForPosition(recycler, 0, -2 * sectorAngleInRad);
-//        addViewForPosition(recycler, 1, -sectorAngleInRad);
-
-        addViewForPosition(recycler, 0, 0);
-
-        addViewForPosition(recycler, 1, sectorAngleInRad);
-        addViewForPosition(recycler, 2, 2 * sectorAngleInRad);
+        int childPos = 0;
+        double layoutAngle = circleConfig.getAngularRestrictions().getTopEdgeAngleRestrictionInRad();
+        final double endAngle = circleConfig.getAngularRestrictions().getBottomEdgeAngleRestrictionInRad();
+        while (layoutAngle >= endAngle && childPos < state.getItemCount()) {
+            addViewForPosition(recycler, childPos, -layoutAngle);
+            layoutAngle -= sectorAngleInRad;
+            childPos++;
+        }
     }
 
-
-
+    // TODO: 10.12.2015 consider replacing to layoutCircleChunk
     private void addViewForPosition(RecyclerView.Recycler recycler, int position, double angleInRad) {
         final WheelBigWrapperView bigWrapperView = (WheelBigWrapperView) recycler.getViewForPosition(position);
 
