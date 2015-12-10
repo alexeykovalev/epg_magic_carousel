@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -44,9 +45,9 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
 //        addViewForPosition(recycler, 0, -2 * sectorAngleInRad);
 //        addViewForPosition(recycler, 1, -sectorAngleInRad);
 
-        addViewForPosition(recycler, 2, 0);
+        addViewForPosition(recycler, 0, 0);
 
-        addViewForPosition(recycler, 3, sectorAngleInRad);
+        addViewForPosition(recycler, 1, sectorAngleInRad);
 //        addViewForPosition(recycler, 4, 2 * sectorAngleInRad);
     }
 
@@ -108,7 +109,9 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
 
     @Override
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
-        double angleToScrollInRad = Math.asin((double)Math.abs(dy) / circleConfig.getOuterRadius());
+        double angleToScrollInRad = Math.asin((double) Math.abs(dy) / circleConfig.getOuterRadius());
+        Log.e(TAG, "dy = [" + dy + "], outerRadius [" + circleConfig.getOuterRadius() + "], " +
+                "rotateCircleByAngle rotationAngle [" + WheelUtils.radToDegree(angleToScrollInRad) + "]");
         return rotateCircleByAngle(angleToScrollInRad, CircleRotationDirection.of(dy), recycler, state);
     }
 
@@ -129,10 +132,10 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
             return 0;
         }
 
-        final double actualRotationAngle = angleToScrollInRad > consumedAngle ?
-                circleRotationDirection.direction * consumedAngle : circleRotationDirection.direction * angleToScrollInRad;
+        final double actualRotationAngle = angleToScrollInRad > consumedAngle ? consumedAngle : angleToScrollInRad;
+//                circleRotationDirection.direction * consumedAngle : circleRotationDirection.direction * angleToScrollInRad;
 
-        doChildrenRotationByAngle(angleToScrollInRad, circleRotationDirection);
+        doChildrenRotationByAngle(actualRotationAngle, circleRotationDirection);
 
         // TODO: 07.12.2015 most probably this computation is not correct
         return (int) (circleConfig.getOuterRadius() * Math.sin(actualRotationAngle));
@@ -205,17 +208,37 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
         double angleToCompensate = layoutState.mRequestedScrollAngle;
         double accumulatedRecycleAngle = 0;
 
-        while (angleToCompensate > 0 && layoutState.hasMore(state)) {
+        while (angleToCompensate > 0
+                && !isEdgeLimitReached(layoutState.mAngleToStartLayout, layoutState.mRotationDirection)
+                && !Double.isNaN(angleToCompensate) // todo: judicious
+                && layoutState.hasMore(state)) {
+
+            Log.e(TAG, layoutState.toString());
+
             final double consumedAngle = layoutCircleChunk(recycler, state, layoutState);
 
-            layoutState.mAngleToStartLayout -= layoutState.mRotationDirection.direction * consumedAngle;
-            angleToCompensate -= consumedAngle;
-            accumulatedRecycleAngle += consumedAngle;
+            layoutState.mAngleToStartLayout +=
+                    layoutState.mRotationDirection == CircleRotationDirection.Anticlockwise ?
+                            -consumedAngle : consumedAngle;
+
+            angleToCompensate -= Math.abs(consumedAngle);
+
+            accumulatedRecycleAngle += Math.abs(consumedAngle);
 
             recycleUnnecessaryViews(recycler, accumulatedRecycleAngle, layoutState.mRotationDirection);
         }
 
         return accumulatedRecycleAngle;
+    }
+
+    private boolean isEdgeLimitReached(double angleToStartLayout, CircleRotationDirection rotationDirection) {
+//        Log.e(TAG, "angleToStartLayout [" + angleToStartLayout + "], " +
+//                "bottomEdge [" + circleConfig.getAngularRestrictions().getBottomEdgeAngleRestrictionInRad() + "]");
+        if (rotationDirection == CircleRotationDirection.Anticlockwise) {
+            return angleToStartLayout < circleConfig.getAngularRestrictions().getBottomEdgeAngleRestrictionInRad();
+        } else {
+            return angleToStartLayout > circleConfig.getAngularRestrictions().getTopEdgeAngleRestrictionInRad();
+        }
     }
 
     private double layoutCircleChunk(RecyclerView.Recycler recycler, RecyclerView.State state, LayoutState layoutState) {
@@ -449,6 +472,14 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
             return closest;
         }
 
+        @Override
+        public String toString() {
+            return "LayoutState{" +
+                    "mRequestedScrollAngle=" + WheelUtils.radToDegree(mRequestedScrollAngle) +
+                    ", mAngleToStartLayout=" + WheelUtils.radToDegree(mAngleToStartLayout) +
+                    ", mCurrentPosition=" + mCurrentPosition +
+                    '}';
+        }
     }
 
     private static final class ComputationHelper {
