@@ -141,17 +141,15 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
     }
 
     private void doChildrenRotationByAngle(double angleToScrollInRad, CircleRotationDirection circleRotationDirection) {
-        // TODO: 07.12.2015 Big wrappers rotation logic here
-        if (circleRotationDirection == CircleRotationDirection.Anticlockwise) {
-            final double angleDeltaInDegree = -angleToScrollInRad;
-            for (int i = 0; i < getChildCount(); i++) {
-                View child = getChildAt(i);
-                final LayoutParams childLp = (LayoutParams) child.getLayoutParams();
-                childLp.rotationAngleInRad += angleToScrollInRad;
+        final double scrollAngleDelta = circleRotationDirection == CircleRotationDirection.Anticlockwise ?
+                - angleToScrollInRad : angleToScrollInRad;
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            final LayoutParams childLp = (LayoutParams) child.getLayoutParams();
+            childLp.rotationAngleInRad += angleToScrollInRad;
 
-                double resAngle = WheelUtils.degreeToRadian(child.getRotation()) + angleDeltaInDegree;
-                rotateBigWrapperViewToAngle(child, resAngle);
-            }
+            double resAngle = WheelUtils.degreeToRadian(child.getRotation()) + scrollAngleDelta;
+            rotateBigWrapperViewToAngle(child, resAngle);
         }
     }
 
@@ -162,7 +160,7 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
         mLayoutState.mRotationDirection = circleRotationDirection;
         double fastScrollSpace = LayoutState.FAST_SCROLL_ANGLE_NOT_DEFINED;
         if (circleRotationDirection == CircleRotationDirection.Anticlockwise) {
-            // get the first child in the direction we are going
+            // get the first child in the direction we are going to
             final View child = getChildClosestToBottom();
             final LayoutParams childLp = (LayoutParams) child.getLayoutParams();
 
@@ -178,17 +176,17 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
             }
         } else {
 
-            // TODO: 07.12.2015 add implementation
-            throw new UnsupportedOperationException("Add implementation");
+            final View child = getChildClosestToTop();
+            final LayoutParams childLp = (LayoutParams) child.getLayoutParams();
 
-            /*final View child = getChildClosestToStart();
-            mLayoutState.mExtra += mOrientationHelper.getStartAfterPadding();
-            mLayoutState.mItemDirection = mShouldReverseLayout ? LayoutState.ITEM_DIRECTION_TAIL
-                    : LayoutState.ITEM_DIRECTION_HEAD;
-            mLayoutState.mCurrentPosition = getPosition(child) + mLayoutState.mItemDirection;
-            mLayoutState.mOffset = mOrientationHelper.getDecoratedStart(child);
-            fastScrollSpace = -mOrientationHelper.getDecoratedStart(child)
-                    + mOrientationHelper.getStartAfterPadding();*/
+            mLayoutState.mCurrentPosition = getPosition(child) - 1;
+
+            mLayoutState.mAngleToStartLayout = childLp.rotationAngleInRad + circleConfig.getAngularRestrictions().getSectorAngleInRad();
+
+            // TODO: 10.12.2015 move outside the embracing else statement
+            if (isEdgeLimitReached(mLayoutState.mAngleToStartLayout, circleRotationDirection)) {
+                fastScrollSpace = Math.abs(mLayoutState.mAngleToStartLayout) - Math.abs(circleConfig.getAngularRestrictions().getTopEdgeAngleRestrictionInRad());
+            }
         }
 
         mLayoutState.mRequestedScrollAngle = angleToScrollInRad;
@@ -205,6 +203,9 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
         return getChildAt(getChildCount() - 1);
     }
 
+    private View getChildClosestToTop() {
+        return getChildAt(0);
+    }
 
     /**
      * Fills the given layout, defined by configured beforehand layoutState.
@@ -339,7 +340,7 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
     }
 
     private void recycleViewsFromBottom(RecyclerView.Recycler recycler, double accumulatedRecycleAngle) {
-        throw new UnsupportedOperationException("Not implemented yet.");
+//        throw new UnsupportedOperationException("Not implemented yet.");
     }
 
     /**
