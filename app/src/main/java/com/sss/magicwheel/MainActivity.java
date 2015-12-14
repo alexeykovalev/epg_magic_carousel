@@ -15,6 +15,7 @@ import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelDataItem;
 import com.sss.magicwheel.manager.WheelLayoutManager;
 import com.sss.magicwheel.manager.WheelUtils;
+import com.sss.magicwheel.manager.second.WheelOfFortuneLayoutManager;
 import com.sss.magicwheel.util.MagicCalculationHelper;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main_layout);
 
         final RecyclerView wheelContainer = (RecyclerView) findViewById(R.id.wheel_container);
-        wheelContainer.setLayoutManager(new WheelLayoutManager(this, createCircleConfig()));
+        wheelContainer.setLayoutManager(new WheelOfFortuneLayoutManager(this, createCircleConfig()));
         wheelContainer.setAdapter(createWheelAdapter());
 
 

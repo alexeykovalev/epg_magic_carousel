@@ -26,6 +26,7 @@ public final class WheelUtils {
         return angleInRad * RAD_TO_DEGREE_COEF;
     }
 
+    @Deprecated
     public static Rect fromCircleCoordsSystemToRecyclerViewCoordsSystem(Point circleCenterRelToRecyclerView,
                                                                         Rect coorditanesToTransform) {
 
@@ -42,6 +43,7 @@ public final class WheelUtils {
         return new Rect(leftTopCorner.x, leftTopCorner.y, rightBottomCorner.x, rightBottomCorner.y);
     }
 
+    @Deprecated
     public static Point fromCircleCoordsSystemToRecyclerViewCoordsSystem(Point circleCenterRelToRecyclerView,
                                                                          Point pointToTransform) {
         return new Point(
