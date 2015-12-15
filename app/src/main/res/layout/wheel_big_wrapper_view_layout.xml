@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -8,7 +8,7 @@
         android:id="@+id/big_wrapper_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+        android:layout_centerVertical="true"
         android:textSize="20sp"
         android:textColor="@android:color/holo_red_dark" />
 
@@ -18,8 +18,8 @@
         android:id="@+id/sector_wrapper_view"
         android:layout_width="204dp"
         android:layout_height="173dp"
-        android:layout_gravity="center_vertical|right"
+        android:layout_alignParentRight="true"
         android:scaleType="fitXY"
         android:src="@drawable/second_cover" />
 
-</merge>
+</RelativeLayout>

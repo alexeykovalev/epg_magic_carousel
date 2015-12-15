@@ -3,11 +3,7 @@ package com.sss.magicwheel.manager;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -53,13 +49,16 @@ public final class WheelBigWrapperView extends FrameLayout {
 
 //        sectorWrapperView = (WheelSectorWrapperView) LayoutInflater.from(getContext()).inflate(R.layout.sector_wrapper_view_layout, this, false);
 
-/*
-        final FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) sectorWrapperView.getLayoutParams();
+        /*final RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) sectorWrapperView.getLayoutParams();
         lp.width = width;
         lp.height = height;
-        lp.gravity = Gravity.CENTER;
+        lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         sectorWrapperView.setLayoutParams(lp);
-*/
+
+        sectorWrapperView.setMaxWidth(width);
+        sectorWrapperView.setMaxHeight(height);*/
+
+//        sectorWrapperView.setAdjustViewBounds(false);
 
         sectorWrapperView.setSectorClipArea(sectorClipArea);
 
