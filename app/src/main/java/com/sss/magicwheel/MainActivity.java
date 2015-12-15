@@ -60,7 +60,7 @@ public class MainActivity extends Activity {
         items.add(new WheelDataItem("fourth"));
         items.add(new WheelDataItem("fifth"));
 
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 50; i++) {
             items.add(new WheelDataItem("item.Num [" + i + "]"));
         }
 

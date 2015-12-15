@@ -10,7 +10,7 @@ import com.sss.magicwheel.manager.WheelUtils;
  */
 final class WheelLayoutDataHolder {
 
-    private enum WheelRotationDirection {
+    public enum WheelRotationDirection {
 
         Clockwise(-1), Anticlockwise(1);
 
@@ -47,13 +47,13 @@ final class WheelLayoutDataHolder {
     /**
      * Current position on the adapter to get the next item.
      */
-    int mCurrentPosition;
+    int mNextLayoutPosition;
 
     /**
      * @return true if there are more items in the data adapter
      */
     boolean hasMore(RecyclerView.State state) {
-        return mCurrentPosition >= 0 && mCurrentPosition < state.getItemCount();
+        return mNextLayoutPosition >= 0 && mNextLayoutPosition < state.getItemCount();
     }
 
     /**
@@ -63,8 +63,8 @@ final class WheelLayoutDataHolder {
      * @return The next element that we should layout.
      */
     View next(RecyclerView.Recycler recycler) {
-        final View view = recycler.getViewForPosition(mCurrentPosition);
-        mCurrentPosition += mRotationDirection.adapterPositionIncrementation;
+        final View view = recycler.getViewForPosition(mNextLayoutPosition);
+        mNextLayoutPosition += mRotationDirection.adapterPositionIncrementation;
         return view;
     }
 
@@ -73,7 +73,7 @@ final class WheelLayoutDataHolder {
         return "LayoutState{" +
                 ", mRequestedScrollAngle=" + WheelUtils.radToDegree(mRequestedScrollAngle) +
                 ", mAngleToStartLayout=" + WheelUtils.radToDegree(mAngleToStartLayout) +
-                ", mCurrentPosition=" + mCurrentPosition +
+                ", mNextLayoutPosition=" + mNextLayoutPosition +
                 '}';
     }
 

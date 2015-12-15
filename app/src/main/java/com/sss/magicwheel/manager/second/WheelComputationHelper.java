@@ -107,6 +107,10 @@ final class WheelComputationHelper {
         return layoutStartAngle;
     }
 
+    public double getSectorAngleBottomEdge(double sectorAnglePosition) {
+        return sectorAnglePosition - circleConfig.getAngularRestrictions().getSectorAngleInRad();
+    }
+
     public static Rect fromCircleCoordsSystemToRecyclerViewCoordsSystem(Point circleCenterRelToRecyclerView,
                                                                         Rect coorditanesToTransform) {
 
