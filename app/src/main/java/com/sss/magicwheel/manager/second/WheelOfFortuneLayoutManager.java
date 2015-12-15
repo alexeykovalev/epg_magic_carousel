@@ -125,7 +125,9 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
 //        Log.i(TAG, "scrollVerticallyBy() rotationAngle [" + WheelUtils.radToDegree(rotationAngle) + "]");
 //        Log.i(TAG, "Views count in layout [" + getChildCount() + "]");
 
-        return (int) (circleConfig.getInnerRadius() * Math.sin(Math.abs(rotationAngle)));
+        final int resultSwipeDistanceAbs = (int) Math.round(circleConfig.getInnerRadius() * Math.sin(Math.abs(rotationAngle)));
+        return rotationDirection == WheelLayoutDataHolder.WheelRotationDirection.Anticlockwise ?
+                resultSwipeDistanceAbs : -resultSwipeDistanceAbs;
     }
 
     private void performRecycling(WheelLayoutDataHolder.WheelRotationDirection rotationDirection,
