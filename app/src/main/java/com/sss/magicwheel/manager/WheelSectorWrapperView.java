@@ -46,6 +46,8 @@ public class WheelSectorWrapperView extends ImageView {
 
     public void setSectorClipArea(SectorClipAreaDescriptor sectorClipAreaDescriptor) {
         this.sectorClipAreaDescriptor = sectorClipAreaDescriptor;
+        this.outerCircleEmbracingSquare = sectorClipAreaDescriptor.getCircleEmbracingSquaresConfig().getOuterCircleEmbracingSquareInSectorWrapperCoordsSystem();
+        this.innerCircleEmbracingSquare = sectorClipAreaDescriptor.getCircleEmbracingSquaresConfig().getInnerCircleEmbracingSquareInSectorWrapperCoordsSystem();
     }
 
 
@@ -68,6 +70,7 @@ public class WheelSectorWrapperView extends ImageView {
         super.onDraw(canvas);
     }
 
+    @Deprecated
     private void drawArcs(Canvas canvas) {
         RectF rectF = outerCircleEmbracingSquare;
         canvas.drawArc(rectF, 10, -20, false, paint);
@@ -86,8 +89,8 @@ public class WheelSectorWrapperView extends ImageView {
 
         path.moveTo(third.getXAsFloat(), third.getYAsFloat());
         path.lineTo(second.getXAsFloat(), second.getYAsFloat());
-        path.arcTo(innerCircleEmbracingSquare, 10, -20);
-        path.arcTo(outerCircleEmbracingSquare, -10, 20);
+        path.arcTo(innerCircleEmbracingSquare, sectorClipAreaDescriptor.getSectorTopEdgeAngleInDegree(), -sectorClipAreaDescriptor.getSectorSweepAngleInDegree());
+        path.arcTo(outerCircleEmbracingSquare, -sectorClipAreaDescriptor.getSectorTopEdgeAngleInDegree(), sectorClipAreaDescriptor.getSectorSweepAngleInDegree());
         path.lineTo(third.getXAsFloat(), third.getYAsFloat());
 
         path.close();
@@ -115,13 +118,4 @@ public class WheelSectorWrapperView extends ImageView {
 
     }
 
-    @Deprecated
-    public void setOuterCircleEmbracingSquare(RectF circleEmbracingSquare) {
-        this.outerCircleEmbracingSquare = circleEmbracingSquare;
-    }
-
-    @Deprecated
-    public void setInnerCircleEmbracingSquare(RectF innerCircleEmbracingSquare) {
-        this.innerCircleEmbracingSquare = innerCircleEmbracingSquare;
-    }
 }

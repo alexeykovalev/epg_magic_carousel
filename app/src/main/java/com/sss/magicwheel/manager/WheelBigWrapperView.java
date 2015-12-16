@@ -85,11 +85,13 @@ public final class WheelBigWrapperView extends FrameLayout {
         sectorWrapperView.setBackgroundColor(colorToBrush);
     }
 
+    @Deprecated
     public void setOuterCircleEmbracingSquare(RectF outerCircleEmbracingSquareInSectorWrapperCoordsSystem) {
-        sectorWrapperView.setOuterCircleEmbracingSquare(outerCircleEmbracingSquareInSectorWrapperCoordsSystem);
+//        sectorWrapperView.setOuterCircleEmbracingSquare(outerCircleEmbracingSquareInSectorWrapperCoordsSystem);
     }
 
+    @Deprecated
     public void setInnerCircleEmbracingSquare(RectF innerCircleEmbracingSquareInSectorWrapperCoordsSystem) {
-        sectorWrapperView.setInnerCircleEmbracingSquare(innerCircleEmbracingSquareInSectorWrapperCoordsSystem);
+//        sectorWrapperView.setInnerCircleEmbracingSquare(innerCircleEmbracingSquareInSectorWrapperCoordsSystem);
     }
 }

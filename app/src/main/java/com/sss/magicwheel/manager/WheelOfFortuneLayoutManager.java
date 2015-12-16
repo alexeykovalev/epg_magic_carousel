@@ -69,9 +69,6 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
                 computationHelper.createSectorClipArea()
         );
 
-        bigWrapperView.setOuterCircleEmbracingSquare(computationHelper.getOuterCircleEmbracingSquareInSectorWrapperCoordsSystem());
-        bigWrapperView.setInnerCircleEmbracingSquare(computationHelper.getInnerCircleEmbracingSquareInSectorWrapperCoordsSystem());
-
         LayoutParams lp = (LayoutParams) bigWrapperView.getLayoutParams();
         lp.anglePositionInRad = angularPosition;
 

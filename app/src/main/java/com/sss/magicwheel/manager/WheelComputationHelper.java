@@ -84,7 +84,7 @@ public final class WheelComputationHelper {
     public RectF getOuterCircleEmbracingSquareInSectorWrapperCoordsSystem() {
         if (outerCircleEmbracingSquareInSectorWrapperCoordsSystem == null) {
             Rect embracingSquare = getOuterCircleEmbracingSquareInCircleCoordsSystem();
-            Point leftCorner = getSectorWrapperViewLeftCornerInCircleSystem();
+            Point leftCorner = getSectorWrapperViewLeftCornerInCircleCoordsSystem();
             outerCircleEmbracingSquareInSectorWrapperCoordsSystem = new RectF(
                     embracingSquare.left - leftCorner.x,
                     leftCorner.y - embracingSquare.top,
@@ -98,7 +98,7 @@ public final class WheelComputationHelper {
     public RectF getInnerCircleEmbracingSquareInSectorWrapperCoordsSystem() {
         if (innerCircleEmbracingSquareInSectorWrapperCoordsSystem == null) {
             Rect embracingSquare = getInnerCircleEmbracingSquareInCircleCoordsSystem();
-            Point leftCorner = getSectorWrapperViewLeftCornerInCircleSystem();
+            Point leftCorner = getSectorWrapperViewLeftCornerInCircleCoordsSystem();
             innerCircleEmbracingSquareInSectorWrapperCoordsSystem = new RectF(
                     embracingSquare.left - leftCorner.x,
                     leftCorner.y - embracingSquare.top,
@@ -119,7 +119,7 @@ public final class WheelComputationHelper {
         return new Rect(-innerRadius, innerRadius, innerRadius, -innerRadius);
     }
 
-    private Point getSectorWrapperViewLeftCornerInCircleSystem() {
+    private Point getSectorWrapperViewLeftCornerInCircleCoordsSystem() {
         final int x = circleConfig.getOuterRadius() - getSectorWrapperViewWidth();
         final int y = getSectorWrapperViewHeight() / 2;
         return new Point(x, y);
@@ -139,7 +139,18 @@ public final class WheelComputationHelper {
             final CoordinatesHolder second = CoordinatesHolder.ofRect(viewWidth, viewHalfHeight + rightBaseDelta);
             final CoordinatesHolder forth = CoordinatesHolder.ofRect(viewWidth, viewHalfHeight - rightBaseDelta);
 
-            sectorClipData = new SectorClipAreaDescriptor(first, second, third, forth);
+            final SectorClipAreaDescriptor.CircleEmbracingSquaresConfig embracingSquaresConfig =
+                    new SectorClipAreaDescriptor.CircleEmbracingSquaresConfig(
+                            getOuterCircleEmbracingSquareInSectorWrapperCoordsSystem(),
+                            getInnerCircleEmbracingSquareInSectorWrapperCoordsSystem()
+                    );
+
+            final float sectorTopEdgeAngleInDegree = (float) radToDegree(circleConfig.getAngularRestrictions().getSectorAngleInRad() / 2);
+            final float sectorSweepAngleInDegree = (float) radToDegree(circleConfig.getAngularRestrictions().getSectorAngleInRad());
+            sectorClipData = new SectorClipAreaDescriptor(
+                    first, second, third, forth, embracingSquaresConfig,
+                    sectorTopEdgeAngleInDegree, sectorSweepAngleInDegree
+            );
         }
 
         return sectorClipData;
