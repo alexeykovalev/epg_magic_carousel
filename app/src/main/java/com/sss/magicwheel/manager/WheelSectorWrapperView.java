@@ -11,7 +11,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.sss.magicwheel.entity.CoordinatesHolder;
-import com.sss.magicwheel.entity.LinearClipData;
+import com.sss.magicwheel.entity.SectorClipAreaDescriptor;
 
 /**
  * @author Alexey Kovalev
@@ -23,7 +23,7 @@ public class WheelSectorWrapperView extends ImageView {
 
     private final Paint paint;
     private Path path;
-    private LinearClipData linearClipData;
+    private SectorClipAreaDescriptor sectorClipAreaDescriptor;
     private RectF outerCircleEmbracingSquare;
     private RectF innerCircleEmbracingSquare;
 
@@ -44,8 +44,8 @@ public class WheelSectorWrapperView extends ImageView {
     }
 
 
-    public void setSectorClipArea(LinearClipData linearClipData) {
-        this.linearClipData = linearClipData;
+    public void setSectorClipArea(SectorClipAreaDescriptor sectorClipAreaDescriptor) {
+        this.sectorClipAreaDescriptor = sectorClipAreaDescriptor;
     }
 
 
@@ -53,14 +53,16 @@ public class WheelSectorWrapperView extends ImageView {
     protected void onDraw(Canvas canvas) {
         Log.e(TAG, "onDraw()");
 
-        if (linearClipData == null) {
+        if (sectorClipAreaDescriptor == null) {
             super.onDraw(canvas);
             return;
         }
 
-        Log.e(TAG, "Clip area " + linearClipData);
+        Log.e(TAG, "Clip area " + sectorClipAreaDescriptor);
 
-        Path pathToClip = createPathForClip2();
+//        drawArcs(canvas);
+
+        Path pathToClip = createSectorPathForClip();
         canvas.clipPath(pathToClip);
 
         super.onDraw(canvas);
@@ -74,13 +76,13 @@ public class WheelSectorWrapperView extends ImageView {
         canvas.drawArc(rectF, 10, -20, true, paint);
     }
 
-    private Path createPathForClip2() {
+    private Path createSectorPathForClip() {
         path.reset();
 
-        CoordinatesHolder first = linearClipData.getFirst();
-        CoordinatesHolder second = linearClipData.getSecond();
-        CoordinatesHolder third = linearClipData.getThird();
-        CoordinatesHolder four = linearClipData.getFourth();
+        CoordinatesHolder first = sectorClipAreaDescriptor.getFirst();
+        CoordinatesHolder second = sectorClipAreaDescriptor.getSecond();
+        CoordinatesHolder third = sectorClipAreaDescriptor.getThird();
+        CoordinatesHolder four = sectorClipAreaDescriptor.getFourth();
 
         path.moveTo(third.getXAsFloat(), third.getYAsFloat());
         path.lineTo(second.getXAsFloat(), second.getYAsFloat());
@@ -94,13 +96,13 @@ public class WheelSectorWrapperView extends ImageView {
     }
 
 
-    private Path createPathForClip(LinearClipData clipData, Canvas canvas) {
+    private Path createLinearPathForClip() {
         path.reset();
 
-        CoordinatesHolder first = linearClipData.getFirst();
-        CoordinatesHolder second = linearClipData.getSecond();
-        CoordinatesHolder third = linearClipData.getThird();
-        CoordinatesHolder four = linearClipData.getFourth();
+        CoordinatesHolder first = sectorClipAreaDescriptor.getFirst();
+        CoordinatesHolder second = sectorClipAreaDescriptor.getSecond();
+        CoordinatesHolder third = sectorClipAreaDescriptor.getThird();
+        CoordinatesHolder four = sectorClipAreaDescriptor.getFourth();
 
         path.moveTo(first.getXAsFloat(), first.getYAsFloat());
         path.lineTo(second.getXAsFloat(), second.getYAsFloat());

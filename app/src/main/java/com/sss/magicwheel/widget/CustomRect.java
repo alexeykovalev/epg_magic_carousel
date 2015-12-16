@@ -1,9 +1,12 @@
-package com.sss.magicwheel.entity;
+package com.sss.magicwheel.widget;
+
+import com.sss.magicwheel.entity.CoordinatesHolder;
 
 /**
  * @author Alexey Kovalev
  * @since 05.11.2015.
  */
+@Deprecated
 public class CustomRect {
 
     private final CoordinatesHolder topLeftCorner;

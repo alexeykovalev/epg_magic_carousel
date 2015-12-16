@@ -4,19 +4,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
-import com.sss.magicwheel.manager.CircleConfig;
+import com.sss.magicwheel.entity.CircleConfig;
+import com.sss.magicwheel.entity.WheelDataItem;
 import com.sss.magicwheel.manager.WheelAdapter;
-import com.sss.magicwheel.manager.WheelDataItem;
-import com.sss.magicwheel.manager.WheelLayoutManager;
-import com.sss.magicwheel.manager.WheelUtils;
-import com.sss.magicwheel.manager.second.WheelOfFortuneLayoutManager;
-import com.sss.magicwheel.util.MagicCalculationHelper;
+import com.sss.magicwheel.manager.WheelComputationHelper;
+import com.sss.magicwheel.manager.WheelOfFortuneLayoutManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,43 +31,15 @@ public class MainActivity extends Activity {
         final RecyclerView wheelContainer = (RecyclerView) findViewById(R.id.wheel_container);
         wheelContainer.setLayoutManager(new WheelOfFortuneLayoutManager(this, createCircleConfig()));
         wheelContainer.setAdapter(createWheelAdapter());
-
-
-//        final View rabbitView = findViewById(R.id.view_to_handle);
-//
-//        Button actionButton = (Button) findViewById(R.id.action_button);
-//        actionButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.e("TAG", "X [" + rabbitView.getX() + "]");
-//                rabbitView.setPivotX(rabbitView.getWidth() / 2);
-//                rabbitView.setPivotY(rabbitView.getHeight());
-//                rabbitView.setRotation(30);
-//                Log.e("TAG", "X [" + rabbitView.getX() + "]");
-//            }
-//        });
     }
 
     private RecyclerView.Adapter createWheelAdapter() {
         List<WheelDataItem> items = new ArrayList<>();
-
-//        items.add(new WheelDataItem("first"));
-//        items.add(new WheelDataItem("second"));
-//        items.add(new WheelDataItem("third"));
-//        items.add(new WheelDataItem("fourth"));
-//        items.add(new WheelDataItem("fifth"));
-
         for (int i = 0; i < 200; i++) {
             items.add(new WheelDataItem("item.Num [" + i + "]"));
         }
 
         return new WheelAdapter(this, items);
-    }
-
-    @Deprecated
-    private void initCalculationHelper() {
-        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        MagicCalculationHelper.initialize(wm.getDefaultDisplay());
     }
 
 
@@ -89,7 +57,7 @@ public class MainActivity extends Activity {
         final int outerRadius = innerRadius + 400;
 
         CircleConfig.AngularRestrictions angularRestrictions = new CircleConfig.AngularRestrictions(
-                WheelUtils.degreeToRadian(DEFAULT_SECTOR_ANGLE_IN_DEGREE),
+                WheelComputationHelper.degreeToRadian(DEFAULT_SECTOR_ANGLE_IN_DEGREE),
                 Math.PI / 2,
                 -Math.PI / 2
         );

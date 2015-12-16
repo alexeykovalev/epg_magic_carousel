@@ -1,16 +1,16 @@
-package com.sss.magicwheel.util;
+package com.sss.magicwheel.widget;
 
 import android.graphics.Point;
 import android.util.Log;
 import android.view.Display;
 
 import com.sss.magicwheel.entity.CoordinatesHolder;
-import com.sss.magicwheel.entity.CustomRect;
 
 /**
  * @author Alexey
  * @since 05.11.2015
  */
+@Deprecated
 public class MagicCalculationHelper {
 
     public static final int SEGMENT_ANGULAR_HEIGHT = 30;

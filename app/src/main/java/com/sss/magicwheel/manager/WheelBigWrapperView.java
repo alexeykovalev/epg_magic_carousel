@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.sss.magicwheel.R;
-import com.sss.magicwheel.entity.LinearClipData;
+import com.sss.magicwheel.entity.SectorClipAreaDescriptor;
 
 import java.util.Random;
 
@@ -43,7 +43,7 @@ public final class WheelBigWrapperView extends FrameLayout {
         titleView = (TextView) rootView.findViewById(R.id.big_wrapper_text);
     }
 
-    public void setSectorWrapperConfig(int width, int height, LinearClipData sectorClipArea) {
+    public void setSectorWrapperConfig(int width, int height, SectorClipAreaDescriptor sectorClipArea) {
 
 //        Log.e("TAG", "mW " + getMeasuredWidth() + " mH " + getMeasuredHeight());
 

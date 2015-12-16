@@ -1,4 +1,4 @@
-package com.sss.magicwheel.manager.second;
+package com.sss.magicwheel.manager;
 
 import android.content.Context;
 import android.graphics.Rect;
@@ -8,9 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.sss.magicwheel.manager.CircleConfig;
-import com.sss.magicwheel.manager.WheelBigWrapperView;
-import com.sss.magicwheel.manager.WheelUtils;
+import com.sss.magicwheel.entity.CircleConfig;
 
 /**
  * @author Alexey Kovalev
@@ -51,7 +49,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
         }
     }
 
-    private void setupViewForPosition(RecyclerView.Recycler recycler, int positionIndex, double angularPosition, boolean addViewToBottom) {
+    private void setupViewForPosition(RecyclerView.Recycler recycler, int positionIndex, double angularPosition, boolean isAddViewToBottom) {
         final WheelBigWrapperView bigWrapperView = (WheelBigWrapperView) recycler.getViewForPosition(positionIndex);
         measureBigWrapperView(bigWrapperView);
 
@@ -77,7 +75,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
         LayoutParams lp = (LayoutParams) bigWrapperView.getLayoutParams();
         lp.anglePositionInRad = angularPosition;
 
-        if (addViewToBottom) {
+        if (isAddViewToBottom) {
             addView(bigWrapperView);
         } else {
             addView(bigWrapperView, 0);
@@ -97,7 +95,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
     private void alignBigWrapperViewByAngle(View bigWrapperView, double angleAlignToInRad) {
         bigWrapperView.setPivotX(0);
         bigWrapperView.setPivotY(bigWrapperView.getMeasuredHeight() / 2);
-        float angleInDegree = (float) WheelUtils.radToDegree(angleAlignToInRad);
+        float angleInDegree = (float) WheelComputationHelper.radToDegree(angleAlignToInRad);
         // TODO: 16.12.2015 ugly bug fix related to central view disappearing while scrolling
         if (angleInDegree > -0.1f && angleInDegree < 0.1f) {
             angleInDegree = 0;
@@ -160,7 +158,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
         int childPos = getPosition(firstChild) - 1;
         while (layoutAngle < computationHelper.getLayoutStartAngle() && childPos >= 0) {
             Log.i(TAG, "addViewsToTopIfNeeded() " +
-                            "layoutAngle [" + WheelUtils.radToDegree(layoutAngle) + "], " +
+                            "layoutAngle [" + WheelComputationHelper.radToDegree(layoutAngle) + "], " +
                             "childPos [" + childPos + "]"
             );
             setupViewForPosition(recycler, childPos, layoutAngle, false);

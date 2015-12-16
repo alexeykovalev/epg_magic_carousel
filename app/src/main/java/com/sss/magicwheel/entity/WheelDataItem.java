@@ -1,4 +1,4 @@
-package com.sss.magicwheel.manager;
+package com.sss.magicwheel.entity;
 
 /**
  * @author Alexey Kovalev

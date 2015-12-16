@@ -3,10 +3,10 @@ package com.sss.magicwheel.manager;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.sss.magicwheel.R;
+import com.sss.magicwheel.entity.WheelDataItem;
 
 import java.util.List;
 

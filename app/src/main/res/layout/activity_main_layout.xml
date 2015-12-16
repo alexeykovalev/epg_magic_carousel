@@ -9,43 +9,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!--<com.sss.magicwheel.widget.MagicWheelView
-        android:id="@+id/magic_carousel"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
--->
-
-
-
-
-
-
-    <!--<com.sss.magicwheel.widget.DrawingLayerView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />-->
-
-
-    <!-- <com.sss.magicwheel.widget.PathView
-        android:layout_width="300dp"
-        android:layout_height="150dp"
-        android:layout_gravity="center"
-        android:src="@drawable/android_icon"
-        android:background="@android:color/holo_red_dark"
-         />-->
-
-    <!--<Button
-        android:id="@+id/action_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Rotate" />
-
-    <com.sss.magicwheel.widget.PathView
-        android:id="@+id/view_to_handle"
-        android:layout_width="300dp"
-        android:layout_height="200dp"
-        android:layout_gravity="center"
-        android:src="@drawable/second_cover"
-        android:scaleType="fitXY"
-        android:background="@android:color/holo_red_dark" />-->
-
 </FrameLayout>

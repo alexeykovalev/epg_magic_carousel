@@ -4,14 +4,14 @@ package com.sss.magicwheel.entity;
  * @author Alexey Kovalev
  * @since 05.11.2015.
  */
-public class LinearClipData {
+public class SectorClipAreaDescriptor {
 
     private final CoordinatesHolder first;
     private final CoordinatesHolder second;
     private final CoordinatesHolder third;
     private final CoordinatesHolder fourth;
 
-    public LinearClipData(CoordinatesHolder first, CoordinatesHolder second, CoordinatesHolder third, CoordinatesHolder fourth) {
+    public SectorClipAreaDescriptor(CoordinatesHolder first, CoordinatesHolder second, CoordinatesHolder third, CoordinatesHolder fourth) {
         this.first = first;
         this.second = second;
         this.third = third;
@@ -36,7 +36,7 @@ public class LinearClipData {
 
     @Override
     public String toString() {
-        return "LinearClipData{" +
+        return "SectorClipAreaDescriptor{" +
                 "first=" + first +
                 ", second=" + second +
                 ", third=" + third +

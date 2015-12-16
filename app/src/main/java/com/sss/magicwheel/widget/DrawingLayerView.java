@@ -10,13 +10,12 @@ import android.util.Log;
 import android.view.View;
 
 import com.sss.magicwheel.entity.CoordinatesHolder;
-import com.sss.magicwheel.entity.CustomRect;
-import com.sss.magicwheel.util.MagicCalculationHelper;
 
 /**
  * @author Alexey
  * @since 05.11.2015
  */
+@Deprecated
 public class DrawingLayerView extends View {
 
     private static final String TAG = DrawingLayerView.class.getCanonicalName();

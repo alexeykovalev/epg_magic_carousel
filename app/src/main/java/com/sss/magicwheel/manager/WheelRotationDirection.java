@@ -1,4 +1,4 @@
-package com.sss.magicwheel.manager.second;
+package com.sss.magicwheel.manager;
 
 /**
  * @author Alexey Kovalev
