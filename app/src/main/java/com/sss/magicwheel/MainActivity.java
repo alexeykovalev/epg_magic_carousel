@@ -54,11 +54,12 @@ public class MainActivity extends Activity {
 
     private RecyclerView.Adapter createWheelAdapter() {
         List<WheelDataItem> items = new ArrayList<>();
-        items.add(new WheelDataItem("first"));
-        items.add(new WheelDataItem("second"));
-        items.add(new WheelDataItem("third"));
-        items.add(new WheelDataItem("fourth"));
-        items.add(new WheelDataItem("fifth"));
+
+//        items.add(new WheelDataItem("first"));
+//        items.add(new WheelDataItem("second"));
+//        items.add(new WheelDataItem("third"));
+//        items.add(new WheelDataItem("fourth"));
+//        items.add(new WheelDataItem("fifth"));
 
         for (int i = 0; i < 200; i++) {
             items.add(new WheelDataItem("item.Num [" + i + "]"));

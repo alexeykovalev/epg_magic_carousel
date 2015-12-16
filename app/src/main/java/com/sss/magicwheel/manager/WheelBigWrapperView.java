@@ -5,8 +5,10 @@ import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.sss.magicwheel.R;
 import com.sss.magicwheel.entity.LinearClipData;
 
@@ -67,6 +69,10 @@ public final class WheelBigWrapperView extends FrameLayout {
 
     public void updateText(String text) {
         titleView.setText(text);
+    }
+
+    public void loadImage(int imageDrawableResId) {
+        Picasso.with(getContext()).load(imageDrawableResId).into(sectorWrapperView);
     }
 
     private void brushWithRandomColor(View sectorWrapperView) {

@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.ImageView;
@@ -60,6 +61,9 @@ public class WheelSectorWrapperView extends ImageView {
 
         Path pathToClip = createPathForClip(linearClipData, canvas);
         canvas.clipPath(pathToClip);
+
+//        RectF rectF = new RectF(0, 0, 300, 200);
+//        canvas.drawArc(rectF, 90, -45, true, paint);
 
         super.onDraw(canvas);
     }

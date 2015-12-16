@@ -16,6 +16,19 @@ import java.util.List;
  */
 public class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelItemViewHolder> {
 
+    private static final int[] COVERS_LIST_DRAWABLE = new int[] {
+            R.drawable.first_cover,
+            R.drawable.second_cover
+    };
+
+    private static int counter = 0;
+
+    private static int getCoverDrawable() {
+        int index = counter % COVERS_LIST_DRAWABLE.length;
+        counter++;
+        return COVERS_LIST_DRAWABLE[index];
+    }
+
     private final List<WheelDataItem> dataItems;
     private final LayoutInflater inflater;
 
@@ -51,6 +64,7 @@ public class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelItemVie
 
         void bindData(WheelDataItem dataItem) {
             bigWrapperView.updateText(dataItem.getTitle());
+            bigWrapperView.loadImage(getCoverDrawable());
         }
     }
 

@@ -19,7 +19,8 @@
         android:layout_width="204dp"
         android:layout_height="173dp"
         android:layout_alignParentRight="true"
-        android:scaleType="fitXY"
-        android:src="@drawable/second_cover" />
+        android:scaleType="fitXY" />
+
+    <!--android:src="@drawable/second_cover"-->
 
 </RelativeLayout>
