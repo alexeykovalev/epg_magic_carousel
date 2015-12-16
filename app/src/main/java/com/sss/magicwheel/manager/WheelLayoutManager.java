@@ -72,7 +72,7 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
 
         rotateBigWrapperViewToAngle(bigWrapperView, angleInRad);
 
-        bigWrapperView.setSectorWrapperViewSize(
+        bigWrapperView.setSectorWrapperConfig(
                 computationHelper.getSectorWrapperViewWidth(),
                 computationHelper.getSectorWrapperViewHeight(),
                 computationHelper.createSectorClipArea()
@@ -287,7 +287,7 @@ public final class WheelLayoutManager extends RecyclerView.LayoutManager {
 
         rotateBigWrapperViewToAngle(view, rotationAngle);
 
-        bigWrapperView.setSectorWrapperViewSize(
+        bigWrapperView.setSectorWrapperConfig(
                 computationHelper.getSectorWrapperViewWidth(),
                 computationHelper.getSectorWrapperViewHeight(),
                 computationHelper.createSectorClipArea()

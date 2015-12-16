@@ -12,7 +12,6 @@ import android.widget.ImageView;
 
 import com.sss.magicwheel.entity.CoordinatesHolder;
 import com.sss.magicwheel.entity.LinearClipData;
-import com.sss.magicwheel.util.MagicCalculationHelper;
 
 /**
  * @author Alexey Kovalev
@@ -25,6 +24,8 @@ public class WheelSectorWrapperView extends ImageView {
     private final Paint paint;
     private Path path;
     private LinearClipData linearClipData;
+    private RectF outerCircleEmbracingSquare;
+    private RectF innerCircleEmbracingSquare;
 
 
     public WheelSectorWrapperView(Context context) {
@@ -59,11 +60,14 @@ public class WheelSectorWrapperView extends ImageView {
 
         Log.e(TAG, "Clip area " + linearClipData);
 
-        Path pathToClip = createPathForClip(linearClipData, canvas);
-        canvas.clipPath(pathToClip);
+//        Path pathToClip = createPathForClip(linearClipData, canvas);
+//        canvas.clipPath(pathToClip);
 
-//        RectF rectF = new RectF(0, 0, 300, 200);
-//        canvas.drawArc(rectF, 90, -45, true, paint);
+        RectF rectF = outerCircleEmbracingSquare;
+        canvas.drawArc(rectF, 10, -20, false, paint);
+
+        rectF = innerCircleEmbracingSquare;
+        canvas.drawArc(rectF, 10, -20, true, paint);
 
         super.onDraw(canvas);
     }
@@ -81,10 +85,19 @@ public class WheelSectorWrapperView extends ImageView {
         path.lineTo(second.getXAsFloat(), second.getYAsFloat());
         path.lineTo(four.getXAsFloat(), four.getYAsFloat());
         path.lineTo(third.getXAsFloat(), third.getYAsFloat());
+
+//        path.arcTo();
         path.close();
 
         return path;
 
     }
 
+    public void setOuterCircleEmbracingSquare(RectF circleEmbracingSquare) {
+        this.outerCircleEmbracingSquare = circleEmbracingSquare;
+    }
+
+    public void setInnerCircleEmbracingSquare(RectF innerCircleEmbracingSquare) {
+        this.innerCircleEmbracingSquare = innerCircleEmbracingSquare;
+    }
 }

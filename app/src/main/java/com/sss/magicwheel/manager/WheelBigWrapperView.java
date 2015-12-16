@@ -2,10 +2,10 @@ package com.sss.magicwheel.manager;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -43,7 +43,7 @@ public final class WheelBigWrapperView extends FrameLayout {
         titleView = (TextView) rootView.findViewById(R.id.big_wrapper_text);
     }
 
-    public void setSectorWrapperViewSize(int width, int height, LinearClipData sectorClipArea) {
+    public void setSectorWrapperConfig(int width, int height, LinearClipData sectorClipArea) {
 
 //        Log.e("TAG", "mW " + getMeasuredWidth() + " mH " + getMeasuredHeight());
 
@@ -85,4 +85,11 @@ public final class WheelBigWrapperView extends FrameLayout {
         sectorWrapperView.setBackgroundColor(colorToBrush);
     }
 
+    public void setOuterCircleEmbracingSquare(RectF outerCircleEmbracingSquareInSectorWrapperCoordsSystem) {
+        sectorWrapperView.setOuterCircleEmbracingSquare(outerCircleEmbracingSquareInSectorWrapperCoordsSystem);
+    }
+
+    public void setInnerCircleEmbracingSquare(RectF innerCircleEmbracingSquareInSectorWrapperCoordsSystem) {
+        sectorWrapperView.setInnerCircleEmbracingSquare(innerCircleEmbracingSquareInSectorWrapperCoordsSystem);
+    }
 }

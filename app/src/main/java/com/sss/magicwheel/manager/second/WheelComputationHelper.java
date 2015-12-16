@@ -2,6 +2,7 @@ package com.sss.magicwheel.manager.second;
 
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.RectF;
 
 import com.sss.magicwheel.entity.CoordinatesHolder;
 import com.sss.magicwheel.entity.LinearClipData;
@@ -20,6 +21,9 @@ final class WheelComputationHelper {
 
     private int sectorWrapperViewWidth = NOT_DEFINED_VALUE;
     private int sectorWrapperViewHeight = NOT_DEFINED_VALUE;
+
+    private RectF outerCircleEmbracingSquareInSectorWrapperCoordsSystem;
+    private RectF innerCircleEmbracingSquareInSectorWrapperCoordsSystem;
 
     private LinearClipData sectorClipData;
 
@@ -65,6 +69,50 @@ final class WheelComputationHelper {
     public Rect getWrapperViewCoordsInCircleSystem(int wrapperViewWidth) {
         final int topEdge = getSectorWrapperViewHeight() / 2;
         return new Rect(0, topEdge, wrapperViewWidth, -topEdge);
+    }
+
+    public RectF getOuterCircleEmbracingSquareInSectorWrapperCoordsSystem() {
+        if (outerCircleEmbracingSquareInSectorWrapperCoordsSystem == null) {
+            Rect embracingSquare = getOuterCircleEmbracingSquareInCircleCoordsSystem();
+            Point leftCorner = getSectorWrapperViewLeftCornerInCircleSystem();
+            return new RectF(
+                    embracingSquare.left - leftCorner.x,
+                    leftCorner.y - embracingSquare.top,
+                    embracingSquare.right - leftCorner.x,
+                    leftCorner.y - embracingSquare.bottom
+            );
+        }
+        return outerCircleEmbracingSquareInSectorWrapperCoordsSystem;
+    }
+
+    public RectF getInnerCircleEmbracingSquareInSectorWrapperCoordsSystem() {
+        if (innerCircleEmbracingSquareInSectorWrapperCoordsSystem == null) {
+            Rect embracingSquare = getInnerCircleEmbracingSquareInCircleCoordsSystem();
+            Point leftCorner = getSectorWrapperViewLeftCornerInCircleSystem();
+            return new RectF(
+                    embracingSquare.left - leftCorner.x,
+                    leftCorner.y - embracingSquare.top,
+                    embracingSquare.right - leftCorner.x,
+                    leftCorner.y - embracingSquare.bottom
+            );
+        }
+        return innerCircleEmbracingSquareInSectorWrapperCoordsSystem;
+    }
+
+    private Rect getOuterCircleEmbracingSquareInCircleCoordsSystem() {
+        final int outerRadius = circleConfig.getOuterRadius();
+        return new Rect(-outerRadius, outerRadius, outerRadius, -outerRadius);
+    }
+
+    private Rect getInnerCircleEmbracingSquareInCircleCoordsSystem() {
+        final int innerRadius = circleConfig.getInnerRadius();
+        return new Rect(-innerRadius, innerRadius, innerRadius, -innerRadius);
+    }
+
+    private Point getSectorWrapperViewLeftCornerInCircleSystem() {
+        final int x = circleConfig.getOuterRadius() - getSectorWrapperViewWidth();
+        final int y = getSectorWrapperViewHeight() / 2;
+        return new Point(x, y);
     }
 
     public LinearClipData createSectorClipArea() {
