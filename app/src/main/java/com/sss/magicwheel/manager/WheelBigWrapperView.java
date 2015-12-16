@@ -71,6 +71,10 @@ public final class WheelBigWrapperView extends FrameLayout {
         titleView.setText(text);
     }
 
+    public String getText() {
+        return titleView.getText().toString();
+    }
+
     public void loadImage(int imageDrawableResId) {
         Picasso.with(getContext()).load(imageDrawableResId).into(sectorWrapperView);
     }

@@ -22,14 +22,10 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
 
     private final CircleConfig circleConfig;
     private final WheelComputationHelper computationHelper;
-    private final WheelScroller scroller;
-    private final WheelLayoutDataHolder layoutDataHolder;
 
     public WheelOfFortuneLayoutManager(Context context, CircleConfig circleConfig) {
         this.circleConfig = circleConfig;
         this.computationHelper = new WheelComputationHelper(circleConfig);
-        this.scroller = new WheelScroller();
-        this.layoutDataHolder = new WheelLayoutDataHolder();
     }
 
     @Override
@@ -56,7 +52,6 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
     }
 
     private void setupViewForPosition(RecyclerView.Recycler recycler, int positionIndex, double angularPosition, boolean addViewToBottom) {
-
         final WheelBigWrapperView bigWrapperView = (WheelBigWrapperView) recycler.getViewForPosition(positionIndex);
         measureBigWrapperView(bigWrapperView);
 
@@ -99,7 +94,15 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
     private void alignBigWrapperViewByAngle(View bigWrapperView, double angleAlignToInRad) {
         bigWrapperView.setPivotX(0);
         bigWrapperView.setPivotY(bigWrapperView.getMeasuredHeight() / 2);
-        bigWrapperView.setRotation((float) WheelUtils.radToDegree(angleAlignToInRad));
+        float angleInDegree = (float) WheelUtils.radToDegree(angleAlignToInRad);
+        // TODO: 16.12.2015 ugly bug fix related to central view disappearing while scrolling
+        if (angleInDegree > -0.1f && angleInDegree < 0.1f) {
+            angleInDegree = 0;
+        }
+        bigWrapperView.setRotation(angleInDegree);
+
+//        final String text = ((WheelBigWrapperView) bigWrapperView).getText();
+//        Log.e(TAG, "alignBigWrapperViewByAngle text [" + text + "], angleInDegree [" + angleInDegree + "]");
     }
 
 
@@ -117,7 +120,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
             return 0;
         }
 
-        final WheelLayoutDataHolder.WheelRotationDirection rotationDirection = WheelLayoutDataHolder.WheelRotationDirection.of(dy);
+        final WheelRotationDirection rotationDirection = WheelRotationDirection.of(dy);
 
         rotateWheel(rotationAngle, rotationDirection);
         performRecycling(rotationDirection, recycler, state);
@@ -126,17 +129,17 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
 //        Log.i(TAG, "Views count in layout [" + getChildCount() + "]");
 
         final int resultSwipeDistanceAbs = (int) Math.round(circleConfig.getInnerRadius() * Math.sin(Math.abs(rotationAngle)));
-        return rotationDirection == WheelLayoutDataHolder.WheelRotationDirection.Anticlockwise ?
+        return rotationDirection == WheelRotationDirection.Anticlockwise ?
                 resultSwipeDistanceAbs : -resultSwipeDistanceAbs;
     }
 
-    private void performRecycling(WheelLayoutDataHolder.WheelRotationDirection rotationDirection,
+    private void performRecycling(WheelRotationDirection rotationDirection,
                                   RecyclerView.Recycler recycler,
                                   RecyclerView.State state) {
-        if (rotationDirection == WheelLayoutDataHolder.WheelRotationDirection.Anticlockwise) {
+        if (rotationDirection == WheelRotationDirection.Anticlockwise) {
             recycleViewsFromTopIfNeeded(recycler);
             addViewsToBottomIfNeeded(recycler, state);
-        } else if (rotationDirection == WheelLayoutDataHolder.WheelRotationDirection.Clockwise) {
+        } else if (rotationDirection == WheelRotationDirection.Clockwise) {
             recycleViewsFromBottomIfNeeded(recycler);
             addViewsToTopIfNeeded(recycler, state);
         } else {
@@ -153,7 +156,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
         double layoutAngle = firstChildLp.anglePositionInRad + sectorAngleInRad;
         int childPos = getPosition(firstChild) - 1;
         while (layoutAngle < computationHelper.getLayoutStartAngle() && childPos >= 0) {
-            Log.e(TAG, "addViewsToTopIfNeeded() " +
+            Log.i(TAG, "addViewsToTopIfNeeded() " +
                             "layoutAngle [" + WheelUtils.radToDegree(layoutAngle) + "], " +
                             "childPos [" + childPos + "]"
             );
@@ -198,34 +201,28 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
             final LayoutParams childLp = (LayoutParams) getChildAt(i).getLayoutParams();
             if (childLp.anglePositionInRad > computationHelper.getLayoutStartAngle()) {
                 removeAndRecycleViewAt(i, recycler);
-//                Log.e(TAG, "Recycle view at index [" + i + "]");
+                Log.i(TAG, "Recycle view at index [" + i + "]");
             }
         }
     }
 
     // TODO: 15.12.2015 same code snippets - remove code duplication
-    private void rotateWheel(double rotationAngle, WheelLayoutDataHolder.WheelRotationDirection rotationDirection) {
-        if (rotationDirection == WheelLayoutDataHolder.WheelRotationDirection.Anticlockwise) {
-            final double scrollAngleDelta = -rotationAngle;
+    private void rotateWheel(double rotationAngle, WheelRotationDirection rotationDirection) {
+        if (rotationDirection == WheelRotationDirection.Anticlockwise) {
             for (int i = 0; i < getChildCount(); i++) {
                 View child = getChildAt(i);
                 final LayoutParams childLp = (LayoutParams) child.getLayoutParams();
                 childLp.anglePositionInRad += rotationAngle;
                 child.setLayoutParams(childLp);
-
-                double resAngle = WheelUtils.degreeToRadian(child.getRotation()) + scrollAngleDelta;
-                alignBigWrapperViewByAngle(child, resAngle);
+                alignBigWrapperViewByAngle(child, -childLp.anglePositionInRad);
             }
         } else {
-            final double scrollAngleDelta = +rotationAngle;
             for (int i = 0; i < getChildCount(); i++) {
                 View child = getChildAt(i);
                 final LayoutParams childLp = (LayoutParams) child.getLayoutParams();
                 childLp.anglePositionInRad -= rotationAngle;
                 child.setLayoutParams(childLp);
-
-                double resAngle = WheelUtils.degreeToRadian(child.getRotation()) + scrollAngleDelta;
-                alignBigWrapperViewByAngle(child, resAngle);
+                alignBigWrapperViewByAngle(child, -childLp.anglePositionInRad);
             }
         }
     }
@@ -234,12 +231,12 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
      * Anticlockwise rotation will correspond to positive return type.
      */
     private double computeRotationAngleBasedOnCurrentState(int dy, RecyclerView.State state) {
-        final WheelLayoutDataHolder.WheelRotationDirection rotationDirection = WheelLayoutDataHolder.WheelRotationDirection.of(dy);
+        final WheelRotationDirection rotationDirection = WheelRotationDirection.of(dy);
         final double angleToRotate = toWheelRotationAngle(dy);
 
         final View referenceChild;
         final LayoutParams refChildLp;
-        if (rotationDirection == WheelLayoutDataHolder.WheelRotationDirection.Anticlockwise) {
+        if (rotationDirection == WheelRotationDirection.Anticlockwise) {
             referenceChild = getChildClosestToBottom();
             refChildLp = (LayoutParams) referenceChild.getLayoutParams();
             final int extraChildrenCount = state.getItemCount() - 1 - getPosition(referenceChild);
@@ -284,9 +281,6 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
                 return Double.MIN_VALUE;
             }
         }
-
-//        return Double.MIN_VALUE;
-
     }
 
     private boolean isBottomBoundsReached() {
@@ -295,35 +289,6 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
         final double lastSectorBottomEdge = computationHelper.getSectorAngleBottomEdge(lastChildLp.anglePositionInRad);
 
         return circleConfig.getAngularRestrictions().getBottomEdgeAngleRestrictionInRad() - lastSectorBottomEdge <= 0;
-    }
-
-    @Deprecated
-    private void updateLayoutDataHolder(double angleToScrollInRad, WheelLayoutDataHolder.WheelRotationDirection rotationDirection) {
-
-//        layoutDataHolder.mRotationDirection = circleRotationDirection;
-//        double fastScrollSpace = LayoutState.FAST_SCROLL_ANGLE_NOT_DEFINED;
-//        if (rotationDirection == WheelLayoutDataHolder.WheelRotationDirection.Anticlockwise) {
-//            // get the first child in the direction we are going to
-//            final View child = getChildClosestToBottom();
-//            final LayoutParams childLp = (LayoutParams) child.getLayoutParams();
-//
-//            layoutDataHolder.mNextLayoutPosition = getPosition(child) + 1;
-//
-//
-//            // here we need to calculate angular position of the sector's bottom edge because in LP
-//            // we remember only top edge angular pos.
-//            mLayoutState.mAngleToStartLayout = childLp.rotationAngleInRad - circleConfig.getAngularRestrictions().getSectorAngleInRad();
-//
-//            // TODO: 10.12.2015 move outside the embracing if statement
-//            // calculate how much we can scroll without adding new children (independent of layout)
-//            if (isEdgeLimitReached(mLayoutState.mAngleToStartLayout, circleRotationDirection)) {
-//                fastScrollSpace = Math.abs(mLayoutState.mAngleToStartLayout) - Math.abs(circleConfig.getAngularRestrictions().getBottomEdgeAngleRestrictionInRad());
-//            }
-//        } else {
-//        }
-//
-//        mLayoutState.mRequestedScrollAngle = angleToScrollInRad;
-//        mLayoutState.mFastScrollAngleInRad = fastScrollSpace;
     }
 
     /**
