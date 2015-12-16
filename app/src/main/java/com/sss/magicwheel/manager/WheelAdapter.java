@@ -64,7 +64,7 @@ public class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelItemVie
 
         void bindData(WheelDataItem dataItem) {
             bigWrapperView.updateText(dataItem.getTitle());
-//            bigWrapperView.loadImage(getCoverDrawable());
+            bigWrapperView.loadImage(getCoverDrawable());
         }
     }
 

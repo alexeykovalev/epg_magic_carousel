@@ -60,16 +60,37 @@ public class WheelSectorWrapperView extends ImageView {
 
         Log.e(TAG, "Clip area " + linearClipData);
 
-//        Path pathToClip = createPathForClip(linearClipData, canvas);
-//        canvas.clipPath(pathToClip);
+        Path pathToClip = createPathForClip2();
+        canvas.clipPath(pathToClip);
 
+        super.onDraw(canvas);
+    }
+
+    private void drawArcs(Canvas canvas) {
         RectF rectF = outerCircleEmbracingSquare;
         canvas.drawArc(rectF, 10, -20, false, paint);
 
         rectF = innerCircleEmbracingSquare;
         canvas.drawArc(rectF, 10, -20, true, paint);
+    }
 
-        super.onDraw(canvas);
+    private Path createPathForClip2() {
+        path.reset();
+
+        CoordinatesHolder first = linearClipData.getFirst();
+        CoordinatesHolder second = linearClipData.getSecond();
+        CoordinatesHolder third = linearClipData.getThird();
+        CoordinatesHolder four = linearClipData.getFourth();
+
+        path.moveTo(third.getXAsFloat(), third.getYAsFloat());
+        path.lineTo(second.getXAsFloat(), second.getYAsFloat());
+        path.arcTo(innerCircleEmbracingSquare, 10, -20);
+        path.arcTo(outerCircleEmbracingSquare, -10, 20);
+        path.lineTo(third.getXAsFloat(), third.getYAsFloat());
+
+        path.close();
+
+        return path;
     }
 
 
@@ -86,17 +107,18 @@ public class WheelSectorWrapperView extends ImageView {
         path.lineTo(four.getXAsFloat(), four.getYAsFloat());
         path.lineTo(third.getXAsFloat(), third.getYAsFloat());
 
-//        path.arcTo();
         path.close();
 
         return path;
 
     }
 
+    @Deprecated
     public void setOuterCircleEmbracingSquare(RectF circleEmbracingSquare) {
         this.outerCircleEmbracingSquare = circleEmbracingSquare;
     }
 
+    @Deprecated
     public void setInnerCircleEmbracingSquare(RectF innerCircleEmbracingSquare) {
         this.innerCircleEmbracingSquare = innerCircleEmbracingSquare;
     }
