@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.sss.magicwheel.R;
 
 /**
@@ -50,7 +51,12 @@ public final class WheelBigWrapperView extends FrameLayout {
     }
 
     public void loadImage(int imageDrawableResId) {
-//        Picasso.with(getContext()).load(imageDrawableResId).into(sectorWrapperView);
+        WheelComputationHelper computationHelper = WheelComputationHelper.getInstance();
+        Picasso
+                .with(getContext())
+                .load(imageDrawableResId)
+                .resize(computationHelper.getSectorWrapperViewWidth(), computationHelper.getSectorWrapperViewHeight())
+                .into(sectorWrapperView);
     }
 
 }
