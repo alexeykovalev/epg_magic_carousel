@@ -21,9 +21,16 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
     private final CircleConfig circleConfig;
     private final WheelComputationHelper computationHelper;
 
-    public WheelOfFortuneLayoutManager(Context context, CircleConfig circleConfig) {
-        this.circleConfig = circleConfig;
-        this.computationHelper = new WheelComputationHelper(circleConfig);
+    public WheelOfFortuneLayoutManager() {
+        this.computationHelper = WheelComputationHelper.getInstance();
+        this.circleConfig = computationHelper.getCircleConfig();
+    }
+
+    @Override
+    public void onDetachedFromWindow(RecyclerView view, RecyclerView.Recycler recycler) {
+        super.onDetachedFromWindow(view, recycler);
+        removeAndRecycleAllViews(recycler);
+        recycler.clear();
     }
 
     @Override
@@ -62,12 +69,6 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
         bigWrapperView.layout(wrTransformedCoords.left, wrTransformedCoords.top, wrTransformedCoords.right, wrTransformedCoords.bottom);
 
         alignBigWrapperViewByAngle(bigWrapperView, -angularPosition);
-
-        bigWrapperView.setSectorWrapperConfig(
-                computationHelper.getSectorWrapperViewWidth(),
-                computationHelper.getSectorWrapperViewHeight(),
-                computationHelper.createSectorClipArea()
-        );
 
         LayoutParams lp = (LayoutParams) bigWrapperView.getLayoutParams();
         lp.anglePositionInRad = angularPosition;

@@ -25,11 +25,11 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        initCalculationHelper();
-        setContentView(R.layout.activity_main_layout);
+        WheelComputationHelper.initialize(createCircleConfig());
 
+        setContentView(R.layout.activity_main_layout);
         final RecyclerView wheelContainer = (RecyclerView) findViewById(R.id.wheel_container);
-        wheelContainer.setLayoutManager(new WheelOfFortuneLayoutManager(this, createCircleConfig()));
+        wheelContainer.setLayoutManager(new WheelOfFortuneLayoutManager());
         wheelContainer.setAdapter(createWheelAdapter());
     }
 

@@ -19,6 +19,8 @@ public final class WheelComputationHelper {
     private static final double RAD_TO_DEGREE_COEF = 1 / DEGREE_TO_RAD_COEF;
     private static final int NOT_DEFINED_VALUE = Integer.MIN_VALUE;
 
+    private static WheelComputationHelper instance;
+
     private final CircleConfig circleConfig;
 
     private int sectorWrapperViewWidth = NOT_DEFINED_VALUE;
@@ -31,6 +33,21 @@ public final class WheelComputationHelper {
 
     private double layoutStartAngle;
 
+    public static WheelComputationHelper getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("Has not been initialized yet. Invoke initialize() beforehand.");
+        }
+        return instance;
+    }
+
+    public static void initialize(CircleConfig circleConfig) {
+        instance = new WheelComputationHelper(circleConfig);
+    }
+
+    private WheelComputationHelper(CircleConfig circleConfig) {
+        this.circleConfig = circleConfig;
+    }
+
     public static double degreeToRadian(double angleInDegree) {
         return angleInDegree * DEGREE_TO_RAD_COEF;
     }
@@ -39,8 +56,8 @@ public final class WheelComputationHelper {
         return angleInRad * RAD_TO_DEGREE_COEF;
     }
 
-    public WheelComputationHelper(CircleConfig circleConfig) {
-        this.circleConfig = circleConfig;
+    public CircleConfig getCircleConfig() {
+        return circleConfig;
     }
 
     /**
