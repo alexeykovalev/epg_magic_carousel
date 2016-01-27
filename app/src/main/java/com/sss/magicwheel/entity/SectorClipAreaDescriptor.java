@@ -35,44 +35,49 @@ public final class SectorClipAreaDescriptor {
         }
     }
 
-    private final CoordinatesHolder first;
-    private final CoordinatesHolder second;
-    private final CoordinatesHolder third;
-    private final CoordinatesHolder fourth;
+    // first
+    private final CoordinatesHolder bottomLeftCorner;
+    // second
+    private final CoordinatesHolder bottomRightCorner;
+    // third
+    private final CoordinatesHolder topLeftCorner;
+    // fourth
+    private final CoordinatesHolder topRightCorner;
+
     private final CircleEmbracingSquaresConfig circleEmbracingSquaresConfig;
     private final float sectorTopEdgeAngleInDegree;
     private final float sectorSweepAngleInDegree;
 
-    public SectorClipAreaDescriptor(CoordinatesHolder first,
-                                    CoordinatesHolder second,
-                                    CoordinatesHolder third,
-                                    CoordinatesHolder fourth,
+    public SectorClipAreaDescriptor(CoordinatesHolder bottomLeftCorner,
+                                    CoordinatesHolder bottomRightCorner,
+                                    CoordinatesHolder topLeftCorner,
+                                    CoordinatesHolder topRightCorner,
                                     CircleEmbracingSquaresConfig circleEmbracingSquaresConfig,
                                     float sectorTopEdgeAngleInDegree,
                                     float sectorSweepAngleInDegree) {
-        this.first = first;
-        this.second = second;
-        this.third = third;
-        this.fourth = fourth;
+        this.bottomLeftCorner = bottomLeftCorner;
+        this.bottomRightCorner = bottomRightCorner;
+        this.topLeftCorner = topLeftCorner;
+        this.topRightCorner = topRightCorner;
         this.circleEmbracingSquaresConfig = circleEmbracingSquaresConfig;
         this.sectorTopEdgeAngleInDegree = sectorTopEdgeAngleInDegree;
         this.sectorSweepAngleInDegree = sectorSweepAngleInDegree;
     }
 
-    public CoordinatesHolder getFirst() {
-        return first;
+    public CoordinatesHolder getBottomLeftCorner() {
+        return bottomLeftCorner;
     }
 
-    public CoordinatesHolder getSecond() {
-        return second;
+    public CoordinatesHolder getBottomRightCorner() {
+        return bottomRightCorner;
     }
 
-    public CoordinatesHolder getThird() {
-        return third;
+    public CoordinatesHolder getTopLeftCorner() {
+        return topLeftCorner;
     }
 
-    public CoordinatesHolder getFourth() {
-        return fourth;
+    public CoordinatesHolder getTopRightCorner() {
+        return topRightCorner;
     }
 
     public CircleEmbracingSquaresConfig getCircleEmbracingSquaresConfig() {
@@ -90,10 +95,10 @@ public final class SectorClipAreaDescriptor {
     @Override
     public String toString() {
         return "SectorClipAreaDescriptor{" +
-                "first=" + first +
-                ", second=" + second +
-                ", third=" + third +
-                ", fourth=" + fourth +
+                "bottomLeftCorner=" + bottomLeftCorner +
+                ", bottomRightCorner=" + bottomRightCorner +
+                ", topLeftCorner=" + topLeftCorner +
+                ", topRightCorner=" + topRightCorner +
                 ", circleEmbracingSquaresConfig=" + circleEmbracingSquaresConfig +
                 ", sectorTopEdgeAngleInDegree=" + sectorTopEdgeAngleInDegree +
                 ", sectorSweepAngleInDegree=" + sectorSweepAngleInDegree +

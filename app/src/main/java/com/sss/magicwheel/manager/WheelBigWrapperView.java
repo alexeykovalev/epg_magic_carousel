@@ -1,6 +1,9 @@
 package com.sss.magicwheel.manager;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +60,29 @@ public final class WheelBigWrapperView extends FrameLayout {
                 .load(imageDrawableResId)
                 .resize(computationHelper.getSectorWrapperViewWidth(), computationHelper.getSectorWrapperViewHeight())
                 .into(sectorWrapperView);
+    }
+
+    @Override
+    protected void dispatchDraw(Canvas canvas) {
+        WheelComputationHelper computationHelper = WheelComputationHelper.getInstance();
+
+        Paint paint = new Paint();
+        paint.setColor(Color.GREEN);
+        paint.setStrokeWidth(10);
+        paint.setAntiAlias(true);
+
+
+        Paint myPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        myPaint.setStyle(Paint.Style.STROKE);
+        int strokeWidth = 20;  // or whatever
+        myPaint.setStrokeWidth(strokeWidth);
+        myPaint.setColor(0xffff0000);   //color.RED
+        float radius= computationHelper.getCircleConfig().getInnerRadius();
+
+        super.dispatchDraw(canvas);
+
+//        canvas.drawLine(0, getMeasuredHeight() / 2, getMeasuredWidth(), 0, paint);
+        canvas.drawCircle(0, getMeasuredHeight() / 2, radius, myPaint);
     }
 
 }
