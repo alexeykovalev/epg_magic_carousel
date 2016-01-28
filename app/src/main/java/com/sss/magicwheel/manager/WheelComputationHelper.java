@@ -14,6 +14,7 @@ import com.sss.magicwheel.entity.SectorClipAreaDescriptor;
  * @since 14.12.2015.
  */
 // TODO: 14.12.2015 use lazy initializer here
+// TODO: 28.01.2016 replace all Rect and Point class usages to respective RectF and PointF ones
 public final class WheelComputationHelper {
 
     private static final double DEGREE_TO_RAD_COEF = Math.PI / 180;
@@ -151,11 +152,11 @@ public final class WheelComputationHelper {
             final double leftBaseDelta = circleConfig.getInnerRadius() * Math.sin(circleConfig.getAngularRestrictions().getSectorAngleInRad() / 2);
             final double rightBaseDelta = circleConfig.getOuterRadius() * Math.sin(circleConfig.getAngularRestrictions().getSectorAngleInRad() / 2);
 
-            final CoordinatesHolder first = CoordinatesHolder.ofRect(0, viewHalfHeight + leftBaseDelta);
-            final CoordinatesHolder third = CoordinatesHolder.ofRect(0, viewHalfHeight - leftBaseDelta);
+            final CoordinatesHolder bottomLeftCorner = CoordinatesHolder.ofRect(0, viewHalfHeight + leftBaseDelta);
+            final CoordinatesHolder topLeftCorner = CoordinatesHolder.ofRect(0, viewHalfHeight - leftBaseDelta);
 
-            final CoordinatesHolder second = CoordinatesHolder.ofRect(viewWidth, viewHalfHeight + rightBaseDelta);
-            final CoordinatesHolder forth = CoordinatesHolder.ofRect(viewWidth, viewHalfHeight - rightBaseDelta);
+            final CoordinatesHolder bottomRight = CoordinatesHolder.ofRect(viewWidth, viewHalfHeight + rightBaseDelta);
+            final CoordinatesHolder topRightCorner = CoordinatesHolder.ofRect(viewWidth, viewHalfHeight - rightBaseDelta);
 
             final SectorClipAreaDescriptor.CircleEmbracingSquaresConfig embracingSquaresConfig =
                     new SectorClipAreaDescriptor.CircleEmbracingSquaresConfig(
@@ -166,7 +167,7 @@ public final class WheelComputationHelper {
             final float sectorTopEdgeAngleInDegree = (float) radToDegree(circleConfig.getAngularRestrictions().getSectorAngleInRad() / 2);
             final float sectorSweepAngleInDegree = (float) radToDegree(circleConfig.getAngularRestrictions().getSectorAngleInRad());
             sectorClipData = new SectorClipAreaDescriptor(
-                    first, second, third, forth, embracingSquaresConfig,
+                    bottomLeftCorner, bottomRight, topLeftCorner, topRightCorner, embracingSquaresConfig,
                     sectorTopEdgeAngleInDegree, sectorSweepAngleInDegree
             );
         }

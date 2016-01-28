@@ -82,16 +82,16 @@ public class WheelSectorWrapperView extends ImageView {
     private Path createSectorPathForClip() {
         path.reset();
 
-        CoordinatesHolder first = sectorClipAreaDescriptor.getBottomLeftCorner();
-        CoordinatesHolder second = sectorClipAreaDescriptor.getBottomRightCorner();
-        CoordinatesHolder third = sectorClipAreaDescriptor.getTopLeftCorner();
-        CoordinatesHolder four = sectorClipAreaDescriptor.getTopRightCorner();
+        CoordinatesHolder bottomLeftCorner = sectorClipAreaDescriptor.getBottomLeftCorner();
+        CoordinatesHolder bottomRightCorner = sectorClipAreaDescriptor.getBottomRightCorner();
+        CoordinatesHolder topLeftCorner = sectorClipAreaDescriptor.getTopLeftCorner();
+        CoordinatesHolder topRightCorner = sectorClipAreaDescriptor.getTopRightCorner();
 
-        path.moveTo(third.getXAsFloat(), third.getYAsFloat());
-        path.lineTo(second.getXAsFloat(), second.getYAsFloat());
+        path.moveTo(topLeftCorner.getXAsFloat(), topLeftCorner.getYAsFloat());
+        path.lineTo(bottomRightCorner.getXAsFloat(), bottomRightCorner.getYAsFloat());
         path.arcTo(innerCircleEmbracingSquare, sectorClipAreaDescriptor.getSectorTopEdgeAngleInDegree(), -sectorClipAreaDescriptor.getSectorSweepAngleInDegree());
         path.arcTo(outerCircleEmbracingSquare, -sectorClipAreaDescriptor.getSectorTopEdgeAngleInDegree(), sectorClipAreaDescriptor.getSectorSweepAngleInDegree());
-        path.lineTo(third.getXAsFloat(), third.getYAsFloat());
+        path.lineTo(topLeftCorner.getXAsFloat(), topLeftCorner.getYAsFloat());
 
         path.close();
 
