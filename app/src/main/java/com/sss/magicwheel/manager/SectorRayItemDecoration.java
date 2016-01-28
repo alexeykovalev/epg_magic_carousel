@@ -18,6 +18,9 @@ public class SectorRayItemDecoration extends RecyclerView.ItemDecoration {
     private static final int DEFAULT_RAY_WIDTH = 700;
     private static final int DEFAULT_RAY_HEIGHT = 10;
 
+    // TODO: 28.01.2016 ray with default draw does not fit exactly at sector's edge. This magic constant compensates this divergence.
+    private static final int MAGIC_CONSTANT_FOR_RAY_ALIGNMENT = 12;
+
     private final WheelComputationHelper computationHelper;
     private final Drawable rayDrawable;
 
@@ -56,7 +59,7 @@ public class SectorRayItemDecoration extends RecyclerView.ItemDecoration {
 
     private Drawable getRayDrawable(PointF rayStartPos) {
         final float startRayPosX = rayStartPos.x;
-        final float startRayPosY = rayStartPos.y;
+        final float startRayPosY = rayStartPos.y - MAGIC_CONSTANT_FOR_RAY_ALIGNMENT;
         final int rayHeight = rayDrawable.getIntrinsicHeight();
         rayDrawable.setBounds(
                 (int) startRayPosX,
