@@ -1,6 +1,7 @@
 package com.sss.magicwheel.manager;
 
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
@@ -93,9 +94,9 @@ public final class WheelComputationHelper {
     /**
      * @param wrapperViewWidth - depends on inner and outer radius values
      */
-    public Rect getWrapperViewCoordsInCircleSystem(int wrapperViewWidth) {
+    public RectF getWrapperViewCoordsInCircleSystem(int wrapperViewWidth) {
         final int topEdge = getSectorWrapperViewHeight() / 2;
-        return new Rect(0, topEdge, wrapperViewWidth, -topEdge);
+        return new RectF(0, topEdge, wrapperViewWidth, -topEdge);
     }
 
     public RectF getOuterCircleEmbracingSquareInSectorWrapperCoordsSystem() {
@@ -198,25 +199,25 @@ public final class WheelComputationHelper {
     }
 
     // TODO: 16.12.2015 to many objects allocation - reduce this amount in future
-    public static Rect fromCircleCoordsSystemToRecyclerViewCoordsSystem(Point circleCenterRelToRecyclerView,
-                                                                        Rect coorditanesToTransform) {
+    public static RectF fromCircleCoordsSystemToRecyclerViewCoordsSystem(PointF circleCenterRelToRecyclerView,
+                                                                        RectF coordinatesToTransform) {
 
-        final Point leftTopCorner = fromCircleCoordsSystemToRecyclerViewCoordsSystem(
+        final PointF leftTopCorner = fromCircleCoordsSystemToRecyclerViewCoordsSystem(
                 circleCenterRelToRecyclerView,
-                new Point(coorditanesToTransform.left, coorditanesToTransform.top)
+                new PointF(coordinatesToTransform.left, coordinatesToTransform.top)
         );
 
-        final Point rightBottomCorner = fromCircleCoordsSystemToRecyclerViewCoordsSystem(
+        final PointF rightBottomCorner = fromCircleCoordsSystemToRecyclerViewCoordsSystem(
                 circleCenterRelToRecyclerView,
-                new Point(coorditanesToTransform.right, coorditanesToTransform.bottom)
+                new PointF(coordinatesToTransform.right, coordinatesToTransform.bottom)
         );
 
-        return new Rect(leftTopCorner.x, leftTopCorner.y, rightBottomCorner.x, rightBottomCorner.y);
+        return new RectF(leftTopCorner.x, leftTopCorner.y, rightBottomCorner.x, rightBottomCorner.y);
     }
 
-    public static Point fromCircleCoordsSystemToRecyclerViewCoordsSystem(Point circleCenterRelToRecyclerView,
-                                                                         Point pointToTransform) {
-        return new Point(
+    public static PointF fromCircleCoordsSystemToRecyclerViewCoordsSystem(PointF circleCenterRelToRecyclerView,
+                                                                          PointF pointToTransform) {
+        return new PointF(
                 circleCenterRelToRecyclerView.x + pointToTransform.x,
                 circleCenterRelToRecyclerView.y - pointToTransform.y
         );

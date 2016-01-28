@@ -2,6 +2,7 @@ package com.sss.magicwheel.manager;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -60,13 +61,16 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
         final WheelBigWrapperView bigWrapperView = (WheelBigWrapperView) recycler.getViewForPosition(positionIndex);
         measureBigWrapperView(bigWrapperView);
 
-        Rect wrViewCoordsInCircleSystem = computationHelper.getWrapperViewCoordsInCircleSystem(bigWrapperView.getMeasuredWidth());
-        Rect wrTransformedCoords = WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(
+        RectF wrViewCoordsInCircleSystem = computationHelper.getWrapperViewCoordsInCircleSystem(bigWrapperView.getMeasuredWidth());
+        RectF wrTransformedCoords = WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(
                 circleConfig.getCircleCenterRelToRecyclerView(),
                 wrViewCoordsInCircleSystem
         );
 
-        bigWrapperView.layout(wrTransformedCoords.left, wrTransformedCoords.top, wrTransformedCoords.right, wrTransformedCoords.bottom);
+        bigWrapperView.layout(
+                (int) wrTransformedCoords.left, (int) wrTransformedCoords.top,
+                (int) wrTransformedCoords.right, (int) wrTransformedCoords.bottom
+        );
 
         alignBigWrapperViewByAngle(bigWrapperView, -angularPosition);
 

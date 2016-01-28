@@ -1,6 +1,6 @@
 package com.sss.magicwheel.entity;
 
-import android.graphics.Point;
+import android.graphics.PointF;
 import android.graphics.Rect;
 
 /**
@@ -49,7 +49,7 @@ public final class CircleConfig {
     /**
      * Relative to Recycler view top left corner.
      */
-    private final Point circleCenter;
+    private final PointF circleCenter;
 
     private final Rect circleBoundaries;
 
@@ -59,7 +59,7 @@ public final class CircleConfig {
 
     private final AngularRestrictions angularRestrictions;
 
-    public CircleConfig(Point circleCenter, int outerRadius, int innerRadius, AngularRestrictions angularRestrictions) {
+    public CircleConfig(PointF circleCenter, int outerRadius, int innerRadius, AngularRestrictions angularRestrictions) {
         this.circleCenter = circleCenter;
         this.outerRadius = outerRadius;
         this.innerRadius = innerRadius;
@@ -71,7 +71,7 @@ public final class CircleConfig {
         return new Rect(-outerRadius, outerRadius, outerRadius, -outerRadius);
     }
 
-    public Point getCircleCenterRelToRecyclerView() {
+    public PointF getCircleCenterRelToRecyclerView() {
         return safePointCopy(circleCenter);
     }
 
@@ -92,8 +92,11 @@ public final class CircleConfig {
 //        return safeRectCopy(circleBoundaries);
 //    }
 
-    private static Point safePointCopy(Point source) {
-        return new Point(source);
+    private static PointF safePointCopy(PointF source) {
+        PointF res = new PointF();
+        res.x = source.x;
+        res.y = source.y;
+        return res;
     }
 
     private static Rect safeRectCopy(Rect source) {

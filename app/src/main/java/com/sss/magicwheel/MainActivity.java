@@ -3,6 +3,7 @@ package com.sss.magicwheel;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.Display;
@@ -52,7 +53,7 @@ public class MainActivity extends Activity {
         final int screenWidth = screenSize.x;
         final int screenHeight = screenSize.y;
 
-        final Point circleCenter = new Point(0, screenHeight / 2);
+        final PointF circleCenter = new PointF(0, screenHeight / 2);
 
         // TODO: 03.12.2015 Not good hardcoded values
         final int innerRadius = screenHeight / 2 + 50;
