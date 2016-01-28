@@ -1,26 +1,13 @@
 package com.sss.magicwheel.manager;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.RotateDrawable;
 import android.support.v7.widget.RecyclerView;
-import android.util.AttributeSet;
-import android.util.Xml;
 import android.view.View;
 
-import com.sss.magicwheel.MainActivity;
 import com.sss.magicwheel.R;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
 
 /**
  * @author Alexey Kovalev
@@ -28,123 +15,86 @@ import java.io.IOException;
  */
 public class SectorRayItemDecoration extends RecyclerView.ItemDecoration {
 
-    private final Context context;
+    private static final int DEFAULT_RAY_WIDTH = 700;
+    private static final int DEFAULT_RAY_HEIGHT = 10;
+
     private final WheelComputationHelper computationHelper;
-    private final Paint drawingPaint;
-    private final RotateDrawable rayDrawable;
+    private final Drawable rayDrawable;
 
     public SectorRayItemDecoration(Context context) {
-        this.context = context;
         this.computationHelper = WheelComputationHelper.getInstance();
-        this.drawingPaint = initDrawingPaint();
-
-        RotateDrawable rDrawable;
-        rDrawable = (RotateDrawable) context.getResources().getDrawable(R.drawable.rotated_ray_drawable);
-
-//        rDrawable.setFromDegrees(-60);
-//        rDrawable.setToDegrees(-60);
-//        rDrawable.invalidateSelf();
-//        rDrawable.invalidateDrawable(rDrawable);
-
-        this.rayDrawable = rDrawable; //context.getResources().getDrawable(R.drawable.rotated_ray_drawable);
-//        this.rayDrawable = context.getResources().getDrawable(R.drawable.wheel_sector_ray);
-
-        /*rDrawable = new RotateDrawable();
-        rDrawable.setDrawable(context.getResources().getDrawable(R.drawable.wheel_sector_ray));
-        rDrawable.setPivotX(0.5f);
-        rDrawable.setPivotY(0.5f);
-        rDrawable.setFromDegrees(90);
-        rDrawable.setToDegrees(90);*/
-
-//        rayDrawable = rDrawable;
-    }
-
-
-//    private RotateDrawable createFromXml() {
-//        RotateDrawable rDrawable = new RotateDrawable();
-//
-//        //r is a Resources object containing the layout
-////id is an integer from R.drawable
-//        final Resources r = context.getResources();
-//        XmlPullParser parser = r.getXml(id);
-//        AttributeSet attrs = Xml.asAttributeSet(parser);
-//        float pivotX = attrs. getAttributeFloatValue("http://schemas.android.com/apk/res/android", "fromDegrees", -60);
-//        float pivotY = attrs.getAttributeFloatValue("http://schemas.android.com/apk/res/android", "toDegrees", -60);
-////d is a RotateDrawable
-//        attrs.
-//        try {
-//            rDrawable.inflate(r, parser, attrs);
-//        } catch (XmlPullParserException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return rDrawable;
-//    }
-
-    private Paint initDrawingPaint() {
-        Paint paint = new Paint();
-        paint.setColor(Color.GREEN);
-        paint.setStrokeWidth(15);
-        paint.setAntiAlias(true);
-        return paint;
+        this.rayDrawable = context.getResources().getDrawable(R.drawable.wheel_sector_ray_drawable);
     }
 
     @Override
     public void onDrawOver(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            final View sectorView = parent.getChildAt(i);
+            final WheelOfFortuneLayoutManager.LayoutParams childLp = (WheelOfFortuneLayoutManager.LayoutParams) sectorView.getLayoutParams();
+            final double sectorAnglePositionInRad = childLp.anglePositionInRad;
 
-        final int left = parent.getPaddingLeft();
-        final int right = parent.getWidth() - parent.getPaddingRight();
-
-        final int childCount = parent.getChildCount();
-        for (int i = 0; i < childCount; i++) {
-            final View child = parent.getChildAt(i);
-            final WheelOfFortuneLayoutManager.LayoutParams childLp = (WheelOfFortuneLayoutManager.LayoutParams) child.getLayoutParams();
-            int childAnglePositionInDegree = (int) WheelComputationHelper.radToDegree(childLp.anglePositionInRad);
-//            anglePositionInRad
-
-            /*final int top = child.getBottom() + childLp.bottomMargin;
-            final int bottom = top + mDivider.getIntrinsicHeight();
-            mDivider.setBounds(left, top, right, bottom);
-            mDivider.draw(canvas);*/
-
-            final Point childRefPointPos = getSectorReferPointInRvCoordsSystem(child);
-//            canvas.drawLine(0, parent.getHeight() / 2, childRefPointPos.x, childRefPointPos.y, drawingPaint);
-
-//            rayDrawable.setBounds(100, 100, 100 + rayDrawable.getIntrinsicWidth(), 100 + rayDrawable.getIntrinsicHeight());
-
-//            rayDrawable.setBounds(100, 100, 500, 120);
-
-
-//            rayDrawable.setFromDegrees(-60);
-//            rayDrawable.setToDegrees(-60);
-
-            canvas.save();
-            canvas.rotate(-10 - childAnglePositionInDegree, childRefPointPos.x, childRefPointPos.y);
-            rayDrawable.setBounds(childRefPointPos.x, childRefPointPos.y, childRefPointPos.x + 700, childRefPointPos.y + 20);
-            rayDrawable.draw(canvas);
-            canvas.restore();
+            drawSectorTopEdgeRay(sectorAnglePositionInRad, canvas);
         }
-
     }
 
-    private Point getSectorReferPointInRvCoordsSystem(View child) {
-        final WheelOfFortuneLayoutManager.LayoutParams childLp = (WheelOfFortuneLayoutManager.LayoutParams) child.getLayoutParams();
-        double childAnglePositionInRad = childLp.anglePositionInRad;
+    private void drawSectorTopEdgeRay(double sectorAnglePositionInRad, Canvas canvas) {
+        final Point sectorReferencePoint = getSectorTopLeftCornerPos(sectorAnglePositionInRad);
+        final float sectorAnglePositionInDegree = (float) WheelComputationHelper.radToDegree(sectorAnglePositionInRad);
+        final float sectorHalfAngleInDegree = (float) WheelComputationHelper.radToDegree(
+                computationHelper.getCircleConfig().getAngularRestrictions().getSectorAngleInRad() / 2
+        );
 
-        final int radius = computationHelper.getCircleConfig().getInnerRadius();
-        final int x = (int) (radius * Math.cos(childAnglePositionInRad));
-        final int y = (int) (radius * Math.sin(childAnglePositionInRad));
-        Point childRefPointPosInCircleCoordsSystem = new Point(x, y);
+        final float rotateRayByAngle = sectorAnglePositionInDegree + sectorHalfAngleInDegree;
+
+        canvas.save();
+        // negative rotation angle due to anticlockwise rotation
+        canvas.rotate(-rotateRayByAngle, sectorReferencePoint.x, sectorReferencePoint.y);
+        Drawable topEdgeRayDrawable = getRayDrawable(sectorReferencePoint);
+        topEdgeRayDrawable.draw(canvas);
+        canvas.restore();
+    }
+
+    private Drawable getRayDrawable(Point rayStartPos) {
+        final int startRayPosX = rayStartPos.x;
+        final int startRayPosY = rayStartPos.y;
+        final int rayHeight = rayDrawable.getIntrinsicHeight();
+        rayDrawable.setBounds(
+                startRayPosX, startRayPosY,
+                startRayPosX + DEFAULT_RAY_WIDTH, startRayPosY + rayHeight
+        );
+        return rayDrawable;
+    }
+
+    private Point getSectorTopLeftCornerPos(double sectorAnglePosInRad) {
+        final double sectorHalfAngleInRad = computationHelper.getCircleConfig().getAngularRestrictions().getSectorAngleInRad() / 2;
+
+        final double topLeftSectorCornerAnglePosInRad = sectorAnglePosInRad + sectorHalfAngleInRad;
+        final int innerRadius = computationHelper.getCircleConfig().getInnerRadius();
+
+        final int refPointXPosInWheelCoordSystem = (int) (innerRadius * Math.cos(topLeftSectorCornerAnglePosInRad));
+        final int refPointYPosInWheelCoordSystem = (int) (innerRadius * Math.sin(topLeftSectorCornerAnglePosInRad));
+        final Point topLeftCornerPosInWheelCoordsSystem = new Point(refPointXPosInWheelCoordSystem, refPointYPosInWheelCoordSystem);
 
         return WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(
                 computationHelper.getCircleConfig().getCircleCenterRelToRecyclerView(),
-                childRefPointPosInCircleCoordsSystem
+                topLeftCornerPosInWheelCoordsSystem
         );
     }
 
-    @Override
-    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-        super.getItemOffsets(outRect, view, parent, state);
+    // TODO: 28.01.2016 make Point instance reusing
+    @Deprecated
+    private Point getSectorReferencePoint(View sectorView) {
+        final WheelOfFortuneLayoutManager.LayoutParams childLp = (WheelOfFortuneLayoutManager.LayoutParams) sectorView.getLayoutParams();
+        final double sectorAnglePositionInRad = childLp.anglePositionInRad;
+
+        final int innerRadius = computationHelper.getCircleConfig().getInnerRadius();
+        final int refPointXPosInWheelCoordSystem = (int) (innerRadius * Math.cos(sectorAnglePositionInRad));
+        final int refPointYPosInWheelCoordSystem = (int) (innerRadius * Math.sin(sectorAnglePositionInRad));
+        final Point sectorRefPointPosInWheelCoordSystem = new Point(refPointXPosInWheelCoordSystem, refPointYPosInWheelCoordSystem);
+
+        return WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(
+                computationHelper.getCircleConfig().getCircleCenterRelToRecyclerView(),
+                sectorRefPointPosInWheelCoordSystem
+        );
     }
 }

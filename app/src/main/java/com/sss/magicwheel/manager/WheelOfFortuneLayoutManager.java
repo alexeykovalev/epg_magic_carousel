@@ -341,7 +341,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
     public static final class LayoutParams extends RecyclerView.LayoutParams {
 
         /**
-         * Defines top edge sector's position on circle.
+         * Defines middle (sector's wrapper view half height) edge sector's position on circle.
          * Effectively it equals to view's rotation angle.
          */
         double anglePositionInRad;
