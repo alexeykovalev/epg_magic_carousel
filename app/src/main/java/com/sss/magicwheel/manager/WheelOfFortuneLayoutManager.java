@@ -1,7 +1,6 @@
 package com.sss.magicwheel.manager;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
