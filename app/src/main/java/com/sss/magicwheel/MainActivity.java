@@ -10,6 +10,7 @@ import android.view.WindowManager;
 
 import com.sss.magicwheel.entity.CircleConfig;
 import com.sss.magicwheel.entity.WheelDataItem;
+import com.sss.magicwheel.manager.SectorRayItemDecoration;
 import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
 import com.sss.magicwheel.manager.WheelOfFortuneLayoutManager;
@@ -29,6 +30,7 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_main_layout);
         final RecyclerView wheelContainer = (RecyclerView) findViewById(R.id.wheel_container);
+        wheelContainer.addItemDecoration(new SectorRayItemDecoration(this));
         wheelContainer.setLayoutManager(new WheelOfFortuneLayoutManager());
         wheelContainer.setAdapter(createWheelAdapter());
     }
