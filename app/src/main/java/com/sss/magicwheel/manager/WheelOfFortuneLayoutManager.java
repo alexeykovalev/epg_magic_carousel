@@ -274,23 +274,23 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
         final int extraChildrenCount = state.getItemCount() - 1 - getPosition(referenceChild);
         final double lastSectorBottomEdge = computationHelper.getSectorAngleBottomEdge(refChildLp.anglePositionInRad);
 
+        double res = Double.MIN_VALUE;
+
         // compute available space
         if (extraChildrenCount == 0) { // is last child
-            // last sector's bottom edge outside bottom limit - only scroll this extra space
+            // if last sector's bottom edge outside bottom limit - only scroll this extra space
             // TODO: 15.12.2015 replace with isBottomBoundsReached()
             if (circleConfig.getAngularRestrictions().getBottomEdgeAngleRestrictionInRad() - lastSectorBottomEdge > 0) {
-                return Math.min(
+                res = Math.min(
                         angleToRotate,
                         circleConfig.getAngularRestrictions().getBottomEdgeAngleRestrictionInRad() - lastSectorBottomEdge
                 );
-            } else {
-                return Double.MIN_VALUE;
             }
         } else if (extraChildrenCount > 0) {
-            return Math.min(angleToRotate, circleConfig.getAngularRestrictions().getSectorAngleInRad() * extraChildrenCount);
-        } else {
-            return Double.MIN_VALUE;
+            res = Math.min(angleToRotate, circleConfig.getAngularRestrictions().getSectorAngleInRad() * extraChildrenCount);
         }
+
+        return res;
     }
 
     private double computeRotationAngleInRadForClockwiseRotation(double angleToRotate) {
@@ -299,21 +299,21 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
         final int extraChildrenCount = getPosition(referenceChild);
         final double firstSectorTopEdge = refChildLp.anglePositionInRad;
 
+        double res = Double.MIN_VALUE;
+
         // first top sector goes outside top edge
         if (extraChildrenCount == 0) {
             if (firstSectorTopEdge - computationHelper.getLayoutStartAngle() > 0) {
-                return Math.min(
+                res = Math.min(
                         angleToRotate,
                         firstSectorTopEdge - computationHelper.getLayoutStartAngle()
                 );
-            } else {
-                return Double.MIN_VALUE;
             }
         } else if (extraChildrenCount > 0) {
-            return Math.min(angleToRotate, circleConfig.getAngularRestrictions().getSectorAngleInRad() * extraChildrenCount);
-        } else {
-            return Double.MIN_VALUE;
+            res = Math.min(angleToRotate, circleConfig.getAngularRestrictions().getSectorAngleInRad() * extraChildrenCount);
         }
+
+        return res;
     }
 
     private boolean isBottomBoundsReached() {
