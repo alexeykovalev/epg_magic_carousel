@@ -126,12 +126,12 @@ public final class WheelComputationHelper {
         return innerCircleEmbracingSquareInSectorWrapperCoordsSystem;
     }
 
-    private RectF getOuterCircleEmbracingSquareInCircleCoordsSystem() {
+    public RectF getOuterCircleEmbracingSquareInCircleCoordsSystem() {
         final int outerRadius = circleConfig.getOuterRadius();
         return new RectF(-outerRadius, outerRadius, outerRadius, -outerRadius);
     }
 
-    private RectF getInnerCircleEmbracingSquareInCircleCoordsSystem() {
+    public RectF getInnerCircleEmbracingSquareInCircleCoordsSystem() {
         final int innerRadius = circleConfig.getInnerRadius();
         return new RectF(-innerRadius, innerRadius, innerRadius, -innerRadius);
     }
@@ -198,6 +198,7 @@ public final class WheelComputationHelper {
     }
 
     // TODO: 16.12.2015 to many objects allocation - reduce this amount in future
+    // TODO: 29.01.2016 it's seems that first parameter might be encapsulated inside the method
     public static RectF fromCircleCoordsSystemToRecyclerViewCoordsSystem(PointF circleCenterRelToRecyclerView,
                                                                         RectF coordinatesToTransform) {
 
