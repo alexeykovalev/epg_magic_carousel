@@ -28,6 +28,18 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
         ALLOWED_METHOD_NAMES.add("scrollVerticallyBy");
     }
 
+    private static boolean isMessageContainsAllowedMethod(String logMessage) {
+        if (logMessage == null || logMessage.isEmpty()) {
+            return false;
+        }
+        for (String methodName : ALLOWED_METHOD_NAMES) {
+            if (logMessage.contains(methodName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private final CircleConfig circleConfig;
     private final WheelComputationHelper computationHelper;
 
@@ -140,8 +152,8 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
 
         logI(
                 "scrollVerticallyBy() " +
-                "rotationAngleInRad [" + rotationAngleInRad + "], " +
-                "rotationAngleInDegree [" + WheelComputationHelper.radToDegree(rotationAngleInRad) + "]"
+                        "rotationAngleInRad [" + rotationAngleInRad + "], " +
+                        "rotationAngleInDegree [" + WheelComputationHelper.radToDegree(rotationAngleInRad) + "]"
         );
 //        Log.i(TAG, "Views count in layout [" + getChildCount() + "]");
 
@@ -323,7 +335,9 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
 
     private void logI(String message) {
         if (IS_LOG_ACTIVATED) {
-            Log.i(TAG, message);
+            if (IS_FILTER_LOG_BY_METHOD_NAME && isMessageContainsAllowedMethod(message)) {
+                Log.i(TAG, message);
+            }
         }
     }
 
