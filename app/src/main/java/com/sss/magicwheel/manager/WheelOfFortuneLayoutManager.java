@@ -129,37 +129,49 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
 //        Log.e(TAG, "alignBigWrapperViewByAngle text [" + text + "], angleInDegree [" + angleInDegree + "]");
     }
 
-
+    @Override
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
         final int childCount = getChildCount();
-//        Log.i(TAG, "scrollVerticallyBy dy [" + dy + "], childCount [" + childCount + "]");
         if (childCount == 0) {
             // we cannot scroll if we don't have views
             return 0;
         }
 
-        final double rotationAngleInRad = computeRotationAngleInRadBasedOnCurrentState(dy, state);
+        final double absRotationAngleInRad = computeRotationAngleInRadBasedOnCurrentState(dy, state);
 
-        if (rotationAngleInRad == Double.MIN_VALUE) {
+        if (absRotationAngleInRad == Double.MIN_VALUE) {
             Log.i(TAG, "HIT INTO Double.MIN_VALUE");
             return 0;
         }
 
         final WheelRotationDirection rotationDirection = WheelRotationDirection.of(dy);
 
-        rotateWheel(rotationAngleInRad, rotationDirection);
+        rotateWheel(absRotationAngleInRad, rotationDirection);
         performRecycling(rotationDirection, recycler, state);
 
+        final int resultSwipeDistanceAbs = (int) Math.round(fromWheelRotationAngleToTraveledDistance(absRotationAngleInRad));
         logI(
                 "scrollVerticallyBy() " +
-                        "rotationAngleInRad [" + rotationAngleInRad + "], " +
-                        "rotationAngleInDegree [" + WheelComputationHelper.radToDegree(rotationAngleInRad) + "]"
+                "dy [" + dy + "], " +
+                "resultSwipeDistanceAbs [" + resultSwipeDistanceAbs + "], " +
+                "rotationAngleInDegree [" + WheelComputationHelper.radToDegree(absRotationAngleInRad) + "]"
         );
-//        Log.i(TAG, "Views count in layout [" + getChildCount() + "]");
-
-        final int resultSwipeDistanceAbs = (int) Math.round(circleConfig.getInnerRadius() * Math.sin(Math.abs(rotationAngleInRad)));
         return rotationDirection == WheelRotationDirection.Anticlockwise ?
                 resultSwipeDistanceAbs : -resultSwipeDistanceAbs;
+    }
+
+    /**
+     * Transforms swipe gesture's travelled distance {@code scrollDelta} into relevant
+     * wheel rotation angle.
+     */
+    private double fromTraveledDistanceToWheelRotationAngle(int scrollDelta) {
+        final int outerDiameter = 2 * circleConfig.getOuterRadius();
+        return Math.asin(Math.abs(scrollDelta) / (double) outerDiameter);
+    }
+
+    private double fromWheelRotationAngleToTraveledDistance(double rotationAngleInRad) {
+        final int outerDiameter = 2 * circleConfig.getOuterRadius();
+        return outerDiameter * Math.sin(rotationAngleInRad);
     }
 
     private void performRecycling(WheelRotationDirection rotationDirection,
@@ -261,7 +273,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
      */
     private double computeRotationAngleInRadBasedOnCurrentState(int dy, RecyclerView.State state) {
         final WheelRotationDirection rotationDirection = WheelRotationDirection.of(dy);
-        final double angleToRotate = toWheelRotationAngle(dy);
+        final double angleToRotate = fromTraveledDistanceToWheelRotationAngle(dy);
 
         return rotationDirection == WheelRotationDirection.Anticlockwise ?
                     computeRotationAngleInRadForAnticlockwiseRotation(state, angleToRotate) :
@@ -322,15 +334,6 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
         final double lastSectorBottomEdge = computationHelper.getSectorAngleBottomEdge(lastChildLp.anglePositionInRad);
 
         return circleConfig.getAngularRestrictions().getBottomEdgeAngleRestrictionInRad() - lastSectorBottomEdge <= 0;
-    }
-
-    /**
-     * Transforms swipe gesture's travelled distance {@code scrollDelta} into relevant
-     * wheel rotation angle.
-     */
-    private double toWheelRotationAngle(int scrollDelta) {
-        final double scrollDeltaAbsValue = (double) Math.abs(scrollDelta);
-        return Math.asin(scrollDeltaAbsValue / circleConfig.getInnerRadius());
     }
 
     private void logI(String message) {
