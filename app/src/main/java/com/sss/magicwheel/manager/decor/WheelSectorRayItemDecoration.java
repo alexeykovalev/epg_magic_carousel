@@ -1,4 +1,4 @@
-package com.sss.magicwheel.manager;
+package com.sss.magicwheel.manager.decor;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -8,12 +8,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.sss.magicwheel.R;
+import com.sss.magicwheel.manager.WheelComputationHelper;
 
 /**
  * @author Alexey Kovalev
  * @since 28.01.2016.
  */
-public class SectorRayItemDecoration extends RecyclerView.ItemDecoration {
+public final class WheelSectorRayItemDecoration extends WheelBaseItemDecoration {
 
     private static final int DEFAULT_RAY_WIDTH = 700;
     private static final int DEFAULT_RAY_HEIGHT = 10;
@@ -21,11 +22,10 @@ public class SectorRayItemDecoration extends RecyclerView.ItemDecoration {
     // TODO: 28.01.2016 ray with default draw does not fit exactly at sector's edge. This magic constant compensates this divergence.
     private static final int MAGIC_CONSTANT_FOR_RAY_ALIGNMENT = 12;
 
-    private final WheelComputationHelper computationHelper;
     private final Drawable rayDrawable;
 
-    public SectorRayItemDecoration(Context context) {
-        this.computationHelper = WheelComputationHelper.getInstance();
+    public WheelSectorRayItemDecoration(Context context) {
+        super(context);
         this.rayDrawable = context.getResources().getDrawable(R.drawable.wheel_sector_ray_drawable);
     }
 
@@ -33,15 +33,13 @@ public class SectorRayItemDecoration extends RecyclerView.ItemDecoration {
     public void onDrawOver(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
         for (int i = 0; i < parent.getChildCount(); i++) {
             final View sectorView = parent.getChildAt(i);
-            final WheelOfFortuneLayoutManager.LayoutParams childLp = (WheelOfFortuneLayoutManager.LayoutParams) sectorView.getLayoutParams();
-            final double sectorAnglePositionInRad = childLp.anglePositionInRad;
-
-            drawSectorTopEdgeRay(sectorAnglePositionInRad, canvas);
+            drawSectorTopEdgeRay(sectorView, canvas);
         }
     }
 
-    private void drawSectorTopEdgeRay(double sectorAnglePositionInRad, Canvas canvas) {
-        final PointF sectorReferencePoint = getSectorTopLeftCornerPos(sectorAnglePositionInRad);
+    private void drawSectorTopEdgeRay(View sectorView, Canvas canvas) {
+        final double sectorAnglePositionInRad = getSectorAnglePositionInRad(sectorView);
+        final PointF sectorReferencePoint = getSectorTopLeftCornerPos(sectorView);
         final float sectorAnglePositionInDegree = (float) WheelComputationHelper.radToDegree(sectorAnglePositionInRad);
         final float sectorHalfAngleInDegree = (float) WheelComputationHelper.radToDegree(
                 computationHelper.getCircleConfig().getAngularRestrictions().getSectorAngleInRad() / 2
@@ -70,10 +68,8 @@ public class SectorRayItemDecoration extends RecyclerView.ItemDecoration {
         return rayDrawable;
     }
 
-    private PointF getSectorTopLeftCornerPos(double sectorAnglePosInRad) {
-        final double sectorHalfAngleInRad = computationHelper.getCircleConfig().getAngularRestrictions().getSectorAngleInRad() / 2;
-
-        final double topLeftSectorCornerAnglePosInRad = sectorAnglePosInRad + sectorHalfAngleInRad;
+    private PointF getSectorTopLeftCornerPos(View sectorView) {
+        final double topLeftSectorCornerAnglePosInRad = getSectorTopEdgeAnglePositionInRad(sectorView);
         final int innerRadius = computationHelper.getCircleConfig().getInnerRadius();
 
         final float refPointXPosInWheelCoordSystem = (float) (innerRadius * Math.cos(topLeftSectorCornerAnglePosInRad));
@@ -83,23 +79,6 @@ public class SectorRayItemDecoration extends RecyclerView.ItemDecoration {
         return WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(
                 computationHelper.getCircleConfig().getCircleCenterRelToRecyclerView(),
                 topLeftCornerPosInWheelCoordsSystem
-        );
-    }
-
-    // TODO: 28.01.2016 make Point instance reusing
-    @Deprecated
-    private PointF getSectorReferencePoint(View sectorView) {
-        final WheelOfFortuneLayoutManager.LayoutParams childLp = (WheelOfFortuneLayoutManager.LayoutParams) sectorView.getLayoutParams();
-        final double sectorAnglePositionInRad = childLp.anglePositionInRad;
-
-        final int innerRadius = computationHelper.getCircleConfig().getInnerRadius();
-        final float refPointXPosInWheelCoordSystem = (float) (innerRadius * Math.cos(sectorAnglePositionInRad));
-        final float refPointYPosInWheelCoordSystem = (float) (innerRadius * Math.sin(sectorAnglePositionInRad));
-        final PointF sectorRefPointPosInWheelCoordSystem = new PointF(refPointXPosInWheelCoordSystem, refPointYPosInWheelCoordSystem);
-
-        return WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(
-                computationHelper.getCircleConfig().getCircleCenterRelToRecyclerView(),
-                sectorRefPointPosInWheelCoordSystem
         );
     }
 }

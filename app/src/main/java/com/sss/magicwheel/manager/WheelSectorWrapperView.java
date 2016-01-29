@@ -22,7 +22,7 @@ public class WheelSectorWrapperView extends ImageView {
     private static final String TAG = WheelSectorWrapperView.class.getCanonicalName();
 
     private final Paint paint;
-    private Path path;
+    private final Path path;
     private SectorClipAreaDescriptor sectorClipAreaDescriptor;
     private RectF outerCircleEmbracingSquare;
     private RectF innerCircleEmbracingSquare;
@@ -70,15 +70,6 @@ public class WheelSectorWrapperView extends ImageView {
         super.onDraw(canvas);
     }
 
-    @Deprecated
-    private void drawArcs(Canvas canvas) {
-        RectF rectF = outerCircleEmbracingSquare;
-        canvas.drawArc(rectF, 10, -20, false, paint);
-
-        rectF = innerCircleEmbracingSquare;
-        canvas.drawArc(rectF, 10, -20, true, paint);
-    }
-
     private Path createSectorPathForClip() {
         path.reset();
 
@@ -96,6 +87,15 @@ public class WheelSectorWrapperView extends ImageView {
         path.close();
 
         return path;
+    }
+
+    @Deprecated
+    private void drawArcs(Canvas canvas) {
+        RectF rectF = outerCircleEmbracingSquare;
+        canvas.drawArc(rectF, 10, -20, false, paint);
+
+        rectF = innerCircleEmbracingSquare;
+        canvas.drawArc(rectF, 10, -20, true, paint);
     }
 
 

@@ -11,12 +11,14 @@ import android.view.WindowManager;
 
 import com.sss.magicwheel.entity.CircleConfig;
 import com.sss.magicwheel.entity.WheelDataItem;
-import com.sss.magicwheel.manager.SectorRayItemDecoration;
+import com.sss.magicwheel.manager.decor.WheelSectorLeftSideColorItemDecoration;
+import com.sss.magicwheel.manager.decor.WheelSectorRayItemDecoration;
 import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
 import com.sss.magicwheel.manager.WheelOfFortuneLayoutManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends Activity {
@@ -30,21 +32,26 @@ public class MainActivity extends Activity {
         WheelComputationHelper.initialize(createCircleConfig());
 
         setContentView(R.layout.activity_main_layout);
+
+        final List<WheelDataItem> dataSet = createDataSet();
         final RecyclerView wheelContainer = (RecyclerView) findViewById(R.id.wheel_container);
-        wheelContainer.addItemDecoration(new SectorRayItemDecoration(this));
+        wheelContainer.addItemDecoration(new WheelSectorRayItemDecoration(this));
+        wheelContainer.addItemDecoration(new WheelSectorLeftSideColorItemDecoration(this));
         wheelContainer.setLayoutManager(new WheelOfFortuneLayoutManager());
-        wheelContainer.setAdapter(createWheelAdapter());
+        wheelContainer.setAdapter(createWheelAdapter(dataSet));
     }
 
-    private RecyclerView.Adapter createWheelAdapter() {
+    private RecyclerView.Adapter createWheelAdapter(List<WheelDataItem> adapterDataSet) {
+        return new WheelAdapter(this, adapterDataSet);
+    }
+
+    private List<WheelDataItem> createDataSet() {
         List<WheelDataItem> items = new ArrayList<>();
         for (int i = 0; i < 200; i++) {
             items.add(new WheelDataItem("item.Num [" + i + "]"));
         }
-
-        return new WheelAdapter(this, items);
+        return Collections.unmodifiableList(items);
     }
-
 
     private CircleConfig createCircleConfig() {
         WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);

@@ -32,9 +32,15 @@ public class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelItemVie
     private final List<WheelDataItem> dataItems;
     private final LayoutInflater inflater;
 
+    // TODO: 29.01.2016 Check for Preconditions here
     public WheelAdapter(Context context, List<WheelDataItem> dataItems) {
         this.dataItems = dataItems;
         this.inflater = LayoutInflater.from(context);
+    }
+
+    // TODO: 29.01.2016 Optional<WheelDataItem> here
+    public WheelDataItem getDataItemByPosition(int position) {
+        return position < dataItems.size() ? dataItems.get(position) : null;
     }
 
     @Override
@@ -45,7 +51,7 @@ public class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelItemVie
 
     @Override
     public void onBindViewHolder(WheelItemViewHolder holder, int position) {
-        holder.bindData(dataItems.get(position));
+        holder.bindData(getDataItemByPosition(position));
     }
 
     @Override
