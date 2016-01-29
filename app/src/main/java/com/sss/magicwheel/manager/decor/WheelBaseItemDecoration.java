@@ -6,6 +6,7 @@ import android.graphics.PointF;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
 import com.sss.magicwheel.manager.WheelOfFortuneLayoutManager;
 
@@ -24,12 +25,12 @@ public abstract class WheelBaseItemDecoration extends RecyclerView.ItemDecoratio
     }
 
     @Override
-    public abstract void onDrawOver(Canvas canvas, RecyclerView parent, RecyclerView.State state);
+    public abstract void onDrawOver(Canvas canvas, RecyclerView wheelView, RecyclerView.State state);
 
 
     // TODO: 28.01.2016 make Point instance reusing
     @Deprecated
-    protected PointF getSectorReferencePoint(View sectorView) {
+    protected final PointF getSectorReferencePoint(View sectorView) {
         final WheelOfFortuneLayoutManager.LayoutParams childLp = (WheelOfFortuneLayoutManager.LayoutParams) sectorView.getLayoutParams();
         final double sectorAnglePositionInRad = childLp.anglePositionInRad;
 
@@ -44,18 +45,22 @@ public abstract class WheelBaseItemDecoration extends RecyclerView.ItemDecoratio
         );
     }
 
-    protected double getSectorAnglePositionInRad(View sectorView) {
+    protected final WheelAdapter getWheelAdapter(RecyclerView wheelView) {
+        return (WheelAdapter) wheelView.getAdapter();
+    }
+
+    protected final double getSectorAnglePositionInRad(View sectorView) {
         final WheelOfFortuneLayoutManager.LayoutParams childLp =
                 (WheelOfFortuneLayoutManager.LayoutParams) sectorView.getLayoutParams();
         return childLp.anglePositionInRad;
     }
 
-    protected double getSectorTopEdgeAnglePositionInRad(View sectorView) {
+    protected final double getSectorTopEdgeAnglePositionInRad(View sectorView) {
         final double halfSectorAngle = computationHelper.getCircleConfig().getAngularRestrictions().getSectorAngleInRad() / 2;
         return getSectorAnglePositionInRad(sectorView) + halfSectorAngle;
     }
 
-    protected double getSectorBottomEdgeAnglePositionInRad(View sectorView) {
+    protected final double getSectorBottomEdgeAnglePositionInRad(View sectorView) {
         final double halfSectorAngle = computationHelper.getCircleConfig().getAngularRestrictions().getSectorAngleInRad() / 2;
         return getSectorAnglePositionInRad(sectorView) - halfSectorAngle;
     }

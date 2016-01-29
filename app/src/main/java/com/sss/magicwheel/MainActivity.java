@@ -32,16 +32,19 @@ public class MainActivity extends Activity {
         WheelComputationHelper.initialize(createCircleConfig());
 
         setContentView(R.layout.activity_main_layout);
-
-        final List<WheelDataItem> dataSet = createDataSet();
-        final RecyclerView wheelContainer = (RecyclerView) findViewById(R.id.wheel_container);
-        wheelContainer.addItemDecoration(new WheelSectorRayItemDecoration(this));
-        wheelContainer.addItemDecoration(new WheelSectorLeftSideColorItemDecoration(this));
-        wheelContainer.setLayoutManager(new WheelOfFortuneLayoutManager());
-        wheelContainer.setAdapter(createWheelAdapter(dataSet));
+        
+        final RecyclerView wheelContainerView = (RecyclerView) findViewById(R.id.wheel_container);
+        initWheelContainer(wheelContainerView);
     }
 
-    private RecyclerView.Adapter createWheelAdapter(List<WheelDataItem> adapterDataSet) {
+    private void initWheelContainer(RecyclerView wheelContainerView) {
+        wheelContainerView.addItemDecoration(new WheelSectorRayItemDecoration(this));
+        wheelContainerView.addItemDecoration(new WheelSectorLeftSideColorItemDecoration(this));
+        wheelContainerView.setLayoutManager(new WheelOfFortuneLayoutManager());
+        wheelContainerView.setAdapter(createWheelAdapter(createDataSet()));
+    }
+
+    private WheelAdapter createWheelAdapter(List<WheelDataItem> adapterDataSet) {
         return new WheelAdapter(this, adapterDataSet);
     }
 
