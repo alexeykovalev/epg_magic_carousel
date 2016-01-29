@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 
 import com.sss.magicwheel.entity.WheelDataItem;
@@ -18,7 +19,10 @@ import com.sss.magicwheel.manager.WheelComputationHelper;
  */
 public final class WheelSectorLeftEdgeColorItemDecoration extends WheelBaseItemDecoration {
 
-    private  static final int SECTOR_EDGE_RING_THICKNESS = 20;
+    private static final String TAG = WheelSectorLeftEdgeColorItemDecoration.class.getCanonicalName();
+
+    private static final int SECTOR_EDGE_RING_THICKNESS = 17;
+    private static final int SECTOR_EDGE_DEFAULT_COLOR = Color.GRAY;
 
     private final RectF innerCircleEmbracingSquare;
     private final Paint sectorEdgeDrawingPaint;
@@ -47,7 +51,16 @@ public final class WheelSectorLeftEdgeColorItemDecoration extends WheelBaseItemD
         for (int i = 0; i < wheelView.getChildCount(); i++) {
             final View sectorView = wheelView.getChildAt(i);
             final int sectorViewAdapterPosition = wheelView.getChildAdapterPosition(sectorView);
-            drawSectorSideColor(canvas, sectorView, wheelAdapter.getDataItemByPosition(sectorViewAdapterPosition));
+
+            final WheelDataItem wheelDataItem = wheelAdapter.getDataItemByPosition(sectorViewAdapterPosition);
+            if (wheelDataItem != null) {
+                Log.e(TAG,
+                        "title = [" + wheelDataItem.getTitle() + "], " +
+                        "sectorViewAdapterPosition = [" + sectorViewAdapterPosition + "], " +
+                        "color = [" + WheelDataItem.colorToString(wheelDataItem.getSectorLeftEdgeColor()) + "]");
+            }
+
+            drawSectorSideColor(canvas, sectorView, wheelDataItem);
         }
     }
 
@@ -59,13 +72,16 @@ public final class WheelSectorLeftEdgeColorItemDecoration extends WheelBaseItemD
                 computationHelper.getCircleConfig().getAngularRestrictions().getSectorAngleInRad()
         );
 
-        sectorEdgeDrawingPaint.setColor(sectorDataItem.getSectorLeftEdgeColor());
-//        sectorEdgeDrawingPaint.setColor(Color.GREEN);
+        sectorEdgeDrawingPaint.setColor(getSectorLeftEdgeColor(sectorDataItem));
         canvas.drawArc(innerCircleEmbracingSquare,
-                sectorTopEdgeAnglePositionInDegree,
+                -sectorTopEdgeAnglePositionInDegree,
                 sectorAngleInDegree,
                 false, sectorEdgeDrawingPaint
         );
+    }
+
+    private int getSectorLeftEdgeColor(WheelDataItem sectorDataItem) {
+        return sectorDataItem != null ? sectorDataItem.getSectorLeftEdgeColor() : SECTOR_EDGE_DEFAULT_COLOR;
     }
 
 }

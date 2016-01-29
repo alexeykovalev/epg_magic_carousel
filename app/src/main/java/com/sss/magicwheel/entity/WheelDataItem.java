@@ -2,6 +2,8 @@ package com.sss.magicwheel.entity;
 
 import android.graphics.Color;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -10,12 +12,32 @@ import java.util.Random;
  */
 public final class WheelDataItem {
 
+    private static int colorCounter = 0;
+
     private static final int[] COLORS = new int[] {
             Color.RED,
             Color.GREEN,
             Color.BLUE,
-            Color.WHITE
+            Color.WHITE,
+            Color.CYAN,
+            Color.MAGENTA
     };
+
+    private static final Map<Integer, String> COLOR_TO_STRING_PRESENTATION = new HashMap<>();
+
+    static {
+        COLOR_TO_STRING_PRESENTATION.put(Color.RED, "RED");
+        COLOR_TO_STRING_PRESENTATION.put(Color.GREEN, "GREEN");
+        COLOR_TO_STRING_PRESENTATION.put(Color.BLUE, "BLUE");
+        COLOR_TO_STRING_PRESENTATION.put(Color.WHITE, "WHITE");
+        COLOR_TO_STRING_PRESENTATION.put(Color.CYAN, "CYAN");
+        COLOR_TO_STRING_PRESENTATION.put(Color.MAGENTA, "MAGENTA");
+    }
+
+    // for debug purposes
+    public static String colorToString(int colorAsInt) {
+        return COLOR_TO_STRING_PRESENTATION.get(colorAsInt);
+    }
 
     private final String title;
     private final int sectorLeftEdgeColor;
@@ -23,12 +45,15 @@ public final class WheelDataItem {
 
     public WheelDataItem(String title) {
         this.title = title;
-        this.sectorLeftEdgeColor = getRandomColor();
+        this.sectorLeftEdgeColor = getColor();
     }
 
-    private int getRandomColor() {
-        final int colorIndex = colorRandomizer.nextInt(COLORS.length);
-        return COLORS[colorIndex];
+    private static int getColor() {
+//        final int colorIndex = colorRandomizer.nextInt(COLORS.length);
+//        return COLORS[colorIndex];
+        final int res = COLORS[colorCounter % COLORS.length];
+        colorCounter++;
+        return res;
     }
 
     public String getTitle() {
