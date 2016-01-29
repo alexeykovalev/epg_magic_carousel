@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 
 import com.sss.magicwheel.entity.CircleConfig;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author Alexey Kovalev
  * @since 14.12.2015.
@@ -17,6 +20,13 @@ import com.sss.magicwheel.entity.CircleConfig;
 public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManager {
 
     private static final String TAG = WheelOfFortuneLayoutManager.class.getCanonicalName();
+    private static final boolean IS_LOG_ACTIVATED = true;
+    private static final boolean IS_FILTER_LOG_BY_METHOD_NAME = true;
+
+    private static final Set<String> ALLOWED_METHOD_NAMES = new HashSet<>();
+    static {
+        ALLOWED_METHOD_NAMES.add("scrollVerticallyBy");
+    }
 
     private final CircleConfig circleConfig;
     private final WheelComputationHelper computationHelper;
@@ -110,27 +120,32 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
 
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
         final int childCount = getChildCount();
-        Log.i(TAG, "scrollVerticallyBy dy [" + dy + "], childCount [" + childCount + "]");
+//        Log.i(TAG, "scrollVerticallyBy dy [" + dy + "], childCount [" + childCount + "]");
         if (childCount == 0) {
             // we cannot scroll if we don't have views
             return 0;
         }
 
-        final double rotationAngle = computeRotationAngleBasedOnCurrentState(dy, state);
+        final double rotationAngleInRad = computeRotationAngleInRadBasedOnCurrentState(dy, state);
 
-        if (rotationAngle == Double.MIN_VALUE) {
+        if (rotationAngleInRad == Double.MIN_VALUE) {
+            Log.i(TAG, "HIT INTO Double.MIN_VALUE");
             return 0;
         }
 
         final WheelRotationDirection rotationDirection = WheelRotationDirection.of(dy);
 
-        rotateWheel(rotationAngle, rotationDirection);
+        rotateWheel(rotationAngleInRad, rotationDirection);
         performRecycling(rotationDirection, recycler, state);
 
-//        Log.i(TAG, "scrollVerticallyBy() rotationAngle [" + WheelUtils.radToDegree(rotationAngle) + "]");
+        logI(
+                "scrollVerticallyBy() " +
+                "rotationAngleInRad [" + rotationAngleInRad + "], " +
+                "rotationAngleInDegree [" + WheelComputationHelper.radToDegree(rotationAngleInRad) + "]"
+        );
 //        Log.i(TAG, "Views count in layout [" + getChildCount() + "]");
 
-        final int resultSwipeDistanceAbs = (int) Math.round(circleConfig.getInnerRadius() * Math.sin(Math.abs(rotationAngle)));
+        final int resultSwipeDistanceAbs = (int) Math.round(circleConfig.getInnerRadius() * Math.sin(Math.abs(rotationAngleInRad)));
         return rotationDirection == WheelRotationDirection.Anticlockwise ?
                 resultSwipeDistanceAbs : -resultSwipeDistanceAbs;
     }
@@ -158,10 +173,10 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
         double layoutAngle = firstChildLp.anglePositionInRad + sectorAngleInRad;
         int childPos = getPosition(firstChild) - 1;
         while (layoutAngle < computationHelper.getLayoutStartAngle() && childPos >= 0) {
-            Log.i(TAG, "addViewsToTopIfNeeded() " +
-                            "layoutAngle [" + WheelComputationHelper.radToDegree(layoutAngle) + "], " +
-                            "childPos [" + childPos + "]"
-            );
+//            Log.i(TAG, "addViewsToTopIfNeeded() " +
+//                            "layoutAngle [" + WheelComputationHelper.radToDegree(layoutAngle) + "], " +
+//                            "childPos [" + childPos + "]"
+//            );
             setupViewForPosition(recycler, childPos, layoutAngle, false);
             layoutAngle += sectorAngleInRad;
             childPos--;
@@ -173,7 +188,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
             final LayoutParams childLp = (LayoutParams) getChildAt(i).getLayoutParams();
             if (childLp.anglePositionInRad < circleConfig.getAngularRestrictions().getBottomEdgeAngleRestrictionInRad()) {
                 removeAndRecycleViewAt(i, recycler);
-                Log.e(TAG, "Recycle view at index [" + i + "]");
+//                Log.e(TAG, "Recycle view at index [" + i + "]");
             }
         }
     }
@@ -203,7 +218,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
             final LayoutParams childLp = (LayoutParams) getChildAt(i).getLayoutParams();
             if (childLp.anglePositionInRad > computationHelper.getLayoutStartAngle()) {
                 removeAndRecycleViewAt(i, recycler);
-                Log.i(TAG, "Recycle view at index [" + i + "]");
+//                Log.i(TAG, "Recycle view at index [" + i + "]");
             }
         }
     }
@@ -232,56 +247,60 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
     /**
      * Anticlockwise rotation will correspond to positive return type.
      */
-    private double computeRotationAngleBasedOnCurrentState(int dy, RecyclerView.State state) {
+    private double computeRotationAngleInRadBasedOnCurrentState(int dy, RecyclerView.State state) {
         final WheelRotationDirection rotationDirection = WheelRotationDirection.of(dy);
         final double angleToRotate = toWheelRotationAngle(dy);
 
-        final View referenceChild;
-        final LayoutParams refChildLp;
-        if (rotationDirection == WheelRotationDirection.Anticlockwise) {
-            referenceChild = getChildClosestToBottom();
-            refChildLp = (LayoutParams) referenceChild.getLayoutParams();
-            final int extraChildrenCount = state.getItemCount() - 1 - getPosition(referenceChild);
-            final double lastSectorBottomEdge = computationHelper.getSectorAngleBottomEdge(refChildLp.anglePositionInRad);
+        return rotationDirection == WheelRotationDirection.Anticlockwise ?
+                    computeRotationAngleInRadForAnticlockwiseRotation(state, angleToRotate) :
+                    computeRotationAngleInRadForClockwiseRotation(angleToRotate);
+    }
 
-            // compute available space
-            if (extraChildrenCount == 0) { // is last child
-                // last sector's bottom edge outside bottom limit - only scroll this extra space
-                // TODO: 15.12.2015 replace with isBottomBoundsReached()
-                if (circleConfig.getAngularRestrictions().getBottomEdgeAngleRestrictionInRad() - lastSectorBottomEdge > 0) {
-                    return Math.min(
-                            angleToRotate,
-                            circleConfig.getAngularRestrictions().getBottomEdgeAngleRestrictionInRad() - lastSectorBottomEdge
-                    );
-                } else {
-                    return Double.MIN_VALUE;
-                }
-            } else if (extraChildrenCount > 0) {
-                return Math.min(angleToRotate, circleConfig.getAngularRestrictions().getSectorAngleInRad() * extraChildrenCount);
+    private double computeRotationAngleInRadForAnticlockwiseRotation(RecyclerView.State state, double angleToRotate) {
+        final View referenceChild = getChildClosestToBottom();
+        final LayoutParams refChildLp = (LayoutParams) referenceChild.getLayoutParams();
+        final int extraChildrenCount = state.getItemCount() - 1 - getPosition(referenceChild);
+        final double lastSectorBottomEdge = computationHelper.getSectorAngleBottomEdge(refChildLp.anglePositionInRad);
+
+        // compute available space
+        if (extraChildrenCount == 0) { // is last child
+            // last sector's bottom edge outside bottom limit - only scroll this extra space
+            // TODO: 15.12.2015 replace with isBottomBoundsReached()
+            if (circleConfig.getAngularRestrictions().getBottomEdgeAngleRestrictionInRad() - lastSectorBottomEdge > 0) {
+                return Math.min(
+                        angleToRotate,
+                        circleConfig.getAngularRestrictions().getBottomEdgeAngleRestrictionInRad() - lastSectorBottomEdge
+                );
             } else {
                 return Double.MIN_VALUE;
             }
+        } else if (extraChildrenCount > 0) {
+            return Math.min(angleToRotate, circleConfig.getAngularRestrictions().getSectorAngleInRad() * extraChildrenCount);
         } else {
-            referenceChild = getChildClosestToTop();
-            refChildLp = (LayoutParams) referenceChild.getLayoutParams();
-            final int extraChildrenCount = getPosition(referenceChild);
-            final double firstSectorTopEdge = refChildLp.anglePositionInRad;
+            return Double.MIN_VALUE;
+        }
+    }
 
-            // first top sector goes outside top edge
-            if (extraChildrenCount == 0) {
-                if (firstSectorTopEdge - computationHelper.getLayoutStartAngle() > 0) {
-                    return Math.min(
-                            angleToRotate,
-                            firstSectorTopEdge - computationHelper.getLayoutStartAngle()
-                    );
-                } else {
-                    return Double.MIN_VALUE;
-                }
-            } else if (extraChildrenCount > 0) {
-                return Math.min(angleToRotate, circleConfig.getAngularRestrictions().getSectorAngleInRad() * extraChildrenCount);
+    private double computeRotationAngleInRadForClockwiseRotation(double angleToRotate) {
+        final View referenceChild = getChildClosestToTop();
+        final LayoutParams refChildLp = (LayoutParams) referenceChild.getLayoutParams();
+        final int extraChildrenCount = getPosition(referenceChild);
+        final double firstSectorTopEdge = refChildLp.anglePositionInRad;
+
+        // first top sector goes outside top edge
+        if (extraChildrenCount == 0) {
+            if (firstSectorTopEdge - computationHelper.getLayoutStartAngle() > 0) {
+                return Math.min(
+                        angleToRotate,
+                        firstSectorTopEdge - computationHelper.getLayoutStartAngle()
+                );
             } else {
                 return Double.MIN_VALUE;
             }
+        } else if (extraChildrenCount > 0) {
+            return Math.min(angleToRotate, circleConfig.getAngularRestrictions().getSectorAngleInRad() * extraChildrenCount);
+        } else {
+            return Double.MIN_VALUE;
         }
     }
 
@@ -300,6 +319,12 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
     private double toWheelRotationAngle(int scrollDelta) {
         final double scrollDeltaAbsValue = (double) Math.abs(scrollDelta);
         return Math.asin(scrollDeltaAbsValue / circleConfig.getInnerRadius());
+    }
+
+    private void logI(String message) {
+        if (IS_LOG_ACTIVATED) {
+            Log.i(TAG, message);
+        }
     }
 
     private View getChildClosestToBottom() {
