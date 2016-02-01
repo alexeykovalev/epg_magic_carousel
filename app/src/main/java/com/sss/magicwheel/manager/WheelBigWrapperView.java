@@ -1,9 +1,6 @@
 package com.sss.magicwheel.manager;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +9,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.sss.magicwheel.R;
+import com.sss.magicwheel.entity.WheelDataItem;
 
 /**
  * @author Alexey Kovalev
@@ -19,8 +17,9 @@ import com.sss.magicwheel.R;
  */
 public final class WheelBigWrapperView extends FrameLayout {
 
-    private final WheelSectorWrapperView sectorWrapperView;
-    private final TextView titleView;
+    private WheelSectorWrapperView sectorWrapperView;
+    private TextView titleView;
+    private final WheelComputationHelper computationHelper;
 
     public WheelBigWrapperView(Context context) {
         this(context, null);
@@ -32,10 +31,16 @@ public final class WheelBigWrapperView extends FrameLayout {
 
     public WheelBigWrapperView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        this.computationHelper = WheelComputationHelper.getInstance();
+
+        inflateAndBindContent(context);
+        initSectorWrapperView();
+    }
+
+    private void inflateAndBindContent(Context context) {
         final View rootView = inflate(context, R.layout.wheel_big_wrapper_view_layout, this);
         sectorWrapperView = (WheelSectorWrapperView) rootView.findViewById(R.id.sector_wrapper_view);
         titleView = (TextView) rootView.findViewById(R.id.big_wrapper_text);
-        initSectorWrapperView();
     }
 
     private void initSectorWrapperView() {
@@ -49,12 +54,13 @@ public final class WheelBigWrapperView extends FrameLayout {
         sectorWrapperView.setSectorClipArea(computationHelper.createSectorClipArea());
     }
 
-    public void updateText(String text) {
-        titleView.setText(text);
+    public void bindData(WheelDataItem dataItem) {
+        sectorWrapperView.bindData(dataItem);
+        titleView.setText(dataItem.getTitle());
+        loadSectorImage(dataItem.getSectorImageDrawable());
     }
 
-    public void loadImage(int imageDrawableResId) {
-        WheelComputationHelper computationHelper = WheelComputationHelper.getInstance();
+    private void loadSectorImage(int imageDrawableResId) {
         Picasso
                 .with(getContext())
                 .load(imageDrawableResId)
@@ -62,6 +68,7 @@ public final class WheelBigWrapperView extends FrameLayout {
                 .into(sectorWrapperView);
     }
 
+    // TODO: 01.02.2016 attempt to draw rays using big wrapper - problem big wrapper view has to be much more larger size than it actually is
 //    @Override
 //    protected void dispatchDraw(Canvas canvas) {
 //        WheelComputationHelper computationHelper = WheelComputationHelper.getInstance();

@@ -39,7 +39,7 @@ public class MainActivity extends Activity {
 
     private void initWheelContainer(RecyclerView wheelContainerView) {
         wheelContainerView.addItemDecoration(new WheelSectorRayItemDecoration(this));
-        wheelContainerView.addItemDecoration(new WheelSectorLeftEdgeColorItemDecoration(this));
+//        wheelContainerView.addItemDecoration(new WheelSectorLeftEdgeColorItemDecoration(this));
         wheelContainerView.setLayoutManager(new WheelOfFortuneLayoutManager());
         wheelContainerView.setAdapter(createWheelAdapter(createDataSet()));
     }

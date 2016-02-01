@@ -12,6 +12,7 @@ import android.widget.ImageView;
 
 import com.sss.magicwheel.entity.CoordinatesHolder;
 import com.sss.magicwheel.entity.SectorClipAreaDescriptor;
+import com.sss.magicwheel.entity.WheelDataItem;
 
 /**
  * @author Alexey Kovalev
@@ -21,12 +22,17 @@ public class WheelSectorWrapperView extends ImageView {
 
     private static final String TAG = WheelSectorWrapperView.class.getCanonicalName();
 
-    private final Paint paint;
-    private final Path path;
+    private static final int SECTOR_EDGE_DEFAULT_COLOR = Color.GRAY;
+    private static final int SECTOR_EDGE_RING_THICKNESS = 25;
+
+    private final Paint sectorLeftEdgeDrawingPaint;
+    private final Path sectorShapePath;
+    private boolean isSectorShapePathInitialized;
+
+    private WheelDataItem dataItem;
     private SectorClipAreaDescriptor sectorClipAreaDescriptor;
     private RectF outerCircleEmbracingSquare;
     private RectF innerCircleEmbracingSquare;
-
 
     public WheelSectorWrapperView(Context context) {
         this(context, null);
@@ -34,15 +40,18 @@ public class WheelSectorWrapperView extends ImageView {
 
     public WheelSectorWrapperView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        paint = new Paint();
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(15);
-        paint.setColor(Color.RED);
-
-        path = new Path();
+        this.sectorShapePath = new Path();
+        this.sectorLeftEdgeDrawingPaint = createSectorEdgeDrawingPaint();
     }
 
+    private static Paint createSectorEdgeDrawingPaint() {
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(SECTOR_EDGE_DEFAULT_COLOR);
+        paint.setStrokeWidth(SECTOR_EDGE_RING_THICKNESS);
+        paint.setAntiAlias(true);
+        return paint;
+    }
 
     public void setSectorClipArea(SectorClipAreaDescriptor sectorClipAreaDescriptor) {
         this.sectorClipAreaDescriptor = sectorClipAreaDescriptor;
@@ -50,72 +59,70 @@ public class WheelSectorWrapperView extends ImageView {
         this.innerCircleEmbracingSquare = sectorClipAreaDescriptor.getCircleEmbracingSquaresConfig().getInnerCircleEmbracingSquareInSectorWrapperCoordsSystem();
     }
 
-
     @Override
     protected void onDraw(Canvas canvas) {
-        Log.e(TAG, "onDraw()");
-
         if (sectorClipAreaDescriptor == null) {
             super.onDraw(canvas);
             return;
         }
 
-        Log.e(TAG, "Clip area " + sectorClipAreaDescriptor);
-
-//        drawArcs(canvas);
-
         Path pathToClip = createSectorPathForClip();
         canvas.clipPath(pathToClip);
 
         super.onDraw(canvas);
+
+        drawSectorLeftEdgeColor(canvas);
+    }
+
+    public void bindData(WheelDataItem dataItem) {
+        this.dataItem = dataItem;
+    }
+
+    private void drawSectorLeftEdgeColor(Canvas canvas) {
+        if (dataItem != null) {
+            sectorLeftEdgeDrawingPaint.setColor(dataItem.getSectorLeftEdgeColor());
+            canvas.drawArc(innerCircleEmbracingSquare, sectorClipAreaDescriptor.getSectorTopEdgeAngleInDegree(),
+                    -sectorClipAreaDescriptor.getSectorSweepAngleInDegree(), false, sectorLeftEdgeDrawingPaint);
+        }
     }
 
     private Path createSectorPathForClip() {
-        path.reset();
+        if (!isSectorShapePathInitialized) {
+            sectorShapePath.reset();
 
-        CoordinatesHolder bottomLeftCorner = sectorClipAreaDescriptor.getBottomLeftCorner();
-        CoordinatesHolder bottomRightCorner = sectorClipAreaDescriptor.getBottomRightCorner();
-        CoordinatesHolder topLeftCorner = sectorClipAreaDescriptor.getTopLeftCorner();
-        CoordinatesHolder topRightCorner = sectorClipAreaDescriptor.getTopRightCorner();
+            CoordinatesHolder bottomLeftCorner = sectorClipAreaDescriptor.getBottomLeftCorner();
+            CoordinatesHolder bottomRightCorner = sectorClipAreaDescriptor.getBottomRightCorner();
+            CoordinatesHolder topLeftCorner = sectorClipAreaDescriptor.getTopLeftCorner();
+            CoordinatesHolder topRightCorner = sectorClipAreaDescriptor.getTopRightCorner();
 
-        path.moveTo(topLeftCorner.getXAsFloat(), topLeftCorner.getYAsFloat());
-        path.lineTo(bottomRightCorner.getXAsFloat(), bottomRightCorner.getYAsFloat());
-        path.arcTo(innerCircleEmbracingSquare, sectorClipAreaDescriptor.getSectorTopEdgeAngleInDegree(), -sectorClipAreaDescriptor.getSectorSweepAngleInDegree());
-        path.arcTo(outerCircleEmbracingSquare, -sectorClipAreaDescriptor.getSectorTopEdgeAngleInDegree(), sectorClipAreaDescriptor.getSectorSweepAngleInDegree());
-        path.lineTo(topLeftCorner.getXAsFloat(), topLeftCorner.getYAsFloat());
+            sectorShapePath.moveTo(topLeftCorner.getXAsFloat(), topLeftCorner.getYAsFloat());
+            sectorShapePath.lineTo(bottomRightCorner.getXAsFloat(), bottomRightCorner.getYAsFloat());
+            sectorShapePath.arcTo(innerCircleEmbracingSquare, sectorClipAreaDescriptor.getSectorTopEdgeAngleInDegree(), -sectorClipAreaDescriptor.getSectorSweepAngleInDegree());
+            sectorShapePath.arcTo(outerCircleEmbracingSquare, -sectorClipAreaDescriptor.getSectorTopEdgeAngleInDegree(), sectorClipAreaDescriptor.getSectorSweepAngleInDegree());
+            sectorShapePath.lineTo(topLeftCorner.getXAsFloat(), topLeftCorner.getYAsFloat());
 
-        path.close();
-
-        return path;
+            sectorShapePath.close();
+            isSectorShapePathInitialized = true;
+        }
+        return sectorShapePath;
     }
-
-    @Deprecated
-    private void drawArcs(Canvas canvas) {
-        RectF rectF = outerCircleEmbracingSquare;
-        canvas.drawArc(rectF, 10, -20, false, paint);
-
-        rectF = innerCircleEmbracingSquare;
-        canvas.drawArc(rectF, 10, -20, true, paint);
-    }
-
 
     private Path createLinearPathForClip() {
-        path.reset();
+        sectorShapePath.reset();
 
         CoordinatesHolder first = sectorClipAreaDescriptor.getBottomLeftCorner();
         CoordinatesHolder second = sectorClipAreaDescriptor.getBottomRightCorner();
         CoordinatesHolder third = sectorClipAreaDescriptor.getTopLeftCorner();
         CoordinatesHolder four = sectorClipAreaDescriptor.getTopRightCorner();
 
-        path.moveTo(first.getXAsFloat(), first.getYAsFloat());
-        path.lineTo(second.getXAsFloat(), second.getYAsFloat());
-        path.lineTo(four.getXAsFloat(), four.getYAsFloat());
-        path.lineTo(third.getXAsFloat(), third.getYAsFloat());
+        sectorShapePath.moveTo(first.getXAsFloat(), first.getYAsFloat());
+        sectorShapePath.lineTo(second.getXAsFloat(), second.getYAsFloat());
+        sectorShapePath.lineTo(four.getXAsFloat(), four.getYAsFloat());
+        sectorShapePath.lineTo(third.getXAsFloat(), third.getYAsFloat());
 
-        path.close();
+        sectorShapePath.close();
 
-        return path;
-
+        return sectorShapePath;
     }
 
 }

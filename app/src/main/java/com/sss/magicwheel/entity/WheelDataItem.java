@@ -2,9 +2,10 @@ package com.sss.magicwheel.entity;
 
 import android.graphics.Color;
 
+import com.sss.magicwheel.R;
+
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * @author Alexey Kovalev
@@ -12,7 +13,10 @@ import java.util.Random;
  */
 public final class WheelDataItem {
 
-    private static int colorCounter = 0;
+    private static final int[] COVERS_LIST_DRAWABLE = new int[] {
+            R.drawable.first_cover,
+            R.drawable.second_cover
+    };
 
     private static final int[] COLORS = new int[] {
             Color.RED,
@@ -22,6 +26,10 @@ public final class WheelDataItem {
             Color.CYAN,
             Color.MAGENTA
     };
+
+    private static int coverImageCounter = 0;
+    private static int colorCounter = 0;
+
 
     private static final Map<Integer, String> COLOR_TO_STRING_PRESENTATION = new HashMap<>();
 
@@ -41,19 +49,24 @@ public final class WheelDataItem {
 
     private final String title;
     private final int sectorLeftEdgeColor;
-    private final Random colorRandomizer = new Random();
+    private final int sectorImageDrawable;
 
     public WheelDataItem(String title) {
         this.title = title;
-        this.sectorLeftEdgeColor = getColor();
+        this.sectorLeftEdgeColor = createSectorLeftEdgeColor();
+        this.sectorImageDrawable = createSectorImageDrawable();
     }
 
-    private static int getColor() {
-//        final int colorIndex = colorRandomizer.nextInt(COLORS.length);
-//        return COLORS[colorIndex];
+    private static int createSectorLeftEdgeColor() {
         final int res = COLORS[colorCounter % COLORS.length];
         colorCounter++;
         return res;
+    }
+
+    private static int createSectorImageDrawable() {
+        int index = coverImageCounter % COVERS_LIST_DRAWABLE.length;
+        coverImageCounter++;
+        return COVERS_LIST_DRAWABLE[index];
     }
 
     public String getTitle() {
@@ -62,5 +75,9 @@ public final class WheelDataItem {
 
     public int getSectorLeftEdgeColor() {
         return sectorLeftEdgeColor;
+    }
+
+    public int getSectorImageDrawable() {
+        return sectorImageDrawable;
     }
 }
