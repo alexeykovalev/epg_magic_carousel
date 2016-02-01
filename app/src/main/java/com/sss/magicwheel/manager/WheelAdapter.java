@@ -14,7 +14,7 @@ import java.util.List;
  * @author Alexey Kovalev
  * @since 04.12.2015.
  */
-public class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelItemViewHolder> {
+public final class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelItemViewHolder> {
 
     private static final int[] COVERS_LIST_DRAWABLE = new int[] {
             R.drawable.first_cover,
@@ -22,6 +22,9 @@ public class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelItemVie
     };
 
     private static int counter = 0;
+
+    public static final int VIRTUAL_ITEMS_COUNT = Integer.MAX_VALUE;
+    public static final int MIDDLE_VIRTUAL_ITEMS_COUNT = VIRTUAL_ITEMS_COUNT / 2;
 
     private static int getCoverDrawable() {
         int index = counter % COVERS_LIST_DRAWABLE.length;
@@ -39,8 +42,8 @@ public class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelItemVie
     }
 
     // TODO: 29.01.2016 Optional<WheelDataItem> here
-    public WheelDataItem getDataItemByPosition(int position) {
-        return position < dataItems.size() ? dataItems.get(position) : null;
+    public WheelDataItem getDataItemByPosition(int virtualPosition) {
+        return dataItems.get(toRealPosition(virtualPosition));
     }
 
     @Override
@@ -54,9 +57,21 @@ public class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelItemVie
         holder.bindData(getDataItemByPosition(position));
     }
 
+    /**
+     * In order to make wheel infinite we return virtual items count instead
+     * of effectively existing.
+     */
     @Override
     public int getItemCount() {
+        return VIRTUAL_ITEMS_COUNT;
+    }
+
+    public int getRealItemCount() {
         return dataItems.size();
+    }
+
+    private int toRealPosition(int virtualPosition) {
+        return Math.abs((virtualPosition - MIDDLE_VIRTUAL_ITEMS_COUNT) % dataItems.size());
     }
 
     static class WheelItemViewHolder extends RecyclerView.ViewHolder {

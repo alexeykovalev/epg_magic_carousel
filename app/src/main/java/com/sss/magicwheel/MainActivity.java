@@ -50,7 +50,7 @@ public class MainActivity extends Activity {
 
     private List<WheelDataItem> createDataSet() {
         List<WheelDataItem> items = new ArrayList<>();
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 30; i++) {
             items.add(new WheelDataItem("item.Num [" + i + "]"));
         }
         return Collections.unmodifiableList(items);

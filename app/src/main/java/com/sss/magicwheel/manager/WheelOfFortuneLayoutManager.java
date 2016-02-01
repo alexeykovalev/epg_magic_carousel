@@ -20,12 +20,21 @@ import java.util.Set;
 public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManager {
 
     private static final String TAG = WheelOfFortuneLayoutManager.class.getCanonicalName();
+    private static final double NOT_DEFINED_ROTATION_ANGLE = Double.MIN_VALUE;
+
+    /**
+     * In order to make wheel infinite we have to set virtual position as start layout position.
+     */
+    private static final int START_LAYOUT_FROM_POSITION = WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT;
+
     private static final boolean IS_LOG_ACTIVATED = true;
     private static final boolean IS_FILTER_LOG_BY_METHOD_NAME = true;
 
     private static final Set<String> ALLOWED_METHOD_NAMES = new HashSet<>();
+
     static {
         ALLOWED_METHOD_NAMES.add("scrollVerticallyBy");
+        ALLOWED_METHOD_NAMES.add("onLayoutChildren");
     }
 
     private static boolean isMessageContainsAllowedMethod(String logMessage) {
@@ -39,6 +48,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
         }
         return false;
     }
+
 
     private final CircleConfig circleConfig;
     private final WheelComputationHelper computationHelper;
@@ -70,7 +80,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
         final double bottomLimitAngle = circleConfig.getAngularRestrictions().getBottomEdgeAngleRestrictionInRad();
 
         double layoutAngle = computationHelper.getLayoutStartAngle();
-        int childPos = 0;
+        int childPos = START_LAYOUT_FROM_POSITION;
         while (layoutAngle > bottomLimitAngle && childPos < state.getItemCount()) {
             setupViewForPosition(recycler, childPos, layoutAngle, true);
             layoutAngle -= sectorAngleInRad;
@@ -139,8 +149,8 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
 
         final double absRotationAngleInRad = computeRotationAngleInRadBasedOnCurrentState(dy, state);
 
-        if (absRotationAngleInRad == Double.MIN_VALUE) {
-            Log.i(TAG, "HIT INTO Double.MIN_VALUE");
+        if (absRotationAngleInRad == NOT_DEFINED_ROTATION_ANGLE) {
+            Log.i(TAG, "HIT INTO NOT_DEFINED_ROTATION_ANGLE");
             return 0;
         }
 
@@ -286,7 +296,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
         final int extraChildrenCount = state.getItemCount() - 1 - getPosition(referenceChild);
         final double lastSectorBottomEdge = computationHelper.getSectorAngleBottomEdge(refChildLp.anglePositionInRad);
 
-        double res = Double.MIN_VALUE;
+        double res = NOT_DEFINED_ROTATION_ANGLE;
 
         // compute available space
         if (extraChildrenCount == 0) { // is last child
@@ -311,7 +321,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
         final int extraChildrenCount = getPosition(referenceChild);
         final double firstSectorTopEdge = refChildLp.anglePositionInRad;
 
-        double res = Double.MIN_VALUE;
+        double res = NOT_DEFINED_ROTATION_ANGLE;
 
         // first top sector goes outside top edge
         if (extraChildrenCount == 0) {
