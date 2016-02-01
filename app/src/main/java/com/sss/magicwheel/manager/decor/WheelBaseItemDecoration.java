@@ -25,8 +25,10 @@ public abstract class WheelBaseItemDecoration extends RecyclerView.ItemDecoratio
     }
 
     @Override
-    public abstract void onDrawOver(Canvas canvas, RecyclerView wheelView, RecyclerView.State state);
+    public abstract void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state);
 
+    @Override
+    public abstract void onDrawOver(Canvas canvas, RecyclerView wheelView, RecyclerView.State state);
 
     // TODO: 28.01.2016 make Point instance reusing
     @Deprecated

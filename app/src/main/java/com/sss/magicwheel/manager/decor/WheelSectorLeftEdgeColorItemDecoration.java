@@ -36,12 +36,16 @@ public final class WheelSectorLeftEdgeColorItemDecoration extends WheelBaseItemD
         );
     }
 
-    private Paint createSectorEdgeDrawingPaint() {
+    private static Paint createSectorEdgeDrawingPaint() {
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(SECTOR_EDGE_DEFAULT_COLOR);
         paint.setStrokeWidth(SECTOR_EDGE_RING_THICKNESS);
         return paint;
+    }
+
+    @Override
+    public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
     }
 
     @Override

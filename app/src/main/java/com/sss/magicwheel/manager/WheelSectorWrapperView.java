@@ -23,7 +23,7 @@ public class WheelSectorWrapperView extends ImageView {
     private static final String TAG = WheelSectorWrapperView.class.getCanonicalName();
 
     private static final int SECTOR_EDGE_DEFAULT_COLOR = Color.GRAY;
-    private static final int SECTOR_EDGE_RING_THICKNESS = 25;
+    private static final int SECTOR_EDGE_RING_THICKNESS = 35;
 
     private final Paint sectorLeftEdgeDrawingPaint;
     private final Path sectorShapePath;

@@ -11,7 +11,7 @@ import android.view.WindowManager;
 
 import com.sss.magicwheel.entity.CircleConfig;
 import com.sss.magicwheel.entity.WheelDataItem;
-import com.sss.magicwheel.manager.decor.WheelSectorLeftEdgeColorItemDecoration;
+import com.sss.magicwheel.manager.decor.WheelFrameItemDecoration;
 import com.sss.magicwheel.manager.decor.WheelSectorRayItemDecoration;
 import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
@@ -38,10 +38,15 @@ public class MainActivity extends Activity {
     }
 
     private void initWheelContainer(RecyclerView wheelContainerView) {
-        wheelContainerView.addItemDecoration(new WheelSectorRayItemDecoration(this));
-//        wheelContainerView.addItemDecoration(new WheelSectorLeftEdgeColorItemDecoration(this));
         wheelContainerView.setLayoutManager(new WheelOfFortuneLayoutManager());
         wheelContainerView.setAdapter(createWheelAdapter(createDataSet()));
+        addWheelItemDecorations(wheelContainerView);
+    }
+
+    private void addWheelItemDecorations(RecyclerView wheelContainerView) {
+        wheelContainerView.addItemDecoration(new WheelFrameItemDecoration(this));
+        wheelContainerView.addItemDecoration(new WheelSectorRayItemDecoration(this));
+//        wheelContainerView.addItemDecoration(new WheelSectorLeftEdgeColorItemDecoration(this));
     }
 
     private WheelAdapter createWheelAdapter(List<WheelDataItem> adapterDataSet) {

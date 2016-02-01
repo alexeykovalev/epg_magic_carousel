@@ -79,7 +79,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
         final double sectorAngleInRad = circleConfig.getAngularRestrictions().getSectorAngleInRad();
         final double bottomLimitAngle = circleConfig.getAngularRestrictions().getBottomEdgeAngleRestrictionInRad();
 
-        double layoutAngle = computationHelper.getLayoutStartAngle();
+        double layoutAngle = computationHelper.getLayoutStartAngleInRad();
         int childPos = START_LAYOUT_FROM_POSITION;
         while (layoutAngle > bottomLimitAngle && childPos < state.getItemCount()) {
             setupViewForPosition(recycler, childPos, layoutAngle, true);
@@ -206,7 +206,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
 
         double layoutAngle = firstChildLp.anglePositionInRad + sectorAngleInRad;
         int childPos = getPosition(firstChild) - 1;
-        while (layoutAngle < computationHelper.getLayoutStartAngle() && childPos >= 0) {
+        while (layoutAngle < computationHelper.getLayoutStartAngleInRad() && childPos >= 0) {
 //            Log.i(TAG, "addViewsToTopIfNeeded() " +
 //                            "layoutAngle [" + WheelComputationHelper.radToDegree(layoutAngle) + "], " +
 //                            "childPos [" + childPos + "]"
@@ -234,7 +234,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
         final double sectorAngleInRad = circleConfig.getAngularRestrictions().getSectorAngleInRad();
         final double bottomLimitAngle = circleConfig.getAngularRestrictions().getBottomEdgeAngleRestrictionInRad();
 
-        double layoutAngle = computationHelper.getSectorAngleBottomEdge(lastChildLp.anglePositionInRad);
+        double layoutAngle = computationHelper.getSectorAngleBottomEdgeInRad(lastChildLp.anglePositionInRad);
         int childPos = getPosition(lastChild) + 1;
         while (layoutAngle > bottomLimitAngle && childPos < state.getItemCount()) {
 //            Log.e(TAG, "addViewsToBottomIfNeeded() " +
@@ -250,7 +250,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
     private void recycleViewsFromTopIfNeeded(RecyclerView.Recycler recycler) {
         for (int i = 0; i < getChildCount(); i++) {
             final LayoutParams childLp = (LayoutParams) getChildAt(i).getLayoutParams();
-            if (childLp.anglePositionInRad > computationHelper.getLayoutStartAngle()) {
+            if (childLp.anglePositionInRad > computationHelper.getLayoutStartAngleInRad()) {
                 removeAndRecycleViewAt(i, recycler);
 //                Log.i(TAG, "Recycle view at index [" + i + "]");
             }
@@ -294,7 +294,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
         final View referenceChild = getChildClosestToBottom();
         final LayoutParams refChildLp = (LayoutParams) referenceChild.getLayoutParams();
         final int extraChildrenCount = state.getItemCount() - 1 - getPosition(referenceChild);
-        final double lastSectorBottomEdge = computationHelper.getSectorAngleBottomEdge(refChildLp.anglePositionInRad);
+        final double lastSectorBottomEdge = computationHelper.getSectorAngleBottomEdgeInRad(refChildLp.anglePositionInRad);
 
         double res = NOT_DEFINED_ROTATION_ANGLE;
 
@@ -325,10 +325,10 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
 
         // first top sector goes outside top edge
         if (extraChildrenCount == 0) {
-            if (firstSectorTopEdge - computationHelper.getLayoutStartAngle() > 0) {
+            if (firstSectorTopEdge - computationHelper.getLayoutStartAngleInRad() > 0) {
                 res = Math.min(
                         angleToRotate,
-                        firstSectorTopEdge - computationHelper.getLayoutStartAngle()
+                        firstSectorTopEdge - computationHelper.getLayoutStartAngleInRad()
                 );
             }
         } else if (extraChildrenCount > 0) {
@@ -341,7 +341,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
     private boolean isBottomBoundsReached() {
         View lastChild = getChildClosestToBottom();
         LayoutParams lastChildLp = (LayoutParams) lastChild.getLayoutParams();
-        final double lastSectorBottomEdge = computationHelper.getSectorAngleBottomEdge(lastChildLp.anglePositionInRad);
+        final double lastSectorBottomEdge = computationHelper.getSectorAngleBottomEdgeInRad(lastChildLp.anglePositionInRad);
 
         return circleConfig.getAngularRestrictions().getBottomEdgeAngleRestrictionInRad() - lastSectorBottomEdge <= 0;
     }

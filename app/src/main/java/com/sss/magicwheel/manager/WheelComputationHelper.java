@@ -181,7 +181,7 @@ public final class WheelComputationHelper {
      * <p/>
      * So the firstly layouted sector's top edge will be aligned by this angle.
      */
-    public double getLayoutStartAngle() {
+    public double getLayoutStartAngleInRad() {
         if (layoutStartAngle == 0) {
             double res = 0;
             final double topEdgeAngularRestrictionInRad = circleConfig.getAngularRestrictions().getTopEdgeAngleRestrictionInRad();
@@ -193,7 +193,7 @@ public final class WheelComputationHelper {
         return layoutStartAngle;
     }
 
-    public double getSectorAngleBottomEdge(double sectorAnglePosition) {
+    public double getSectorAngleBottomEdgeInRad(double sectorAnglePosition) {
         return sectorAnglePosition - circleConfig.getAngularRestrictions().getSectorAngleInRad();
     }
 

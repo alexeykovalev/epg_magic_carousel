@@ -30,6 +30,10 @@ public final class WheelSectorRayItemDecoration extends WheelBaseItemDecoration 
     }
 
     @Override
+    public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+    }
+
+    @Override
     public void onDrawOver(Canvas canvas, RecyclerView wheelView, RecyclerView.State state) {
         for (int i = 0; i < wheelView.getChildCount(); i++) {
             final View sectorView = wheelView.getChildAt(i);
