@@ -4,32 +4,40 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Point;
-import android.graphics.PointF;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
-import android.view.Display;
+import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 
-import com.sss.magicwheel.entity.WheelConfig;
-import com.sss.magicwheel.entity.WheelDataItem;
-import com.sss.magicwheel.manager.decor.WheelFrameItemDecoration;
-import com.sss.magicwheel.manager.decor.WheelSectorRayItemDecoration;
-import com.sss.magicwheel.manager.WheelAdapter;
-import com.sss.magicwheel.manager.WheelComputationHelper;
-import com.sss.magicwheel.manager.WheelOfFortuneLayoutManager;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 public class MainActivity extends Activity {
+
+    private View headerView;
+    private View fragmentContainerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        injectWheelPage();
         setContentView(R.layout.activity_main_layout);
+
+        headerView = findViewById(R.id.header);
+        fragmentContainerView = findViewById(R.id.fragments_container);
+
+        injectWheelPage();
     }
+
+    public int getAvailableSpace() {
+        Log.e("TAG", "headerView.getHeight() [" + headerView.getHeight() + "]");
+        return getScreenHeight() - headerView.getHeight();
+    }
+
+    private int getScreenHeight() {
+        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+
+        Point size = new Point();
+        wm.getDefaultDisplay().getSize(size);
+        return size.y;
+    }
+
 
     private void injectWheelPage() {
         Fragment wheelFragment = new FragmentWheelPage();

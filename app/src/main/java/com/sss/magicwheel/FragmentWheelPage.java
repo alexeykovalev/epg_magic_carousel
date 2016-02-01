@@ -47,8 +47,15 @@ public final class FragmentWheelPage extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        View rView = (View) getView().getParent();
-        Log.e("TAG", "rView.getY() [" + rView.getTop() + "]");
+        final int containerHeight = ((MainActivity) getActivity()).getAvailableSpace();
+//        Log.e("TAG", "availableHeight [" + containerHeight + "]");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        final int containerHeight = ((MainActivity) getActivity()).getAvailableSpace();
+//        Log.e("TAG", "availableHeight [" + containerHeight + "]");
     }
 
     private void initWheelContainer(RecyclerView wheelContainerView) {
@@ -82,11 +89,13 @@ public final class FragmentWheelPage extends Fragment {
         final int screenWidth = screenSize.x;
         final int screenHeight = screenSize.y;
 
-        final PointF circleCenter = new PointF(0, screenHeight / 2);
+        Log.e("TAG", "Sh Fragment [" + screenHeight + "]");
+
+        final PointF circleCenter = new PointF(0, screenHeight / 2 );
 
         // TODO: 03.12.2015 Not good hardcoded values
-        final int innerRadius = screenHeight / 2 - 100;
-        final int outerRadius = innerRadius + 200;
+        final int outerRadius =  screenHeight / 2;
+        final int innerRadius = outerRadius - 200;
 
         WheelConfig.AngularRestrictions angularRestrictions = new WheelConfig.AngularRestrictions(
                 WheelComputationHelper.degreeToRadian(DEFAULT_SECTOR_ANGLE_IN_DEGREE),

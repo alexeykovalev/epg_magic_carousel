@@ -7,17 +7,10 @@
     android:background="@android:color/black">
 
     <View
+        android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:background="@android:color/holo_blue_dark"/>
-
-<!--
-    <fragment
-        android:id="@+id/fragments_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:name="com.sss.magicwheel.FragmentWheelPage" />
--->
 
     <FrameLayout
         android:id="@+id/fragments_container"
