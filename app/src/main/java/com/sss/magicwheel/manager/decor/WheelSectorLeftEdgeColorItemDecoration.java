@@ -31,7 +31,7 @@ public final class WheelSectorLeftEdgeColorItemDecoration extends WheelBaseItemD
         super(context);
         this.sectorEdgeDrawingPaint = createSectorEdgeDrawingPaint();
         this.innerCircleEmbracingSquare = WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(
-                computationHelper.getCircleConfig().getCircleCenterRelToRecyclerView(),
+                computationHelper.getWheelConfig().getCircleCenterRelToRecyclerView(),
                 computationHelper.getInnerCircleEmbracingSquareInCircleCoordsSystem()
         );
     }
@@ -72,7 +72,7 @@ public final class WheelSectorLeftEdgeColorItemDecoration extends WheelBaseItemD
                 (int) WheelComputationHelper.radToDegree(getSectorTopEdgeAnglePositionInRad(sectorView));
 
         final int sectorAngleInDegree = (int) WheelComputationHelper.radToDegree(
-                computationHelper.getCircleConfig().getAngularRestrictions().getSectorAngleInRad()
+                computationHelper.getWheelConfig().getAngularRestrictions().getSectorAngleInRad()
         );
 
         sectorEdgeDrawingPaint.setColor(getSectorLeftEdgeColor(sectorDataItem));

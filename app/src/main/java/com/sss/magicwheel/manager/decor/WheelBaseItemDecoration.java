@@ -36,13 +36,13 @@ public abstract class WheelBaseItemDecoration extends RecyclerView.ItemDecoratio
         final WheelOfFortuneLayoutManager.LayoutParams childLp = (WheelOfFortuneLayoutManager.LayoutParams) sectorView.getLayoutParams();
         final double sectorAnglePositionInRad = childLp.anglePositionInRad;
 
-        final int innerRadius = computationHelper.getCircleConfig().getInnerRadius();
+        final int innerRadius = computationHelper.getWheelConfig().getInnerRadius();
         final float refPointXPosInWheelCoordSystem = (float) (innerRadius * Math.cos(sectorAnglePositionInRad));
         final float refPointYPosInWheelCoordSystem = (float) (innerRadius * Math.sin(sectorAnglePositionInRad));
         final PointF sectorRefPointPosInWheelCoordSystem = new PointF(refPointXPosInWheelCoordSystem, refPointYPosInWheelCoordSystem);
 
         return WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(
-                computationHelper.getCircleConfig().getCircleCenterRelToRecyclerView(),
+                computationHelper.getWheelConfig().getCircleCenterRelToRecyclerView(),
                 sectorRefPointPosInWheelCoordSystem
         );
     }
@@ -58,12 +58,12 @@ public abstract class WheelBaseItemDecoration extends RecyclerView.ItemDecoratio
     }
 
     protected final double getSectorTopEdgeAnglePositionInRad(View sectorView) {
-        final double halfSectorAngle = computationHelper.getCircleConfig().getAngularRestrictions().getSectorAngleInRad() / 2;
+        final double halfSectorAngle = computationHelper.getWheelConfig().getAngularRestrictions().getSectorAngleInRad() / 2;
         return getSectorAnglePositionInRad(sectorView) + halfSectorAngle;
     }
 
     protected final double getSectorBottomEdgeAnglePositionInRad(View sectorView) {
-        final double halfSectorAngle = computationHelper.getCircleConfig().getAngularRestrictions().getSectorAngleInRad() / 2;
+        final double halfSectorAngle = computationHelper.getWheelConfig().getAngularRestrictions().getSectorAngleInRad() / 2;
         return getSectorAnglePositionInRad(sectorView) - halfSectorAngle;
     }
 }

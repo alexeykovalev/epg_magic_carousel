@@ -7,7 +7,7 @@ import android.graphics.RectF;
  * @author Alexey Kovalev
  * @since 04.12.2015.
  */
-public final class CircleConfig {
+public final class WheelConfig {
 
     public static final class AngularRestrictions {
 
@@ -59,7 +59,7 @@ public final class CircleConfig {
 
     private final AngularRestrictions angularRestrictions;
 
-    public CircleConfig(PointF circleCenter, int outerRadius, int innerRadius, AngularRestrictions angularRestrictions) {
+    public WheelConfig(PointF circleCenter, int outerRadius, int innerRadius, AngularRestrictions angularRestrictions) {
         this.circleCenter = circleCenter;
         this.outerRadius = outerRadius;
         this.innerRadius = innerRadius;
@@ -101,7 +101,7 @@ public final class CircleConfig {
 
     @Override
     public String toString() {
-        return "CircleConfig{" +
+        return "WheelConfig{" +
                 "circleCenter=" + circleCenter +
                 ", circleBoundaries=" + circleBoundaries.toShortString() +
                 ", outerRadius=" + outerRadius +

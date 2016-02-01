@@ -84,7 +84,7 @@ public final class WheelBigWrapperView extends FrameLayout {
 //        int strokeWidth = 20;  // or whatever
 //        myPaint.setStrokeWidth(strokeWidth);
 //        myPaint.setColor(0xffff0000);   //color.RED
-//        float radius= computationHelper.getCircleConfig().getInnerRadius();
+//        float radius= computationHelper.getWheelConfig().getInnerRadius();
 //
 //        super.dispatchDraw(canvas);
 //
