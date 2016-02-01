@@ -32,7 +32,6 @@ public class MainActivity extends Activity {
 
     private int getScreenHeight() {
         WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-
         Point size = new Point();
         wm.getDefaultDisplay().getSize(size);
         return size.y;

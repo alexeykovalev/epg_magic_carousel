@@ -11,6 +11,7 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 
 import com.sss.magicwheel.entity.WheelConfig;
@@ -40,22 +41,15 @@ public final class FragmentWheelPage extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_wheel_page_layout, container, false);
         final RecyclerView wheelContainerView = (RecyclerView) rootView.findViewById(R.id.wheel_container);
         initWheelContainer(wheelContainerView);
+
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                final int containerHeight = ((MainActivity) getActivity()).getAvailableSpace();
+            }
+        });
+
         return rootView;
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        final int containerHeight = ((MainActivity) getActivity()).getAvailableSpace();
-//        Log.e("TAG", "availableHeight [" + containerHeight + "]");
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        final int containerHeight = ((MainActivity) getActivity()).getAvailableSpace();
-//        Log.e("TAG", "availableHeight [" + containerHeight + "]");
     }
 
     private void initWheelContainer(RecyclerView wheelContainerView) {
@@ -67,7 +61,7 @@ public final class FragmentWheelPage extends Fragment {
     private void addWheelItemDecorations(RecyclerView wheelContainerView) {
         wheelContainerView.addItemDecoration(new WheelFrameItemDecoration(getActivity()));
         wheelContainerView.addItemDecoration(new WheelSectorRayItemDecoration(getActivity()));
-//        wheelContainerView.addItemDecoration(new WheelSectorLeftEdgeColorItemDecoration(this));
+//        wheelContainerView.addItemDecoration(new WheelSectorLeftEdgeColorItemDecoration(getActivity()));
     }
 
     private WheelAdapter createWheelAdapter(List<WheelDataItem> adapterDataSet) {
