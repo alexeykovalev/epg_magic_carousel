@@ -59,6 +59,11 @@ public final class WheelContainerRecyclerView extends RecyclerView {
 
     @Override
     public void onDraw(Canvas canvas) {
+        if (true) {
+            super.onDraw(canvas);
+            return;
+        }
+
         if (!WheelComputationHelper.isInitialized()) {
             super.onDraw(canvas);
             return;

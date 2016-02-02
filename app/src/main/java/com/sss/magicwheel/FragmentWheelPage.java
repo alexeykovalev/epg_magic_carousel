@@ -49,8 +49,6 @@ public final class FragmentWheelPage extends Fragment {
                 if (!isWheelContainerInitialized) {
                     isWheelContainerInitialized = true;
                     final int fragmentContainerTopEdge = container.getTop();
-                    Log.e("TAG", "container.getTop() [" + fragmentContainerTopEdge + "]");
-
                     WheelComputationHelper.initialize(createWheelConfig(fragmentContainerTopEdge));
                     initWheelContainer(wheelContainerView);
                 }
@@ -88,8 +86,6 @@ public final class FragmentWheelPage extends Fragment {
         WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
 
         final int screenHeight = getScreenHeight(wm.getDefaultDisplay());
-
-        Log.e("TAG", "Sh Fragment [" + screenHeight + "]");
 
         final int yWheelCenterPosition = (screenHeight - fragmentContainerTopEdge) / 2 ;
         final PointF circleCenter = new PointF(0, yWheelCenterPosition);
