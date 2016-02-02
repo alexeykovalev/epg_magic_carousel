@@ -44,6 +44,10 @@ public final class WheelComputationHelper {
         instance = new WheelComputationHelper(wheelConfig);
     }
 
+    public static boolean isInitialized() {
+        return instance != null;
+    }
+
     private WheelComputationHelper(WheelConfig wheelConfig) {
         this.wheelConfig = wheelConfig;
     }

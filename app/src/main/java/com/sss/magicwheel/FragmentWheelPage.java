@@ -51,13 +51,9 @@ public final class FragmentWheelPage extends Fragment {
                     final int fragmentContainerTopEdge = container.getTop();
                     Log.e("TAG", "container.getTop() [" + fragmentContainerTopEdge + "]");
 
-                    WheelComputationHelper.initialize(createCircleConfig(fragmentContainerTopEdge));
+                    WheelComputationHelper.initialize(createWheelConfig(fragmentContainerTopEdge));
                     initWheelContainer(wheelContainerView);
                 }
-
-
-
-//                final int containerHeight = ((MainActivity) getActivity()).getAvailableSpace();
             }
         });
 
@@ -88,7 +84,7 @@ public final class FragmentWheelPage extends Fragment {
         return Collections.unmodifiableList(items);
     }
 
-    private WheelConfig createCircleConfig(int fragmentContainerTopEdge) {
+    private WheelConfig createWheelConfig(int fragmentContainerTopEdge) {
         WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
 
         final int screenHeight = getScreenHeight(wm.getDefaultDisplay());
