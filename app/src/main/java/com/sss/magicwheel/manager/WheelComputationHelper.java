@@ -3,6 +3,7 @@ package com.sss.magicwheel.manager;
 import android.graphics.PointF;
 import android.graphics.RectF;
 
+import com.sss.magicwheel.entity.MeasurementsHolder;
 import com.sss.magicwheel.entity.WheelConfig;
 import com.sss.magicwheel.entity.CoordinatesHolder;
 import com.sss.magicwheel.entity.SectorClipAreaDescriptor;
@@ -21,12 +22,11 @@ public final class WheelComputationHelper {
     private static WheelComputationHelper instance;
 
     private final WheelConfig wheelConfig;
+    private final MeasurementsHolder sectorWrapperMeasurements;
 
     // ------------
     // Be careful LAZY initialized fields. Don't access directly, use getters instead.
     // ------------
-    private int sectorWrapperViewWidth = NOT_DEFINED_VALUE;
-    private int sectorWrapperViewHeight = NOT_DEFINED_VALUE;
 
     private RectF outerCircleEmbracingSquareInSectorWrapperCoordsSystem;
     private RectF innerCircleEmbracingSquareInSectorWrapperCoordsSystem;
@@ -86,10 +86,29 @@ public final class WheelComputationHelper {
         );
     }
 
-
-
     private WheelComputationHelper(WheelConfig wheelConfig) {
         this.wheelConfig = wheelConfig;
+        this.sectorWrapperMeasurements = new MeasurementsHolder(
+                computeSectorWrapperViewWidth(),
+                computeSectorWrapperViewHeight()
+        );
+    }
+
+
+    /**
+     * Width of the view which wraps the sector.
+     */
+    private int computeSectorWrapperViewWidth() {
+        final double delta = wheelConfig.getInnerRadius() * Math.cos(wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 2);
+        return (int) (wheelConfig.getOuterRadius() - delta);
+    }
+
+    /**
+     * Height of the view which wraps the sector.
+     */
+    private int computeSectorWrapperViewHeight() {
+        final double halfHeight = wheelConfig.getOuterRadius() * Math.sin(wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 2);
+        return (int) (2 * halfHeight);
     }
 
     public WheelConfig getWheelConfig() {
@@ -120,35 +139,15 @@ public final class WheelComputationHelper {
         return sectorAnglePosition - wheelConfig.getAngularRestrictions().getSectorAngleInRad();
     }
 
-
-
-    /**
-     * Width of the view which wraps the sector.
-     */
-    public int getSectorWrapperViewWidth() {
-        if (sectorWrapperViewWidth == NOT_DEFINED_VALUE) {
-            final double delta = wheelConfig.getInnerRadius() * Math.cos(wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 2);
-            sectorWrapperViewWidth = (int) (wheelConfig.getOuterRadius() - delta);
-        }
-        return sectorWrapperViewWidth;
-    }
-
-    /**
-     * Height of the view which wraps the sector.
-     */
-    public int getSectorWrapperViewHeight() {
-        if (sectorWrapperViewHeight == NOT_DEFINED_VALUE) {
-            final double halfHeight = wheelConfig.getOuterRadius() * Math.sin(wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 2);
-            sectorWrapperViewHeight = (int) (2 * halfHeight);
-        }
-        return sectorWrapperViewHeight;
+    public MeasurementsHolder getSectorWrapperMeasurements() {
+        return sectorWrapperMeasurements;
     }
 
     /**
      * @param wrapperViewWidth - depends on inner and outer radius values
      */
     public RectF getSectorWrapperViewCoordsInCircleSystem(int wrapperViewWidth) {
-        final int topEdge = getSectorWrapperViewHeight() / 2;
+        final int topEdge = sectorWrapperMeasurements.getHeight() / 2;
         return new RectF(0, topEdge, wrapperViewWidth, -topEdge);
     }
 
@@ -165,8 +164,8 @@ public final class WheelComputationHelper {
     }
 
     private PointF getSectorWrapperViewLeftCornerInCircleCoordsSystem() {
-        final float x = wheelConfig.getOuterRadius() - getSectorWrapperViewWidth();
-        final float y = getSectorWrapperViewHeight() / 2f;
+        final float x = wheelConfig.getOuterRadius() - sectorWrapperMeasurements.getWidth();
+        final float y = sectorWrapperMeasurements.getHeight() / 2f;
         return new PointF(x, y);
     }
 
@@ -174,17 +173,17 @@ public final class WheelComputationHelper {
 
     public SectorClipAreaDescriptor createSectorClipArea() {
         if (sectorClipArea == null) {
-            final int viewWidth = getSectorWrapperViewWidth();
-            final int viewHalfHeight = getSectorWrapperViewHeight() / 2;
+            final int sectorWrapperViewWidth = sectorWrapperMeasurements.getWidth();
+            final int sectorWrapperViewHalfHeight = sectorWrapperMeasurements.getHeight() / 2;
 
             final double leftBaseDelta = wheelConfig.getInnerRadius() * Math.sin(wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 2);
             final double rightBaseDelta = wheelConfig.getOuterRadius() * Math.sin(wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 2);
 
-            final CoordinatesHolder bottomLeftCorner = CoordinatesHolder.ofRect(0, viewHalfHeight + leftBaseDelta);
-            final CoordinatesHolder topLeftCorner = CoordinatesHolder.ofRect(0, viewHalfHeight - leftBaseDelta);
+            final CoordinatesHolder bottomLeftCorner = CoordinatesHolder.ofRect(0, sectorWrapperViewHalfHeight + leftBaseDelta);
+            final CoordinatesHolder topLeftCorner = CoordinatesHolder.ofRect(0, sectorWrapperViewHalfHeight - leftBaseDelta);
 
-            final CoordinatesHolder bottomRight = CoordinatesHolder.ofRect(viewWidth, viewHalfHeight + rightBaseDelta);
-            final CoordinatesHolder topRightCorner = CoordinatesHolder.ofRect(viewWidth, viewHalfHeight - rightBaseDelta);
+            final CoordinatesHolder bottomRight = CoordinatesHolder.ofRect(sectorWrapperViewWidth, sectorWrapperViewHalfHeight + rightBaseDelta);
+            final CoordinatesHolder topRightCorner = CoordinatesHolder.ofRect(sectorWrapperViewWidth, sectorWrapperViewHalfHeight - rightBaseDelta);
 
             final SectorClipAreaDescriptor.CircleEmbracingSquaresConfig embracingSquaresConfig =
                     new SectorClipAreaDescriptor.CircleEmbracingSquaresConfig(

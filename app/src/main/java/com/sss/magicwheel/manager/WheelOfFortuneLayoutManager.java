@@ -117,7 +117,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
     private void measureBigWrapperView(View bigWrapperView) {
         final int viewWidth = wheelConfig.getOuterRadius();
         // big wrapper view has the same height as the sector wrapper view
-        final int viewHeight = computationHelper.getSectorWrapperViewHeight();
+        final int viewHeight = computationHelper.getSectorWrapperMeasurements().getHeight();
 
         final int childWidthSpec = View.MeasureSpec.makeMeasureSpec(viewWidth, View.MeasureSpec.EXACTLY);
         final int childHeightSpec = View.MeasureSpec.makeMeasureSpec(viewHeight, View.MeasureSpec.EXACTLY);
