@@ -19,6 +19,12 @@ public final class WheelConfig {
         private final double gapAreaTopEdgeAngleRestrictionInRad;
         private final double gapAreaBottomEdgeAngleRestrictionInRad;
 
+        /**
+         * Angle from which we have to actually start sectors layout.
+         * Does not equal to {@link #wheelTopEdgeAngleRestrictionInRad}
+         */
+        private double wheelLayoutStartAngle;
+
         public static Builder builder(double sectorAngleInRad) {
             return new Builder(sectorAngleInRad);
         }
@@ -35,8 +41,22 @@ public final class WheelConfig {
             return sectorAngleInRad;
         }
 
-        public double getWheelTopEdgeAngleRestrictionInRad() {
-            return wheelTopEdgeAngleRestrictionInRad;
+        /**
+         * Layout will be performed from top to bottom direction. And we should have sector
+         * positioned parallel to central diameter. So taking into account imposed angular restrictions
+         * we should compute actual layout start angle.
+         * <p/>
+         * So the firstly layouted sector's top edge will be aligned by this angle.
+         */
+        public double getWheelLayoutStartAngleInRad() {
+            if (wheelLayoutStartAngle == 0) {
+                double res = 0;
+                while (res < wheelTopEdgeAngleRestrictionInRad) {
+                    res += sectorAngleInRad;
+                }
+                wheelLayoutStartAngle = res;
+            }
+            return wheelLayoutStartAngle;
         }
 
         public double getWheelBottomEdgeAngleRestrictionInRad() {

@@ -38,8 +38,6 @@ public final class WheelComputationHelper {
 
     private SectorClipAreaDescriptor sectorClipArea;
 
-    private double layoutStartAngle;
-
     // ------------
 
     public static WheelComputationHelper getInstance() {
@@ -139,15 +137,7 @@ public final class WheelComputationHelper {
      * So the firstly layouted sector's top edge will be aligned by this angle.
      */
     public double getWheelLayoutStartAngleInRad() {
-        if (layoutStartAngle == 0) {
-            double res = 0;
-            final double topEdgeAngularRestrictionInRad = wheelConfig.getAngularRestrictions().getWheelTopEdgeAngleRestrictionInRad();
-            while (res < topEdgeAngularRestrictionInRad) {
-                res += wheelConfig.getAngularRestrictions().getSectorAngleInRad();
-            }
-            layoutStartAngle = res;
-        }
-        return layoutStartAngle;
+        return wheelConfig.getAngularRestrictions().getWheelLayoutStartAngleInRad();
     }
 
     public double getSectorAngleBottomEdgeInRad(double sectorAnglePosition) {
