@@ -12,7 +12,6 @@ import com.sss.magicwheel.entity.SectorClipAreaDescriptor;
  * @since 14.12.2015.
  */
 // TODO: 14.12.2015 use lazy initializer here
-// TODO: 28.01.2016 replace all Rect and Point class usages to respective RectF and PointF ones
 public final class WheelComputationHelper {
 
     private static final double DEGREE_TO_RAD_COEF = Math.PI / 180;
@@ -23,15 +22,20 @@ public final class WheelComputationHelper {
 
     private final WheelConfig wheelConfig;
 
+    // ------------
+    // Be careful LAZY initialized fields. Don't access directly, use getters instead.
+    // ------------
     private int sectorWrapperViewWidth = NOT_DEFINED_VALUE;
     private int sectorWrapperViewHeight = NOT_DEFINED_VALUE;
 
     private RectF outerCircleEmbracingSquareInSectorWrapperCoordsSystem;
     private RectF innerCircleEmbracingSquareInSectorWrapperCoordsSystem;
 
-    private SectorClipAreaDescriptor sectorClipData;
+    private SectorClipAreaDescriptor sectorClipArea;
 
     private double layoutStartAngle;
+
+    // ------------
 
     public static WheelComputationHelper getInstance() {
         if (instance == null) {
@@ -41,15 +45,14 @@ public final class WheelComputationHelper {
     }
 
     public static void initialize(WheelConfig wheelConfig) {
+        if (isInitialized()) {
+            throw new IllegalStateException("WheelComputationHelper has been already initialized. Don't invoke this method twice.");
+        }
         instance = new WheelComputationHelper(wheelConfig);
     }
 
     public static boolean isInitialized() {
         return instance != null;
-    }
-
-    private WheelComputationHelper(WheelConfig wheelConfig) {
-        this.wheelConfig = wheelConfig;
     }
 
     public static double degreeToRadian(double angleInDegree) {
@@ -60,23 +63,74 @@ public final class WheelComputationHelper {
         return angleInRad * RAD_TO_DEGREE_COEF;
     }
 
+    // TODO: 16.12.2015 to many objects allocation - reduce this amount in future
+    public static RectF fromCircleCoordsSystemToRecyclerViewCoordsSystem(RectF coordinatesToTransform) {
+
+        final PointF leftTopCorner = fromCircleCoordsSystemToRecyclerViewCoordsSystem(
+                new PointF(coordinatesToTransform.left, coordinatesToTransform.top)
+        );
+
+        final PointF rightBottomCorner = fromCircleCoordsSystemToRecyclerViewCoordsSystem(
+                new PointF(coordinatesToTransform.right, coordinatesToTransform.bottom)
+        );
+
+        return new RectF(leftTopCorner.x, leftTopCorner.y, rightBottomCorner.x, rightBottomCorner.y);
+    }
+
+    public static PointF fromCircleCoordsSystemToRecyclerViewCoordsSystem(PointF pointToTransform) {
+        final PointF circleCenterRelToRecyclerView = getInstance().getWheelConfig().getCircleCenterRelToRecyclerView();
+
+        return new PointF(
+                circleCenterRelToRecyclerView.x + pointToTransform.x,
+                circleCenterRelToRecyclerView.y - pointToTransform.y
+        );
+    }
+
+
+
+    private WheelComputationHelper(WheelConfig wheelConfig) {
+        this.wheelConfig = wheelConfig;
+    }
+
     public WheelConfig getWheelConfig() {
         return wheelConfig;
     }
+
+
+    /**
+     * Layout will be performed from top to bottom direction. And we should have sector
+     * positioned parallel to central diameter. So taking into account imposed angular restrictions
+     * we should compute actual layout start angle.
+     * <p/>
+     * So the firstly layouted sector's top edge will be aligned by this angle.
+     */
+    public double getWheelLayoutStartAngleInRad() {
+        if (layoutStartAngle == 0) {
+            double res = 0;
+            final double topEdgeAngularRestrictionInRad = wheelConfig.getAngularRestrictions().getWheelTopEdgeAngleRestrictionInRad();
+            while (res < topEdgeAngularRestrictionInRad) {
+                res += wheelConfig.getAngularRestrictions().getSectorAngleInRad();
+            }
+            layoutStartAngle = res;
+        }
+        return layoutStartAngle;
+    }
+
+    public double getSectorAngleBottomEdgeInRad(double sectorAnglePosition) {
+        return sectorAnglePosition - wheelConfig.getAngularRestrictions().getSectorAngleInRad();
+    }
+
+
 
     /**
      * Width of the view which wraps the sector.
      */
     public int getSectorWrapperViewWidth() {
         if (sectorWrapperViewWidth == NOT_DEFINED_VALUE) {
-            sectorWrapperViewWidth = computeViewWidth();
+            final double delta = wheelConfig.getInnerRadius() * Math.cos(wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 2);
+            sectorWrapperViewWidth = (int) (wheelConfig.getOuterRadius() - delta);
         }
         return sectorWrapperViewWidth;
-    }
-
-    private int computeViewWidth() {
-        final double delta = wheelConfig.getInnerRadius() * Math.cos(wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 2);
-        return (int) (wheelConfig.getOuterRadius() - delta);
     }
 
     /**
@@ -84,51 +138,21 @@ public final class WheelComputationHelper {
      */
     public int getSectorWrapperViewHeight() {
         if (sectorWrapperViewHeight == NOT_DEFINED_VALUE) {
-            sectorWrapperViewHeight = computeViewHeight();
+            final double halfHeight = wheelConfig.getOuterRadius() * Math.sin(wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 2);
+            sectorWrapperViewHeight = (int) (2 * halfHeight);
         }
         return sectorWrapperViewHeight;
-    }
-
-    private int computeViewHeight() {
-        final double halfHeight = wheelConfig.getOuterRadius() * Math.sin(wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 2);
-        return (int) (2 * halfHeight);
     }
 
     /**
      * @param wrapperViewWidth - depends on inner and outer radius values
      */
-    public RectF getWrapperViewCoordsInCircleSystem(int wrapperViewWidth) {
+    public RectF getSectorWrapperViewCoordsInCircleSystem(int wrapperViewWidth) {
         final int topEdge = getSectorWrapperViewHeight() / 2;
         return new RectF(0, topEdge, wrapperViewWidth, -topEdge);
     }
 
-    public RectF getOuterCircleEmbracingSquareInSectorWrapperCoordsSystem() {
-        if (outerCircleEmbracingSquareInSectorWrapperCoordsSystem == null) {
-            RectF embracingSquare = getOuterCircleEmbracingSquareInCircleCoordsSystem();
-            PointF leftCorner = getSectorWrapperViewLeftCornerInCircleCoordsSystem();
-            outerCircleEmbracingSquareInSectorWrapperCoordsSystem = new RectF(
-                    embracingSquare.left - leftCorner.x,
-                    leftCorner.y - embracingSquare.top,
-                    embracingSquare.right - leftCorner.x,
-                    leftCorner.y - embracingSquare.bottom
-            );
-        }
-        return outerCircleEmbracingSquareInSectorWrapperCoordsSystem;
-    }
 
-    public RectF getInnerCircleEmbracingSquareInSectorWrapperCoordsSystem() {
-        if (innerCircleEmbracingSquareInSectorWrapperCoordsSystem == null) {
-            RectF embracingSquare = getInnerCircleEmbracingSquareInCircleCoordsSystem();
-            PointF leftCorner = getSectorWrapperViewLeftCornerInCircleCoordsSystem();
-            innerCircleEmbracingSquareInSectorWrapperCoordsSystem = new RectF(
-                    embracingSquare.left - leftCorner.x,
-                    leftCorner.y - embracingSquare.top,
-                    embracingSquare.right - leftCorner.x,
-                    leftCorner.y - embracingSquare.bottom
-            );
-        }
-        return innerCircleEmbracingSquareInSectorWrapperCoordsSystem;
-    }
 
     public RectF getOuterCircleEmbracingSquareInCircleCoordsSystem() {
         final int outerRadius = wheelConfig.getOuterRadius();
@@ -146,8 +170,10 @@ public final class WheelComputationHelper {
         return new PointF(x, y);
     }
 
+
+
     public SectorClipAreaDescriptor createSectorClipArea() {
-        if (sectorClipData == null) {
+        if (sectorClipArea == null) {
             final int viewWidth = getSectorWrapperViewWidth();
             final int viewHalfHeight = getSectorWrapperViewHeight() / 2;
 
@@ -168,63 +194,41 @@ public final class WheelComputationHelper {
 
             final float sectorTopEdgeAngleInDegree = (float) radToDegree(wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 2);
             final float sectorSweepAngleInDegree = (float) radToDegree(wheelConfig.getAngularRestrictions().getSectorAngleInRad());
-            sectorClipData = new SectorClipAreaDescriptor(
+            sectorClipArea = new SectorClipAreaDescriptor(
                     bottomLeftCorner, bottomRight, topLeftCorner, topRightCorner, embracingSquaresConfig,
                     sectorTopEdgeAngleInDegree, sectorSweepAngleInDegree
             );
         }
 
-        return sectorClipData;
+        return sectorClipArea;
     }
 
-
-    /**
-     * Layout will be performed from top to bottom direction. And we should have sector
-     * positioned parallel to central diameter. So taking into account imposed angular restrictions
-     * we should compute actual layout start angle.
-     * <p/>
-     * So the firstly layouted sector's top edge will be aligned by this angle.
-     */
-    public double getLayoutStartAngleInRad() {
-        if (layoutStartAngle == 0) {
-            double res = 0;
-            final double topEdgeAngularRestrictionInRad = wheelConfig.getAngularRestrictions().getTopEdgeAngleRestrictionInRad();
-            while (res < topEdgeAngularRestrictionInRad) {
-                res += wheelConfig.getAngularRestrictions().getSectorAngleInRad();
-            }
-            layoutStartAngle = res;
+    private RectF getOuterCircleEmbracingSquareInSectorWrapperCoordsSystem() {
+        if (outerCircleEmbracingSquareInSectorWrapperCoordsSystem == null) {
+            RectF embracingSquare = getOuterCircleEmbracingSquareInCircleCoordsSystem();
+            PointF leftCorner = getSectorWrapperViewLeftCornerInCircleCoordsSystem();
+            outerCircleEmbracingSquareInSectorWrapperCoordsSystem = new RectF(
+                    embracingSquare.left - leftCorner.x,
+                    leftCorner.y - embracingSquare.top,
+                    embracingSquare.right - leftCorner.x,
+                    leftCorner.y - embracingSquare.bottom
+            );
         }
-        return layoutStartAngle;
+        return outerCircleEmbracingSquareInSectorWrapperCoordsSystem;
     }
 
-    public double getSectorAngleBottomEdgeInRad(double sectorAnglePosition) {
-        return sectorAnglePosition - wheelConfig.getAngularRestrictions().getSectorAngleInRad();
-    }
-
-    // TODO: 16.12.2015 to many objects allocation - reduce this amount in future
-    // TODO: 29.01.2016 it's seems that first parameter might be encapsulated inside the method
-    public static RectF fromCircleCoordsSystemToRecyclerViewCoordsSystem(PointF circleCenterRelToRecyclerView,
-                                                                        RectF coordinatesToTransform) {
-
-        final PointF leftTopCorner = fromCircleCoordsSystemToRecyclerViewCoordsSystem(
-                circleCenterRelToRecyclerView,
-                new PointF(coordinatesToTransform.left, coordinatesToTransform.top)
-        );
-
-        final PointF rightBottomCorner = fromCircleCoordsSystemToRecyclerViewCoordsSystem(
-                circleCenterRelToRecyclerView,
-                new PointF(coordinatesToTransform.right, coordinatesToTransform.bottom)
-        );
-
-        return new RectF(leftTopCorner.x, leftTopCorner.y, rightBottomCorner.x, rightBottomCorner.y);
-    }
-
-    public static PointF fromCircleCoordsSystemToRecyclerViewCoordsSystem(PointF circleCenterRelToRecyclerView,
-                                                                          PointF pointToTransform) {
-        return new PointF(
-                circleCenterRelToRecyclerView.x + pointToTransform.x,
-                circleCenterRelToRecyclerView.y - pointToTransform.y
-        );
+    private RectF getInnerCircleEmbracingSquareInSectorWrapperCoordsSystem() {
+        if (innerCircleEmbracingSquareInSectorWrapperCoordsSystem == null) {
+            RectF embracingSquare = getInnerCircleEmbracingSquareInCircleCoordsSystem();
+            PointF leftCorner = getSectorWrapperViewLeftCornerInCircleCoordsSystem();
+            innerCircleEmbracingSquareInSectorWrapperCoordsSystem = new RectF(
+                    embracingSquare.left - leftCorner.x,
+                    leftCorner.y - embracingSquare.top,
+                    embracingSquare.right - leftCorner.x,
+                    leftCorner.y - embracingSquare.bottom
+            );
+        }
+        return innerCircleEmbracingSquareInSectorWrapperCoordsSystem;
     }
 
 }

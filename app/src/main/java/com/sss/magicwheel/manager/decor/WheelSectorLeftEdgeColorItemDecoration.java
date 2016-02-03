@@ -31,7 +31,6 @@ public final class WheelSectorLeftEdgeColorItemDecoration extends WheelBaseItemD
         super(context);
         this.sectorEdgeDrawingPaint = createSectorEdgeDrawingPaint();
         this.innerCircleEmbracingSquare = WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(
-                computationHelper.getWheelConfig().getCircleCenterRelToRecyclerView(),
                 computationHelper.getInnerCircleEmbracingSquareInCircleCoordsSystem()
         );
     }

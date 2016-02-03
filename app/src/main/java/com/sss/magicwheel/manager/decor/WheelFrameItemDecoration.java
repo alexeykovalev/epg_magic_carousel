@@ -30,19 +30,17 @@ public final class WheelFrameItemDecoration extends WheelBaseItemDecoration {
         super(context);
         this.framePaint = createFramePaint();
         this.innerCircleEmbracingSquare = WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(
-                computationHelper.getWheelConfig().getCircleCenterRelToRecyclerView(),
                 computationHelper.getInnerCircleEmbracingSquareInCircleCoordsSystem()
         );
         this.outerCircleEmbracingSquare = WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(
-                computationHelper.getWheelConfig().getCircleCenterRelToRecyclerView(),
                 computationHelper.getOuterCircleEmbracingSquareInCircleCoordsSystem()
         );
 
         this.wheelTopEdgeAngleInDegree =
-                (int) WheelComputationHelper.radToDegree(computationHelper.getLayoutStartAngleInRad());
+                (int) WheelComputationHelper.radToDegree(computationHelper.getWheelLayoutStartAngleInRad());
 
         final int wheelBottomEdgeAngleInDegree = (int) WheelComputationHelper.radToDegree(
-                computationHelper.getWheelConfig().getAngularRestrictions().getBottomEdgeAngleRestrictionInRad()
+                computationHelper.getWheelConfig().getAngularRestrictions().getWheelBottomEdgeAngleRestrictionInRad()
         );
         this.wheelFrameSweepAngleInDegree = wheelTopEdgeAngleInDegree - wheelBottomEdgeAngleInDegree;
     }

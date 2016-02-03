@@ -6,7 +6,6 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +19,6 @@ import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
 import com.sss.magicwheel.manager.WheelOfFortuneLayoutManager;
 import com.sss.magicwheel.manager.decor.WheelFrameItemDecoration;
-import com.sss.magicwheel.manager.decor.WheelSectorRayItemDecoration;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,7 +64,7 @@ public final class FragmentWheelPage extends Fragment {
 
     private void addWheelItemDecorations(RecyclerView wheelContainerView) {
         wheelContainerView.addItemDecoration(new WheelFrameItemDecoration(getActivity()));
-        wheelContainerView.addItemDecoration(new WheelSectorRayItemDecoration(getActivity()));
+//        wheelContainerView.addItemDecoration(new WheelSectorRayItemDecoration(getActivity()));
 //        wheelContainerView.addItemDecoration(new WheelSectorLeftEdgeColorItemDecoration(getActivity()));
     }
 
@@ -94,11 +92,12 @@ public final class FragmentWheelPage extends Fragment {
         final int outerRadius =  (screenHeight - fragmentContainerTopEdge) / 2;
         final int innerRadius = outerRadius - 300;
 
-        WheelConfig.AngularRestrictions angularRestrictions = new WheelConfig.AngularRestrictions(
-                WheelComputationHelper.degreeToRadian(DEFAULT_SECTOR_ANGLE_IN_DEGREE),
-                Math.PI / 2,
-                -Math.PI / 2
-        );
+        final double sectorAngleInRad = WheelComputationHelper.degreeToRadian(DEFAULT_SECTOR_ANGLE_IN_DEGREE);
+        final WheelConfig.AngularRestrictions angularRestrictions = WheelConfig.AngularRestrictions
+                .builder(sectorAngleInRad)
+                .wheelEdgesAngularRestrictions(Math.PI / 2, -Math.PI / 2)
+                .gapEdgesAngularRestrictions(Math.PI / 6, -Math.PI / 6)
+                .build();
 
         return new WheelConfig(circleCenter, outerRadius, innerRadius, angularRestrictions);
     }

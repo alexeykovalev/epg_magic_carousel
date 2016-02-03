@@ -41,10 +41,7 @@ public abstract class WheelBaseItemDecoration extends RecyclerView.ItemDecoratio
         final float refPointYPosInWheelCoordSystem = (float) (innerRadius * Math.sin(sectorAnglePositionInRad));
         final PointF sectorRefPointPosInWheelCoordSystem = new PointF(refPointXPosInWheelCoordSystem, refPointYPosInWheelCoordSystem);
 
-        return WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(
-                computationHelper.getWheelConfig().getCircleCenterRelToRecyclerView(),
-                sectorRefPointPosInWheelCoordSystem
-        );
+        return WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(sectorRefPointPosInWheelCoordSystem);
     }
 
     protected final WheelAdapter getWheelAdapter(RecyclerView wheelView) {

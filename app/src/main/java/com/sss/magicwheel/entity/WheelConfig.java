@@ -12,36 +12,97 @@ public final class WheelConfig {
     public static final class AngularRestrictions {
 
         private final double sectorAngleInRad;
-        private final double topEdgeAngleRestrictionInRad;
-        private final double bottomEdgeAngleRestrictionInRad;
 
-        public AngularRestrictions(double sectorAngleInRad,
-                                   double topEdgeAngleRestrictionInRad,
-                                   double bottomEdgeAngleRestrictionInRad) {
-            this.sectorAngleInRad = sectorAngleInRad;
-            this.topEdgeAngleRestrictionInRad = topEdgeAngleRestrictionInRad;
-            this.bottomEdgeAngleRestrictionInRad = bottomEdgeAngleRestrictionInRad;
+        private final double wheelTopEdgeAngleRestrictionInRad;
+        private final double wheelBottomEdgeAngleRestrictionInRad;
+
+        private final double gapAreaTopEdgeAngleRestrictionInRad;
+        private final double gapAreaBottomEdgeAngleRestrictionInRad;
+
+        public static Builder builder(double sectorAngleInRad) {
+            return new Builder(sectorAngleInRad);
+        }
+
+        private AngularRestrictions(Builder builder) {
+            this.sectorAngleInRad = builder.sectorAngleInRad;
+            this.wheelTopEdgeAngleRestrictionInRad = builder.wheelTopEdgeAngleRestrictionInRad;
+            this.wheelBottomEdgeAngleRestrictionInRad = builder.wheelBottomEdgeAngleRestrictionInRad;
+            this.gapAreaTopEdgeAngleRestrictionInRad = builder.gapAreaTopEdgeAngleRestrictionInRad;
+            this.gapAreaBottomEdgeAngleRestrictionInRad = builder.gapAreaBottomEdgeAngleRestrictionInRad;
         }
 
         public double getSectorAngleInRad() {
             return sectorAngleInRad;
         }
 
-        public double getTopEdgeAngleRestrictionInRad() {
-            return topEdgeAngleRestrictionInRad;
+        public double getWheelTopEdgeAngleRestrictionInRad() {
+            return wheelTopEdgeAngleRestrictionInRad;
         }
 
-        public double getBottomEdgeAngleRestrictionInRad() {
-            return bottomEdgeAngleRestrictionInRad;
+        public double getWheelBottomEdgeAngleRestrictionInRad() {
+            return wheelBottomEdgeAngleRestrictionInRad;
         }
 
+        public double getGapAreaTopEdgeAngleRestrictionInRad() {
+            return gapAreaTopEdgeAngleRestrictionInRad;
+        }
+
+        public double getGapAreaBottomEdgeAngleRestrictionInRad() {
+            return gapAreaBottomEdgeAngleRestrictionInRad;
+        }
+
+        // TODO: 03.02.2016 Guava toStringHelper() should be here
         @Override
         public String toString() {
             return "AngularRestrictions{" +
                     "sectorAngleInRad=" + sectorAngleInRad +
-                    ", topEdgeAngleRestrictionInRad=" + topEdgeAngleRestrictionInRad +
-                    ", bottomEdgeAngleRestrictionInRad=" + bottomEdgeAngleRestrictionInRad +
+                    ", wheelTopEdgeAngleRestrictionInRad=" + wheelTopEdgeAngleRestrictionInRad +
+                    ", wheelBottomEdgeAngleRestrictionInRad=" + wheelBottomEdgeAngleRestrictionInRad +
+                    ", gapAreaTopEdgeAngleRestrictionInRad=" + gapAreaTopEdgeAngleRestrictionInRad +
+                    ", gapAreaBottomEdgeAngleRestrictionInRad=" + gapAreaBottomEdgeAngleRestrictionInRad +
                     '}';
+        }
+
+        public static final class Builder {
+
+            private final double sectorAngleInRad;
+
+            private double wheelTopEdgeAngleRestrictionInRad = Math.PI;
+            private double wheelBottomEdgeAngleRestrictionInRad = -Math.PI;
+
+            private double gapAreaTopEdgeAngleRestrictionInRad = Math.PI / 6;
+            private double gapAreaBottomEdgeAngleRestrictionInRad = -Math.PI / 6;
+
+            private Builder(double sectorAngleInRad) {
+                this.sectorAngleInRad = sectorAngleInRad;
+            }
+
+            public AngularRestrictions build() {
+                return new AngularRestrictions(this);
+            }
+
+            public Builder wheelEdgesAngularRestrictions(double topEdgeAngleRestrictionInRad, double bottomEdgeAngleRestrictionInRad) {
+                ensureAngleInBounds(topEdgeAngleRestrictionInRad);
+                ensureAngleInBounds(bottomEdgeAngleRestrictionInRad);
+                this.wheelTopEdgeAngleRestrictionInRad = topEdgeAngleRestrictionInRad;
+                this.wheelBottomEdgeAngleRestrictionInRad = bottomEdgeAngleRestrictionInRad;
+                return this;
+            }
+
+            public Builder gapEdgesAngularRestrictions(double topEdgeAngleRestrictionInRad, double bottomEdgeAngleRestrictionInRad) {
+                ensureAngleInBounds(topEdgeAngleRestrictionInRad);
+                ensureAngleInBounds(bottomEdgeAngleRestrictionInRad);
+                this.gapAreaTopEdgeAngleRestrictionInRad = topEdgeAngleRestrictionInRad;
+                this.gapAreaBottomEdgeAngleRestrictionInRad = bottomEdgeAngleRestrictionInRad;
+                return this;
+            }
+
+            private static void ensureAngleInBounds(double angleToCheck) {
+                if (angleToCheck < -Math.PI || angleToCheck > Math.PI) {
+                    throw new IllegalArgumentException("You have to specify angle in bounds [-PI; +PI] but " +
+                            "actually passed value is [" + angleToCheck + "]");
+                }
+            }
         }
     }
 

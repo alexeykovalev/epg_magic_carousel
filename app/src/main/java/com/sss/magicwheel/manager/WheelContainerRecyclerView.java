@@ -31,7 +31,6 @@ public final class WheelContainerRecyclerView extends RecyclerView {
     private RectF createGapClipRect() {
         WheelComputationHelper computationHelper = WheelComputationHelper.getInstance();
         return WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(
-                computationHelper.getWheelConfig().getCircleCenterRelToRecyclerView(),
                 new RectF(
                         0,
                         150,

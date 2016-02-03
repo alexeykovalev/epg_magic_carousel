@@ -80,9 +80,6 @@ public final class WheelSectorRayItemDecoration extends WheelBaseItemDecoration 
         final float refPointYPosInWheelCoordSystem = (float) (innerRadius * Math.sin(topLeftSectorCornerAnglePosInRad));
         final PointF topLeftCornerPosInWheelCoordsSystem = new PointF(refPointXPosInWheelCoordSystem, refPointYPosInWheelCoordSystem);
 
-        return WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(
-                computationHelper.getWheelConfig().getCircleCenterRelToRecyclerView(),
-                topLeftCornerPosInWheelCoordsSystem
-        );
+        return WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(topLeftCornerPosInWheelCoordsSystem);
     }
 }
