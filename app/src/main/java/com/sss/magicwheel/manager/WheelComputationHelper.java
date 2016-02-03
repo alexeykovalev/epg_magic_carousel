@@ -1,7 +1,10 @@
 package com.sss.magicwheel.manager;
 
+import android.content.Context;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.view.WindowManager;
 
 import com.sss.magicwheel.entity.MeasurementsHolder;
 import com.sss.magicwheel.entity.WheelConfig;
@@ -18,6 +21,8 @@ public final class WheelComputationHelper {
     private static final double DEGREE_TO_RAD_COEF = Math.PI / 180;
     private static final double RAD_TO_DEGREE_COEF = 1 / DEGREE_TO_RAD_COEF;
     private static final int NOT_DEFINED_VALUE = Integer.MIN_VALUE;
+
+    private static MeasurementsHolder screenDimensions;
 
     private static WheelComputationHelper instance;
 
@@ -53,6 +58,16 @@ public final class WheelComputationHelper {
 
     public static boolean isInitialized() {
         return instance != null;
+    }
+
+    public static MeasurementsHolder getScreenDimensions(Context context) {
+        if (screenDimensions == null) {
+            WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+            Point screenSize = new Point();
+            wm.getDefaultDisplay().getSize(screenSize);
+            screenDimensions = new MeasurementsHolder(screenSize.x, screenSize.y);
+        }
+        return screenDimensions;
     }
 
     public static double degreeToRadian(double angleInDegree) {

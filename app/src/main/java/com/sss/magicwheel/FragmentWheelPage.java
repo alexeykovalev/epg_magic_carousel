@@ -1,17 +1,13 @@
 package com.sss.magicwheel;
 
 import android.app.Fragment;
-import android.content.Context;
-import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.WindowManager;
 
 import com.sss.magicwheel.entity.WheelConfig;
 import com.sss.magicwheel.entity.WheelDataItem;
@@ -81,9 +77,7 @@ public final class FragmentWheelPage extends Fragment {
     }
 
     private WheelConfig createWheelConfig(int fragmentContainerTopEdge) {
-        WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
-
-        final int screenHeight = getScreenHeight(wm.getDefaultDisplay());
+        final int screenHeight = WheelComputationHelper.getScreenDimensions(getActivity()).getHeight();
 
         final int yWheelCenterPosition = (screenHeight - fragmentContainerTopEdge) / 2 ;
         final PointF circleCenter = new PointF(0, yWheelCenterPosition);
@@ -100,13 +94,6 @@ public final class FragmentWheelPage extends Fragment {
                 .build();
 
         return new WheelConfig(circleCenter, outerRadius, innerRadius, angularRestrictions);
-    }
-
-    // TODO: 03.12.2015 Wheel boundaries might be not restricted by screen but by custom rectangle instead
-    private int getScreenHeight(Display display) {
-        Point size = new Point();
-        display.getSize(size);
-        return size.y;
     }
 
 }
