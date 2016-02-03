@@ -3,7 +3,6 @@ package com.sss.magicwheel.manager.layouter;
 import android.support.v7.widget.RecyclerView;
 
 import com.sss.magicwheel.manager.WheelComputationHelper;
-import com.sss.magicwheel.manager.WheelOfFortuneLayoutManager;
 
 /**
  * @author Alexey Kovalev
@@ -11,12 +10,12 @@ import com.sss.magicwheel.manager.WheelOfFortuneLayoutManager;
  */
 public final class BottomSubWheelLayouter extends BaseSubWheelLayouter {
 
-    public BottomSubWheelLayouter(WheelOfFortuneLayoutManager wheelLayoutManager, WheelComputationHelper computationHelper) {
+    protected BottomSubWheelLayouter(WheelOfFortuneLayoutManager wheelLayoutManager, WheelComputationHelper computationHelper) {
         super(wheelLayoutManager, computationHelper);
     }
 
     @Override
-    public void doInitialChildrenLayout(RecyclerView.Recycler recycler, RecyclerView.State state, int startLayoutFromAdapterPosition) {
+    public void doInitialChildrenLayout(RecyclerView.Recycler recycler, RecyclerView.State state, int startLayoutFromAdapterPosition, OnInitialLayoutFinishingListener layoutFinishingListener) {
 
     }
 }

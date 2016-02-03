@@ -8,7 +8,7 @@ import android.view.View;
 
 import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
-import com.sss.magicwheel.manager.WheelOfFortuneLayoutManager;
+import com.sss.magicwheel.manager.layouter.WheelOfFortuneLayoutManager;
 
 /**
  * @author Alexey Kovalev

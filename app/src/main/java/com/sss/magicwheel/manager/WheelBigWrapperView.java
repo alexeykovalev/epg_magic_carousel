@@ -47,11 +47,11 @@ public final class WheelBigWrapperView extends FrameLayout {
         WheelComputationHelper computationHelper = WheelComputationHelper.getInstance();
 
         ViewGroup.LayoutParams lp = sectorWrapperView.getLayoutParams();
-        lp.width = computationHelper.getSectorWrapperMeasurements().getWidth();
-        lp.height = computationHelper.getSectorWrapperMeasurements().getHeight();
+        lp.width = computationHelper.getSectorWrapperViewMeasurements().getWidth();
+        lp.height = computationHelper.getSectorWrapperViewMeasurements().getHeight();
         sectorWrapperView.setLayoutParams(lp);
 
-        sectorWrapperView.setSectorClipArea(computationHelper.createSectorClipArea());
+        sectorWrapperView.setSectorClipArea(computationHelper.getSectorClipArea());
     }
 
     public void bindData(WheelDataItem dataItem) {
@@ -61,8 +61,8 @@ public final class WheelBigWrapperView extends FrameLayout {
     }
 
     private void loadSectorImage(int imageDrawableResId) {
-        final int targetWidth = computationHelper.getSectorWrapperMeasurements().getWidth();
-        final int targetHeight = computationHelper.getSectorWrapperMeasurements().getHeight();
+        final int targetWidth = computationHelper.getSectorWrapperViewMeasurements().getWidth();
+        final int targetHeight = computationHelper.getSectorWrapperViewMeasurements().getHeight();
         Picasso
                 .with(getContext())
                 .load(imageDrawableResId)

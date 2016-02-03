@@ -1,4 +1,4 @@
-package com.sss.magicwheel.manager;
+package com.sss.magicwheel.manager.layouter;
 
 import android.content.Context;
 import android.graphics.RectF;
@@ -9,7 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sss.magicwheel.entity.WheelConfig;
-import com.sss.magicwheel.manager.layouter.BaseSubWheelLayouter;
+import com.sss.magicwheel.manager.WheelAdapter;
+import com.sss.magicwheel.manager.WheelBigWrapperView;
+import com.sss.magicwheel.manager.WheelComputationHelper;
+import com.sss.magicwheel.manager.WheelRotationDirection;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -26,7 +29,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
     /**
      * In order to make wheel infinite we have to set virtual position as start layout position.
      */
-    private static final int START_LAYOUT_FROM_POSITION = WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT;
+    private static final int START_LAYOUT_FROM_ADAPTER_POSITION = WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT;
 
     private static final boolean IS_LOG_ACTIVATED = true;
     private static final boolean IS_FILTER_LOG_BY_METHOD_NAME = true;
@@ -54,10 +57,15 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
     private final WheelConfig wheelConfig;
     private final WheelComputationHelper computationHelper;
 
+    private final TopSubWheelLayouter topSubWheelLayouter;
+    private final BottomSubWheelLayouter bottomSubWheelLayouter;
+
     public WheelOfFortuneLayoutManager(WheelComputationHelper computationHelper) {
         this.computationHelper = computationHelper;
         this.wheelConfig = computationHelper.getWheelConfig();
         BaseSubWheelLayouter.initialize(this, computationHelper);
+        this.topSubWheelLayouter = BaseSubWheelLayouter.topSubwheel();
+        this.bottomSubWheelLayouter = BaseSubWheelLayouter.bottomSubwheel();
     }
 
     @Override
@@ -68,7 +76,7 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
     }
 
     @Override
-    public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+    public void onLayoutChildren(final RecyclerView.Recycler recycler, final RecyclerView.State state) {
         // We have nothing to show for an empty data set but clear any existing views
         int itemCount = getItemCount();
         if (itemCount == 0) {
@@ -78,23 +86,21 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
 
         removeAndRecycleAllViews(recycler);
 
-        final double sectorAngleInRad = wheelConfig.getAngularRestrictions().getSectorAngleInRad();
-        final double bottomLimitAngle = wheelConfig.getAngularRestrictions().getWheelBottomEdgeAngleRestrictionInRad();
+        topSubWheelLayouter.doInitialChildrenLayout(recycler, state, START_LAYOUT_FROM_ADAPTER_POSITION,
+                new BaseSubWheelLayouter.OnInitialLayoutFinishingListener() {
+                    @Override
+                    public void onInitialLayoutFinished(int finishedAtAdapterPosition) {
+                        bottomSubWheelLayouter.doInitialChildrenLayout(recycler, state, finishedAtAdapterPosition, null);
+                    }
+                });
 
-        double layoutAngle = computationHelper.getWheelLayoutStartAngleInRad();
-        int childPos = START_LAYOUT_FROM_POSITION;
-        while (layoutAngle > bottomLimitAngle && childPos < state.getItemCount()) {
-            setupViewForPosition(recycler, childPos, layoutAngle, true);
-            layoutAngle -= sectorAngleInRad;
-            childPos++;
-        }
     }
 
-    private void setupViewForPosition(RecyclerView.Recycler recycler, int positionIndex, double angularPosition, boolean isAddViewToBottom) {
+    void setupViewForPosition(RecyclerView.Recycler recycler, int positionIndex, double angularPosition, boolean isAddViewToBottom) {
         final WheelBigWrapperView bigWrapperView = (WheelBigWrapperView) recycler.getViewForPosition(positionIndex);
         measureBigWrapperView(bigWrapperView);
 
-        RectF wrViewCoordsInCircleSystem = computationHelper.getSectorWrapperViewCoordsInCircleSystem(bigWrapperView.getMeasuredWidth());
+        RectF wrViewCoordsInCircleSystem = computationHelper.getBigWrapperViewCoordsInCircleSystem(bigWrapperView.getMeasuredWidth());
         RectF wrTransformedCoords = WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(
                 wrViewCoordsInCircleSystem
         );
@@ -117,9 +123,8 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
     }
 
     private void measureBigWrapperView(View bigWrapperView) {
-        final int viewWidth = wheelConfig.getOuterRadius();
-        // big wrapper view has the same height as the sector wrapper view
-        final int viewHeight = computationHelper.getSectorWrapperMeasurements().getHeight();
+        final int viewWidth = computationHelper.getBigWrapperViewMeasurements().getWidth();
+        final int viewHeight = computationHelper.getBigWrapperViewMeasurements().getHeight();
 
         final int childWidthSpec = View.MeasureSpec.makeMeasureSpec(viewWidth, View.MeasureSpec.EXACTLY);
         final int childHeightSpec = View.MeasureSpec.makeMeasureSpec(viewHeight, View.MeasureSpec.EXACTLY);
