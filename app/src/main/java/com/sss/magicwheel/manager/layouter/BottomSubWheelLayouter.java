@@ -3,6 +3,7 @@ package com.sss.magicwheel.manager.layouter;
 import android.support.v7.widget.RecyclerView;
 
 import com.sss.magicwheel.manager.WheelComputationHelper;
+import com.sss.magicwheel.manager.WheelRotationDirection;
 
 /**
  * @author Alexey Kovalev
@@ -16,6 +17,11 @@ public final class BottomSubWheelLayouter extends BaseSubWheelLayouter {
 
     @Override
     public void doInitialChildrenLayout(RecyclerView.Recycler recycler, RecyclerView.State state, int startLayoutFromAdapterPosition, OnInitialLayoutFinishingListener layoutFinishingListener) {
+
+    }
+
+    @Override
+    public void rotateSubWheel(double rotationAngle, WheelRotationDirection rotationDirection) {
 
     }
 }
