@@ -2,10 +2,16 @@ package com.sss.magicwheel.manager;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PointF;
 import android.graphics.RectF;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+
+import com.sss.magicwheel.entity.CoordinatesHolder;
+import com.sss.magicwheel.entity.WheelConfig;
 
 /**
  * @author Alexey Kovalev
@@ -13,8 +19,17 @@ import android.util.AttributeSet;
  */
 public final class WheelContainerRecyclerView extends RecyclerView {
 
-    private RectF gapClipRectInRvCoords;
-    private Path gapPath;
+
+    private final WheelComputationHelper computationHelper;
+    private final WheelConfig wheelConfig;
+
+    private final Paint gapDrawingPaint;
+    private final PointF gapTopRay;
+    private final PointF gapBottomRay;
+
+    private final RectF gapClipRectInRvCoords;
+    private final Path gapPath;
+
 
     public WheelContainerRecyclerView(Context context) {
         this(context, null);
@@ -26,10 +41,42 @@ public final class WheelContainerRecyclerView extends RecyclerView {
 
     public WheelContainerRecyclerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        this.computationHelper = WheelComputationHelper.getInstance();
+        this.wheelConfig = computationHelper.getWheelConfig();
+
+        this.gapDrawingPaint = createGapRaysDrawingPaint();
+        this.gapTopRay = computeGapTopRayPosition();
+        this.gapBottomRay = computeGapBottomRayPosition();
+
+        this.gapClipRectInRvCoords = createGapClipRect();
+        this.gapPath = createGapClipPath(gapClipRectInRvCoords);
+    }
+
+    private PointF computeGapTopRayPosition() {
+        final PointF pos = CoordinatesHolder.ofPolar(2 * wheelConfig.getOuterRadius(),
+                wheelConfig.getAngularRestrictions().getGapAreaTopEdgeAngleRestrictionInRad()
+        ).toPointF();
+
+        return WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(pos);
+    }
+
+    private PointF computeGapBottomRayPosition() {
+        final PointF pos = CoordinatesHolder.ofPolar(2 * wheelConfig.getOuterRadius(),
+                wheelConfig.getAngularRestrictions().getGapAreaBottomEdgeAngleRestrictionInRad()
+        ).toPointF();
+
+        return WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(pos);
+    }
+
+    private static Paint createGapRaysDrawingPaint() {
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(Color.RED);
+        paint.setStrokeWidth(8);
+        return paint;
     }
 
     private RectF createGapClipRect() {
-        WheelComputationHelper computationHelper = WheelComputationHelper.getInstance();
         return WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(
                 new RectF(
                         0,
@@ -39,6 +86,8 @@ public final class WheelContainerRecyclerView extends RecyclerView {
                 )
         );
     }
+
+
 
     private Path createGapClipPath(RectF gapClipRect) {
         final Path res = new Path();
@@ -59,22 +108,21 @@ public final class WheelContainerRecyclerView extends RecyclerView {
     @Override
     public void onDraw(Canvas canvas) {
         if (true) {
+
+            final PointF circleCenterRelToRecyclerView = wheelConfig.getCircleCenterRelToRecyclerView();
+            canvas.drawLine(circleCenterRelToRecyclerView.x, circleCenterRelToRecyclerView.y,
+                    gapTopRay.x, gapTopRay.y, gapDrawingPaint);
+
+            canvas.drawLine(circleCenterRelToRecyclerView.x, circleCenterRelToRecyclerView.y,
+                    gapBottomRay.x, gapBottomRay.y, gapDrawingPaint);
+
             super.onDraw(canvas);
+
             return;
         }
 
-        if (!WheelComputationHelper.isInitialized()) {
-            super.onDraw(canvas);
-            return;
-        }
-
-        init();
         canvas.clipPath(gapPath);
         super.onDraw(canvas);
     }
 
-    private void init() {
-        this.gapClipRectInRvCoords = createGapClipRect();
-        this.gapPath = createGapClipPath(gapClipRectInRvCoords);
-    }
 }

@@ -33,9 +33,16 @@ public final class FragmentWheelPage extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
 
+        // TODO: 03.02.2016 simplify for now considering container has 0 height
+
+        WheelComputationHelper.initialize(createWheelConfig(0));
+
         final View rootView = inflater.inflate(R.layout.fragment_wheel_page_layout, container, false);
         final RecyclerView wheelContainerView = (RecyclerView) rootView.findViewById(R.id.wheel_container);
 
+        initWheelContainer(wheelContainerView);
+
+/*
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -48,6 +55,9 @@ public final class FragmentWheelPage extends Fragment {
                 }
             }
         });
+*/
+
+
 
         return rootView;
     }

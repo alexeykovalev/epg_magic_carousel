@@ -1,5 +1,7 @@
 package com.sss.magicwheel.entity;
 
+import android.graphics.PointF;
+
 /**
  * @author Alexey
  * @since 05.11.2015
@@ -45,6 +47,10 @@ public class CoordinatesHolder {
 
     public double getRadius() {
         return Math.sqrt(x * x + y * y);
+    }
+
+    public PointF toPointF() {
+        return new PointF(getXAsFloat(), getYAsFloat());
     }
 
     @Override

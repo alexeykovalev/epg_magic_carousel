@@ -152,8 +152,10 @@ public final class WheelConfig {
         return new RectF(-outerRadius, outerRadius, outerRadius, -outerRadius);
     }
 
+    // TODO: 03.02.2016 do we need safe copy or not is an open question
     public PointF getCircleCenterRelToRecyclerView() {
-        return safePointCopy(circleCenter);
+        return circleCenter;
+//        return safePointCopy(circleCenter);
     }
 
     public int getOuterRadius() {

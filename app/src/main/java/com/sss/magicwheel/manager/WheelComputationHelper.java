@@ -35,6 +35,7 @@ public final class WheelComputationHelper {
     // Be careful LAZY initialized fields. Don't access directly, use getters instead.
     // ------------
 
+    // TODO: 03.02.2016 make them final and initialize in constructor
     private RectF outerCircleEmbracingSquareInSectorWrapperCoordsSystem;
     private RectF innerCircleEmbracingSquareInSectorWrapperCoordsSystem;
 
