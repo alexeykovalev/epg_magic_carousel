@@ -2,6 +2,7 @@ package com.sss.magicwheel.manager.layouter;
 
 import android.support.v7.widget.RecyclerView;
 
+import com.sss.magicwheel.manager.WheelComputationHelper;
 import com.sss.magicwheel.manager.WheelOfFortuneLayoutManager;
 
 /**
@@ -14,14 +15,15 @@ public abstract class BaseSubWheelLayouter {
     private static BottomSubWheelLayouter BOTTOM_SUBWHEEL_LAYOUTER;
 
     protected final WheelOfFortuneLayoutManager wheelLayoutManager;
+    private final WheelComputationHelper computationHelper;
 
-    public static void initialize(WheelOfFortuneLayoutManager wheelLayoutManager) {
+    public static void initialize(WheelOfFortuneLayoutManager wheelLayoutManager, WheelComputationHelper computationHelper) {
         if (isInitialized()) {
             throw new IllegalStateException("Layouters have been already initialized.");
         }
 
-        TOP_SUBWHEEL_LAYOUTER = new TopSubWheelLayouter(wheelLayoutManager);
-        BOTTOM_SUBWHEEL_LAYOUTER = new BottomSubWheelLayouter(wheelLayoutManager);
+        TOP_SUBWHEEL_LAYOUTER = new TopSubWheelLayouter(wheelLayoutManager, computationHelper);
+        BOTTOM_SUBWHEEL_LAYOUTER = new BottomSubWheelLayouter(wheelLayoutManager, computationHelper);
     }
 
     private static boolean isInitialized() {
@@ -42,8 +44,11 @@ public abstract class BaseSubWheelLayouter {
         return BOTTOM_SUBWHEEL_LAYOUTER;
     }
 
-    protected BaseSubWheelLayouter(WheelOfFortuneLayoutManager wheelLayoutManager) {
+
+
+    protected BaseSubWheelLayouter(WheelOfFortuneLayoutManager wheelLayoutManager, WheelComputationHelper computationHelper) {
         this.wheelLayoutManager = wheelLayoutManager;
+        this.computationHelper = computationHelper;
     }
 
     public abstract void doInitialChildrenLayout(RecyclerView.Recycler recycler,

@@ -2,6 +2,7 @@ package com.sss.magicwheel.manager.layouter;
 
 import android.support.v7.widget.RecyclerView;
 
+import com.sss.magicwheel.manager.WheelComputationHelper;
 import com.sss.magicwheel.manager.WheelOfFortuneLayoutManager;
 
 /**
@@ -11,8 +12,8 @@ import com.sss.magicwheel.manager.WheelOfFortuneLayoutManager;
 public final class TopSubWheelLayouter extends BaseSubWheelLayouter {
 
 
-    protected TopSubWheelLayouter(WheelOfFortuneLayoutManager wheelLayoutManager) {
-        super(wheelLayoutManager);
+    public TopSubWheelLayouter(WheelOfFortuneLayoutManager wheelLayoutManager, WheelComputationHelper computationHelper) {
+        super(wheelLayoutManager, computationHelper);
     }
 
     @Override

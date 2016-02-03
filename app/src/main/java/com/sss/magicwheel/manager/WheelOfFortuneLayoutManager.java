@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sss.magicwheel.entity.WheelConfig;
+import com.sss.magicwheel.manager.layouter.BaseSubWheelLayouter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -53,9 +54,10 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
     private final WheelConfig wheelConfig;
     private final WheelComputationHelper computationHelper;
 
-    public WheelOfFortuneLayoutManager() {
-        this.computationHelper = WheelComputationHelper.getInstance();
+    public WheelOfFortuneLayoutManager(WheelComputationHelper computationHelper) {
+        this.computationHelper = computationHelper;
         this.wheelConfig = computationHelper.getWheelConfig();
+        BaseSubWheelLayouter.initialize(this, computationHelper);
     }
 
     @Override

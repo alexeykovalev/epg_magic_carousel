@@ -53,7 +53,7 @@ public final class FragmentWheelPage extends Fragment {
     }
 
     private void initWheelContainer(RecyclerView wheelContainerView) {
-        wheelContainerView.setLayoutManager(new WheelOfFortuneLayoutManager());
+        wheelContainerView.setLayoutManager(new WheelOfFortuneLayoutManager(WheelComputationHelper.getInstance()));
         wheelContainerView.setAdapter(createWheelAdapter(createDataSet()));
         addWheelItemDecorations(wheelContainerView);
     }
