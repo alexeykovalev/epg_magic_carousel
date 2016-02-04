@@ -51,7 +51,7 @@ public final class WheelConfig {
         public double getWheelLayoutStartAngleInRad() {
             if (wheelLayoutStartAngle == 0) {
                 double res = 0;
-                while (res < wheelTopEdgeAngleRestrictionInRad) {
+                while (res <= wheelTopEdgeAngleRestrictionInRad) {
                     res += sectorAngleInRad;
                 }
                 wheelLayoutStartAngle = res;

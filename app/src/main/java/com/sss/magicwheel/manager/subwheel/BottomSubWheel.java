@@ -13,6 +13,8 @@ import com.sss.magicwheel.manager.WheelRotationDirection;
  */
 public final class BottomSubWheel extends BaseSubWheel {
 
+    private static final String TAG = BottomSubWheel.class.getCanonicalName();
+
     protected BottomSubWheel(WheelOfFortuneLayoutManager wheelLayoutManager, WheelComputationHelper computationHelper) {
         super(wheelLayoutManager, computationHelper);
     }
@@ -20,6 +22,11 @@ public final class BottomSubWheel extends BaseSubWheel {
     @Override
     public void doInitialChildrenLayout(RecyclerView.Recycler recycler, RecyclerView.State state, int startLayoutFromAdapterPosition, OnInitialLayoutFinishingListener layoutFinishingListener) {
         throw new UnsupportedOperationException("Not implemented feature yet.");
+    }
+
+    @Override
+    public String getUniqueMarker() {
+        return TAG;
     }
 
     @Override

@@ -64,6 +64,11 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
         return (LayoutParams) child.getLayoutParams();
     }
 
+    // TODO: 04.02.2016 for testing purposes
+    public static String getBigWrapperTitle(View bigWrapperView) {
+        return ((WheelBigWrapperView) bigWrapperView).getTitle();
+    }
+
     public WheelOfFortuneLayoutManager(WheelComputationHelper computationHelper) {
         this.computationHelper = computationHelper;
         this.wheelConfig = computationHelper.getWheelConfig();
@@ -234,8 +239,10 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
     }
 
 
-    public final void setupSectorForPosition(RecyclerView.Recycler recycler, int positionIndex,
-                                             double angularPosition, boolean isAddViewToBottom) {
+    public final void setupSectorForPosition(BaseSubWheel setupFromSubWheel,
+                                             RecyclerView.Recycler recycler,
+                                             int positionIndex, double angularPosition, boolean isAddViewToBottom) {
+
         final WheelBigWrapperView bigWrapperView = (WheelBigWrapperView) recycler.getViewForPosition(positionIndex);
         measureBigWrapperView(bigWrapperView);
 
@@ -253,6 +260,12 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
 
         WheelOfFortuneLayoutManager.LayoutParams lp = (WheelOfFortuneLayoutManager.LayoutParams) bigWrapperView.getLayoutParams();
         lp.anglePositionInRad = angularPosition;
+        lp.subwheelMarker = setupFromSubWheel.getUniqueMarker();
+
+        Log.e(TAG,
+                "setupSectorForPosition() add viewTitle [" + getBigWrapperTitle(bigWrapperView) + "], " +
+                "angleInRad [" + WheelComputationHelper.radToDegree(lp.anglePositionInRad) + "]"
+        );
 
         if (isAddViewToBottom) {
             addView(bigWrapperView);
@@ -351,6 +364,8 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
          * Effectively it equals to view's rotation angle.
          */
         public double anglePositionInRad;
+
+        public String subwheelMarker;
 
         public LayoutParams(Context c, AttributeSet attrs) {
             super(c, attrs);

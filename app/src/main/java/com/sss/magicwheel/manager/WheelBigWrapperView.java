@@ -70,6 +70,10 @@ public final class WheelBigWrapperView extends FrameLayout {
                 .into(sectorWrapperView);
     }
 
+    public String getTitle() {
+        return titleView.getText().toString();
+    }
+
     // TODO: 01.02.2016 attempt to draw rays using big wrapper - problem big wrapper view has to be much more larger size than it actually is
 //    @Override
 //    protected void dispatchDraw(Canvas canvas) {

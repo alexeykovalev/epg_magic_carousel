@@ -32,11 +32,15 @@ public final class TopSubWheel extends BaseSubWheel {
         double layoutAngle = layoutStartAngleInRad;
         int childPos = startLayoutFromAdapterPosition;
         while (layoutAngle > bottomLimitAngle && childPos < state.getItemCount()) {
-            wheelLayoutManager.setupSectorForPosition(recycler, childPos, layoutAngle, true);
-            Log.e(TAG, "doInitialChildrenLayout addView [" + childPos + "]");
+            wheelLayoutManager.setupSectorForPosition(this, recycler, childPos, layoutAngle, true);
             layoutAngle -= sectorAngleInRad;
             childPos++;
         }
+    }
+
+    @Override
+    public String getUniqueMarker() {
+        return TAG;
     }
 
     @Override
@@ -63,20 +67,19 @@ public final class TopSubWheel extends BaseSubWheel {
 
     // TODO: 15.12.2015 same code snippets - remove code duplication
 //    @Override
-    @Deprecated
-    private void rotateSubWheel(double rotationAngle, WheelRotationDirection rotationDirection) {
-        if (rotationDirection == WheelRotationDirection.Anticlockwise) {
-            for (int i = 0; i < wheelLayoutManager.getChildCount(); i++) {
-                View child = wheelLayoutManager.getChildAt(i);
-                final WheelOfFortuneLayoutManager.LayoutParams childLp =
-                        (WheelOfFortuneLayoutManager.LayoutParams) child.getLayoutParams();
-                childLp.anglePositionInRad += rotationAngle;
-                child.setLayoutParams(childLp);
-                wheelLayoutManager.alignBigWrapperViewByAngle(child, -childLp.anglePositionInRad);
-            }
-        } else {
-            throw new UnsupportedOperationException("Clockwise rotation has to be be done in rotator.");
-        }
-    }
+//    private void rotateSubWheel(double rotationAngle, WheelRotationDirection rotationDirection) {
+//        if (rotationDirection == WheelRotationDirection.Anticlockwise) {
+//            for (int i = 0; i < wheelLayoutManager.getChildCount(); i++) {
+//                View child = wheelLayoutManager.getChildAt(i);
+//                final WheelOfFortuneLayoutManager.LayoutParams childLp =
+//                        (WheelOfFortuneLayoutManager.LayoutParams) child.getLayoutParams();
+//                childLp.anglePositionInRad += rotationAngle;
+//                child.setLayoutParams(childLp);
+//                wheelLayoutManager.alignBigWrapperViewByAngle(child, -childLp.anglePositionInRad);
+//            }
+//        } else {
+//            throw new UnsupportedOperationException("Clockwise rotation has to be be done in rotator.");
+//        }
+//    }
 
 }

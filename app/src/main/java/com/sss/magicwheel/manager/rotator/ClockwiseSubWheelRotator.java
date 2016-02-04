@@ -1,6 +1,7 @@
 package com.sss.magicwheel.manager.rotator;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 
 import com.sss.magicwheel.manager.WheelComputationHelper;
@@ -15,6 +16,8 @@ import java.util.List;
  */
 public final class ClockwiseSubWheelRotator extends AbstractSubWheelRotator {
 
+    private static final String TAG = ClockwiseSubWheelRotator.class.getCanonicalName();
+
     protected ClockwiseSubWheelRotator(WheelOfFortuneLayoutManager wheelLayoutManager, WheelComputationHelper computationHelper) {
         super(wheelLayoutManager, computationHelper);
     }
@@ -22,6 +25,7 @@ public final class ClockwiseSubWheelRotator extends AbstractSubWheelRotator {
     @Override
     public void rotateSubWheel(BaseSubWheel subWheelToRotate, double rotationAngleInRad,
                                RecyclerView.Recycler recycler, RecyclerView.State state) {
+        logChildren(subWheelToRotate.getChildren());
         for (View sectorView : subWheelToRotate.getChildren()) {
             final WheelOfFortuneLayoutManager.LayoutParams sectorViewLp = WheelOfFortuneLayoutManager.getChildLayoutParams(sectorView);
             sectorViewLp.anglePositionInRad -= rotationAngleInRad;
@@ -30,6 +34,20 @@ public final class ClockwiseSubWheelRotator extends AbstractSubWheelRotator {
         }
 
         recycleAndAddSectors(subWheelToRotate, recycler, state);
+    }
+
+    private void logChildren(List<View> children) {
+        for (View sectorView : children) {
+            final WheelOfFortuneLayoutManager.LayoutParams sectorViewLp = WheelOfFortuneLayoutManager.getChildLayoutParams(sectorView);
+            final String title = WheelOfFortuneLayoutManager.getBigWrapperTitle(sectorView);
+            double topEdgeSectorInDegree = WheelComputationHelper.radToDegree(computationHelper.getSectorAngleTopEdgeInRad(sectorViewLp.anglePositionInRad));
+            double bottomEdgeSectorInDegree = WheelComputationHelper.radToDegree(computationHelper.getSectorAngleBottomEdgeInRad(sectorViewLp.anglePositionInRad));
+            Log.e(TAG,
+                    "title [" + title + "], " +
+                    "topEdgeSectorInDegree [" + topEdgeSectorInDegree + "], " +
+                    "bottomEdgeSectorInDegree [" + bottomEdgeSectorInDegree + "]"
+            );
+        }
     }
 
     @Override
@@ -67,7 +85,7 @@ public final class ClockwiseSubWheelRotator extends AbstractSubWheelRotator {
 //                            "newSectorViewLayoutAngle [" + WheelComputationHelper.radToDegree(newSectorViewLayoutAngle) + "], " +
 //                            "childPos [" + childPos + "]"
 //            );
-            wheelLayoutManager.setupSectorForPosition(recycler, childPos, newSectorViewLayoutAngle, false);
+            wheelLayoutManager.setupSectorForPosition(subWheel, recycler, childPos, newSectorViewLayoutAngle, false);
             newSectorViewLayoutAngle += sectorAngleInRad;
             newSectorViewBottomEdgeAngularPosInRad = computationHelper.getSectorAngleBottomEdgeInRad(newSectorViewLayoutAngle);
             childPos--;
