@@ -94,12 +94,12 @@ public abstract class BaseSubWheel {
 
     // TODO: 04.02.2016 can cause IndexOutOfBoundsException
     public final View getChildClosestToLayoutStartEdge() {
-        return getChildren().get(getChildren().size() - 1);
+        return getChildren().get(0);
     }
 
     // TODO: 04.02.2016 can cause IndexOutOfBoundsException
     public final View getChildClosestToLayoutEndEdge() {
-        return getChildren().get(0);
+        return getChildren().get(getChildren().size() - 1);
     }
 
     public final List<View> getChildren() {

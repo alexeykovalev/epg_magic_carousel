@@ -74,6 +74,9 @@ public final class ClockwiseSubWheelRotator extends AbstractSubWheelRotator {
         final View closestToStartSectorView = subWheel.getChildClosestToLayoutStartEdge();
         final WheelOfFortuneLayoutManager.LayoutParams sectorViewLp = WheelOfFortuneLayoutManager.getChildLayoutParams(closestToStartSectorView);
 
+        Log.e(WheelOfFortuneLayoutManager.TAG, "addSectorsToTopIfNeeded() " +
+                "closestToStartSectorView [" + WheelOfFortuneLayoutManager.getBigWrapperTitle(closestToStartSectorView) + "]");
+
         final double sectorAngleInRad = computationHelper.getWheelConfig().getAngularRestrictions().getSectorAngleInRad();
 
         double newSectorViewLayoutAngle = sectorViewLp.anglePositionInRad + sectorAngleInRad;
@@ -85,6 +88,7 @@ public final class ClockwiseSubWheelRotator extends AbstractSubWheelRotator {
 //                            "newSectorViewLayoutAngle [" + WheelComputationHelper.radToDegree(newSectorViewLayoutAngle) + "], " +
 //                            "childPos [" + childPos + "]"
 //            );
+            Log.e(WheelOfFortuneLayoutManager.TAG, "addSectorsToTopIfNeeded()");
             wheelLayoutManager.setupSectorForPosition(subWheel, recycler, childPos, newSectorViewLayoutAngle, false);
             newSectorViewLayoutAngle += sectorAngleInRad;
             newSectorViewBottomEdgeAngularPosInRad = computationHelper.getSectorAngleBottomEdgeInRad(newSectorViewLayoutAngle);

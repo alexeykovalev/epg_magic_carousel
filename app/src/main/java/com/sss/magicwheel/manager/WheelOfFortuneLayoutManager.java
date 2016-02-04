@@ -23,7 +23,7 @@ import java.util.Set;
  */
 public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManager {
 
-    private static final String TAG = WheelOfFortuneLayoutManager.class.getCanonicalName();
+    public static final String TAG = WheelOfFortuneLayoutManager.class.getCanonicalName();
     private static final double NOT_DEFINED_ROTATION_ANGLE = Double.MIN_VALUE;
 
     /**
