@@ -7,13 +7,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 
 import com.sss.magicwheel.entity.WheelConfig;
 import com.sss.magicwheel.entity.WheelDataItem;
 import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
-import com.sss.magicwheel.manager.layouter.WheelOfFortuneLayoutManager;
+import com.sss.magicwheel.manager.WheelOfFortuneLayoutManager;
 import com.sss.magicwheel.manager.decor.WheelFrameItemDecoration;
 
 import java.util.ArrayList;

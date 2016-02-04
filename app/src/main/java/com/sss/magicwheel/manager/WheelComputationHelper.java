@@ -190,7 +190,11 @@ public final class WheelComputationHelper {
     }
 
     public double getSectorAngleBottomEdgeInRad(double sectorAnglePosition) {
-        return sectorAnglePosition - wheelConfig.getAngularRestrictions().getSectorAngleInRad();
+        return sectorAnglePosition - wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 2;
+    }
+
+    public double getSectorAngleTopEdgeInRad(double sectorAnglePosition) {
+        return sectorAnglePosition + wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 2;
     }
 
     /**
