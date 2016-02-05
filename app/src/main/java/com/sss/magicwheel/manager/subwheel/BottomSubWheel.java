@@ -20,9 +20,27 @@ public final class BottomSubWheel extends BaseSubWheel {
     }
 
     @Override
-    public void doInitialChildrenLayout(RecyclerView.Recycler recycler, RecyclerView.State state, int startLayoutFromAdapterPosition, OnInitialLayoutFinishingListener layoutFinishingListener) {
-        throw new UnsupportedOperationException("Not implemented feature yet.");
+    public void doInitialChildrenLayout(RecyclerView.Recycler recycler,
+                                              RecyclerView.State state,
+                                              int startLayoutFromAdapterPosition,
+                                              OnInitialLayoutFinishingListener layoutFinishingListener) {
+
+        final double sectorAngleInRad = wheelConfig.getAngularRestrictions().getSectorAngleInRad();
+        final double bottomLimitAngle = layoutEndAngleInRad - sectorAngleInRad;
+
+        double layoutAngle = layoutStartAngleInRad + sectorAngleInRad / 2;
+        int childPos = startLayoutFromAdapterPosition;
+        while (layoutAngle > bottomLimitAngle && childPos < state.getItemCount()) {
+            wheelLayoutManager.setupSectorForPosition(this, recycler, childPos, layoutAngle, true);
+            layoutAngle -= sectorAngleInRad;
+            childPos++;
+        }
+
+        if (layoutFinishingListener != null) {
+            layoutFinishingListener.onInitialLayoutFinished(childPos - 1);
+        }
     }
+
 
     @Override
     public String getUniqueMarker() {

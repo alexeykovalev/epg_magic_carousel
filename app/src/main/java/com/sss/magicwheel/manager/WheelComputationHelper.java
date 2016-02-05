@@ -49,10 +49,9 @@ public final class WheelComputationHelper {
     }
 
     public static void initialize(WheelConfig wheelConfig) {
-        if (isInitialized()) {
-            throw new IllegalStateException("WheelComputationHelper has been already initialized. Don't invoke this method twice.");
+        if (!isInitialized()) {
+            instance = new WheelComputationHelper(wheelConfig);
         }
-        instance = new WheelComputationHelper(wheelConfig);
     }
 
     public static boolean isInitialized() {

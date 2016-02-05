@@ -155,24 +155,11 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
         return outerDiameter * Math.sin(rotationAngleInRad);
     }
 
-    @Deprecated
-    private void recycleAndAddSectors(WheelRotationDirection rotationDirection,
-                                      RecyclerView.Recycler recycler,
-                                      RecyclerView.State state) {
-
-//            topSubWheel.recycleAndAddSectors(rotationDirection, recycler, state);
-        // TODO: 03.02.2016 uncomment when implementation will be added
-//            bottomSubWheel.recycleAndAddSectors(rotationDirection, recycler, state);
-    }
-
-
-
     private void rotateWheel(double rotationAngleInRad, WheelRotationDirection rotationDirection,
                              RecyclerView.Recycler recycler, RecyclerView.State state) {
-        final AbstractSubWheelRotator wheelRotator = AbstractSubWheelRotator.resolveRotatorByRotationDirection(rotationDirection);
+        final AbstractSubWheelRotator wheelRotator = AbstractSubWheelRotator.of(rotationDirection);
         wheelRotator.rotateSubWheel(topSubWheel, rotationAngleInRad, recycler, state);
 //        wheelRotator.rotateSubWheel(bottomSubWheel, rotationAngleInRad, recycler, state);
-
 
 //        topSubWheel.rotateSubWheel(rotationAngleInRad, rotationDirection);
 //        bottomSubWheel.rotateSubWheel(rotationAngleInRad, rotationDirection);
@@ -241,7 +228,8 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
 
     public final void setupSectorForPosition(BaseSubWheel setupFromSubWheel,
                                              RecyclerView.Recycler recycler,
-                                             int positionIndex, double angularPosition, boolean isAddViewToBottom) {
+                                             int positionIndex, double angularPositionInRad,
+                                             boolean isAddViewToBottom) {
 
         final WheelBigWrapperView bigWrapperView = (WheelBigWrapperView) recycler.getViewForPosition(positionIndex);
         measureBigWrapperView(bigWrapperView);
@@ -256,10 +244,10 @@ public final class WheelOfFortuneLayoutManager extends RecyclerView.LayoutManage
                 (int) wrTransformedCoords.right, (int) wrTransformedCoords.bottom
         );
 
-        alignBigWrapperViewByAngle(bigWrapperView, -angularPosition);
+        alignBigWrapperViewByAngle(bigWrapperView, -angularPositionInRad);
 
         WheelOfFortuneLayoutManager.LayoutParams lp = (WheelOfFortuneLayoutManager.LayoutParams) bigWrapperView.getLayoutParams();
-        lp.anglePositionInRad = angularPosition;
+        lp.anglePositionInRad = angularPositionInRad;
         lp.subwheelMarker = setupFromSubWheel.getUniqueMarker();
 
         Log.e(TAG,

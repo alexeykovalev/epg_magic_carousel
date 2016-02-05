@@ -36,6 +36,10 @@ public final class TopSubWheel extends BaseSubWheel {
             layoutAngle -= sectorAngleInRad;
             childPos++;
         }
+
+        if (layoutFinishingListener != null) {
+            layoutFinishingListener.onInitialLayoutFinished(childPos - 1);
+        }
     }
 
     @Override

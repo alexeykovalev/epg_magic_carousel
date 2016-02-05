@@ -21,19 +21,17 @@ public abstract class AbstractSubWheelRotator {
     protected final WheelComputationHelper computationHelper;
 
     public static void initialize(WheelOfFortuneLayoutManager wheelLayoutManager, WheelComputationHelper computationHelper) {
-        if (isInitialized()) {
-            throw new IllegalStateException();
+        if (!isInitialized()) {
+            clockwiseRotator = new ClockwiseSubWheelRotator(wheelLayoutManager, computationHelper);
+            antiClockwiseRotator = new AnticlockwiseSubWheelRotator(wheelLayoutManager, computationHelper);
         }
-
-        clockwiseRotator = new ClockwiseSubWheelRotator(wheelLayoutManager, computationHelper);
-        antiClockwiseRotator = new AnticlockwiseSubWheelRotator(wheelLayoutManager, computationHelper);
     }
 
     public static boolean isInitialized() {
         return clockwiseRotator != null && antiClockwiseRotator != null;
     }
 
-    public static AbstractSubWheelRotator resolveRotatorByRotationDirection(WheelRotationDirection rotationDirection) {
+    public static AbstractSubWheelRotator of(WheelRotationDirection rotationDirection) {
         if (!isInitialized()) {
             throw new IllegalStateException();
         }
