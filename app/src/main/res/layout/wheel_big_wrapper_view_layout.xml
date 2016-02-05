@@ -12,7 +12,7 @@
         android:textSize="20sp"
         android:textColor="@android:color/darker_gray" />
 
-    <com.sss.magicwheel.manager.WheelSectorWrapperView
+    <com.sss.magicwheel.manager.widget.WheelSectorWrapperView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/sector_wrapper_view"
         android:layout_width="wrap_content"

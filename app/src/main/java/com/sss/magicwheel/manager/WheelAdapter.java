@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import com.sss.magicwheel.R;
 import com.sss.magicwheel.entity.WheelDataItem;
+import com.sss.magicwheel.manager.widget.WheelBigWrapperView;
 
 import java.util.List;
 

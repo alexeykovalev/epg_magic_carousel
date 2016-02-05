@@ -10,7 +10,7 @@
         android:layout_height="match_parent" />
 -->
 
-    <com.sss.magicwheel.manager.WheelContainerRecyclerView
+    <com.sss.magicwheel.manager.widget.WheelContainerRecyclerView
         android:id="@+id/wheel_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

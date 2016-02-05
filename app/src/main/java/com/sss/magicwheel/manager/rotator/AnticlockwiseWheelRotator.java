@@ -1,29 +1,27 @@
 package com.sss.magicwheel.manager.rotator;
 
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
+import com.sss.magicwheel.manager.wheel.AbstractWheelLayoutManager;
 import com.sss.magicwheel.manager.WheelComputationHelper;
-import com.sss.magicwheel.manager.WheelOfFortuneLayoutManager;
-import com.sss.magicwheel.manager.subwheel.BaseSubWheel;
 
 /**
  * @author Alexey Kovalev
  * @since 03.02.2016.
  */
-public final class AnticlockwiseSubWheelRotator extends AbstractSubWheelRotator {
+public final class AnticlockwiseWheelRotator extends AbstractWheelRotator {
 
-    protected AnticlockwiseSubWheelRotator(WheelOfFortuneLayoutManager wheelLayoutManager, WheelComputationHelper computationHelper) {
+    protected AnticlockwiseWheelRotator(AbstractWheelLayoutManager wheelLayoutManager, WheelComputationHelper computationHelper) {
         super(wheelLayoutManager, computationHelper);
     }
 
     @Override
-    public void rotateSubWheel(BaseSubWheel subWheelToRotate, double rotationAngleInRad, RecyclerView.Recycler recycler, RecyclerView.State state) {
+    public void rotateWheel(double rotationAngleInRad, RecyclerView.Recycler recycler, RecyclerView.State state) {
         throw new UnsupportedOperationException("Not implemented feature yet.");
     }
 
     @Override
-    protected void recycleAndAddSectors(BaseSubWheel subWheel, RecyclerView.Recycler recycler, RecyclerView.State state) {
+    protected void recycleAndAddSectors(RecyclerView.Recycler recycler, RecyclerView.State state) {
 //        recycleSectorsFromTopIfNeeded();
         addSectorsToBottomIfNeeded(recycler, state);
     }
@@ -48,14 +46,14 @@ public final class AnticlockwiseSubWheelRotator extends AbstractSubWheelRotator 
 //        }
     }
 
-    private void recycleSectorsFromTopIfNeeded(BaseSubWheel subWheel, RecyclerView.Recycler recycler, RecyclerView.State state) {
-        for (int i = 0; i < wheelLayoutManager.getChildCount(); i++) {
-            final WheelOfFortuneLayoutManager.LayoutParams childLp
-                    = (WheelOfFortuneLayoutManager.LayoutParams) wheelLayoutManager.getChildAt(i).getLayoutParams();
-            if (childLp.anglePositionInRad > computationHelper.getWheelLayoutStartAngleInRad()) {
-                wheelLayoutManager.removeAndRecycleViewAt(i, recycler);
-//                Log.i(TAG, "Recycle view at index [" + i + "]");
-            }
-        }
-    }
+//    private void recycleSectorsFromTopIfNeeded(BaseSubWheel subWheel, RecyclerView.Recycler recycler, RecyclerView.State state) {
+//        for (int i = 0; i < wheelLayoutManager.getChildCount(); i++) {
+//            final WheelOfFortuneLayoutManager.LayoutParams childLp
+//                    = (WheelOfFortuneLayoutManager.LayoutParams) wheelLayoutManager.getChildAt(i).getLayoutParams();
+//            if (childLp.anglePositionInRad > computationHelper.getWheelLayoutStartAngleInRad()) {
+//                wheelLayoutManager.removeAndRecycleViewAt(i, recycler);
+////                Log.i(TAG, "Recycle view at index [" + i + "]");
+//            }
+//        }
+//    }
 }

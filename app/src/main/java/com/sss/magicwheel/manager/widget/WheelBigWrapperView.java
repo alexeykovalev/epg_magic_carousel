@@ -1,4 +1,4 @@
-package com.sss.magicwheel.manager;
+package com.sss.magicwheel.manager.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.sss.magicwheel.R;
 import com.sss.magicwheel.entity.WheelDataItem;
+import com.sss.magicwheel.manager.WheelComputationHelper;
 
 /**
  * @author Alexey Kovalev

@@ -6,9 +6,9 @@ import android.graphics.PointF;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.sss.magicwheel.manager.wheel.AbstractWheelLayoutManager;
 import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
-import com.sss.magicwheel.manager.WheelOfFortuneLayoutManager;
 
 /**
  * @author Alexey Kovalev
@@ -33,7 +33,7 @@ public abstract class WheelBaseItemDecoration extends RecyclerView.ItemDecoratio
     // TODO: 28.01.2016 make Point instance reusing
     @Deprecated
     protected final PointF getSectorReferencePoint(View sectorView) {
-        final WheelOfFortuneLayoutManager.LayoutParams childLp = (WheelOfFortuneLayoutManager.LayoutParams) sectorView.getLayoutParams();
+        final AbstractWheelLayoutManager.LayoutParams childLp = AbstractWheelLayoutManager.getChildLayoutParams(sectorView);
         final double sectorAnglePositionInRad = childLp.anglePositionInRad;
 
         final int innerRadius = computationHelper.getWheelConfig().getInnerRadius();
@@ -49,8 +49,7 @@ public abstract class WheelBaseItemDecoration extends RecyclerView.ItemDecoratio
     }
 
     protected final double getSectorAnglePositionInRad(View sectorView) {
-        final WheelOfFortuneLayoutManager.LayoutParams childLp =
-                (WheelOfFortuneLayoutManager.LayoutParams) sectorView.getLayoutParams();
+        final AbstractWheelLayoutManager.LayoutParams childLp = AbstractWheelLayoutManager.getChildLayoutParams(sectorView);
         return childLp.anglePositionInRad;
     }
 

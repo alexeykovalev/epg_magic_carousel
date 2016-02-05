@@ -1,4 +1,4 @@
-package com.sss.magicwheel.manager;
+package com.sss.magicwheel.manager.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.sss.magicwheel.entity.CoordinatesHolder;

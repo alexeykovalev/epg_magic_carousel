@@ -1,4 +1,4 @@
-package com.sss.magicwheel.manager;
+package com.sss.magicwheel.manager.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -12,6 +12,7 @@ import android.util.AttributeSet;
 
 import com.sss.magicwheel.entity.CoordinatesHolder;
 import com.sss.magicwheel.entity.WheelConfig;
+import com.sss.magicwheel.manager.WheelComputationHelper;
 
 /**
  * @author Alexey Kovalev

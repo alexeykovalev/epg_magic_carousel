@@ -3,6 +3,7 @@ package com.sss.magicwheel;
 import android.app.Fragment;
 import android.graphics.PointF;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,9 +11,11 @@ import android.view.ViewGroup;
 
 import com.sss.magicwheel.entity.WheelConfig;
 import com.sss.magicwheel.entity.WheelDataItem;
+import com.sss.magicwheel.manager.wheel.AbstractWheelLayoutManager;
+import com.sss.magicwheel.manager.wheel.BottomWheelLayoutManager;
+import com.sss.magicwheel.manager.wheel.TopWheelLayoutManager;
 import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
-import com.sss.magicwheel.manager.WheelOfFortuneLayoutManager;
 import com.sss.magicwheel.manager.decor.WheelFrameItemDecoration;
 
 import java.util.ArrayList;
@@ -28,6 +31,8 @@ public final class FragmentWheelPage extends Fragment {
     private static final int DEFAULT_SECTOR_ANGLE_IN_DEGREE = 20;
 
     private boolean isWheelContainerInitialized;
+
+    private final Handler handler = new Handler();
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
@@ -62,9 +67,18 @@ public final class FragmentWheelPage extends Fragment {
     }
 
     private void initWheelContainer(RecyclerView wheelContainerView) {
-        wheelContainerView.setLayoutManager(new WheelOfFortuneLayoutManager(WheelComputationHelper.getInstance()));
+        final BottomWheelLayoutManager layoutManager = new BottomWheelLayoutManager(WheelComputationHelper.getInstance(), null);
+        wheelContainerView.setLayoutManager(layoutManager);
         wheelContainerView.setAdapter(createWheelAdapter(createDataSet()));
         addWheelItemDecorations(wheelContainerView);
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                layoutManager.setStartLayoutFromAdapterPosition(AbstractWheelLayoutManager.START_LAYOUT_FROM_ADAPTER_POSITION);
+            }
+        }, 2000);
+
     }
 
     private void addWheelItemDecorations(RecyclerView wheelContainerView) {
