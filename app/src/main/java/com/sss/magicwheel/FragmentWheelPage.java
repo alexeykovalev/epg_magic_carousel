@@ -13,10 +13,10 @@ import com.sss.magicwheel.entity.WheelConfig;
 import com.sss.magicwheel.entity.WheelDataItem;
 import com.sss.magicwheel.manager.wheel.AbstractWheelLayoutManager;
 import com.sss.magicwheel.manager.wheel.BottomWheelLayoutManager;
-import com.sss.magicwheel.manager.wheel.TopWheelLayoutManager;
 import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
 import com.sss.magicwheel.manager.decor.WheelFrameItemDecoration;
+import com.sss.magicwheel.manager.wheel.TopWheelLayoutManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +33,7 @@ public final class FragmentWheelPage extends Fragment {
     private boolean isWheelContainerInitialized;
 
     private final Handler handler = new Handler();
+    private BottomWheelLayoutManager bottomWheelLayoutManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
@@ -42,9 +43,12 @@ public final class FragmentWheelPage extends Fragment {
         WheelComputationHelper.initialize(createWheelConfig(0));
 
         final View rootView = inflater.inflate(R.layout.fragment_wheel_page_layout, container, false);
-        final RecyclerView wheelContainerView = (RecyclerView) rootView.findViewById(R.id.wheel_container);
+        final RecyclerView topWheelContainerView = (RecyclerView) rootView.findViewById(R.id.top_wheel_container);
+        final RecyclerView bottomWheelContainerView = (RecyclerView) rootView.findViewById(R.id.bottom_wheel_container);
 
-        initWheelContainer(wheelContainerView);
+        bottomWheelLayoutManager = new BottomWheelLayoutManager(WheelComputationHelper.getInstance(), null);
+        initBottomWheelContainer(bottomWheelContainerView);
+        initTopWheelContainer(topWheelContainerView);
 
 /*
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -55,7 +59,7 @@ public final class FragmentWheelPage extends Fragment {
                     isWheelContainerInitialized = true;
                     final int fragmentContainerTopEdge = container.getTop();
                     WheelComputationHelper.initialize(createWheelConfig(fragmentContainerTopEdge));
-                    initWheelContainer(wheelContainerView);
+                    initTopWheelContainer(topWheelContainerView);
                 }
             }
         });
@@ -66,19 +70,23 @@ public final class FragmentWheelPage extends Fragment {
         return rootView;
     }
 
-    private void initWheelContainer(RecyclerView wheelContainerView) {
-        final BottomWheelLayoutManager layoutManager = new BottomWheelLayoutManager(WheelComputationHelper.getInstance(), null);
-        wheelContainerView.setLayoutManager(layoutManager);
-        wheelContainerView.setAdapter(createWheelAdapter(createDataSet()));
-        addWheelItemDecorations(wheelContainerView);
-
-        handler.postDelayed(new Runnable() {
+    private void initTopWheelContainer(RecyclerView topWheelContainerView) {
+        topWheelContainerView.setLayoutManager(new TopWheelLayoutManager(WheelComputationHelper.getInstance(), new AbstractWheelLayoutManager.OnInitialLayoutFinishingListener() {
             @Override
-            public void run() {
-                layoutManager.setStartLayoutFromAdapterPosition(AbstractWheelLayoutManager.START_LAYOUT_FROM_ADAPTER_POSITION);
+            public void onInitialLayoutFinished(int finishedAtAdapterPosition) {
+                if (bottomWheelLayoutManager != null) {
+                    bottomWheelLayoutManager.setStartLayoutFromAdapterPosition(finishedAtAdapterPosition);
+                }
             }
-        }, 2000);
+        }));
+        topWheelContainerView.setAdapter(createWheelAdapter(createDataSet()));
+        addWheelItemDecorations(topWheelContainerView);
+    }
 
+    private void initBottomWheelContainer(RecyclerView topWheelContainerView) {
+        topWheelContainerView.setLayoutManager(bottomWheelLayoutManager);
+        topWheelContainerView.setAdapter(createWheelAdapter(createDataSet()));
+        addWheelItemDecorations(topWheelContainerView);
     }
 
     private void addWheelItemDecorations(RecyclerView wheelContainerView) {

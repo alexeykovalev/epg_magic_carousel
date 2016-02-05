@@ -11,7 +11,7 @@ import com.sss.magicwheel.manager.WheelComputationHelper;
  */
 public final class AnticlockwiseWheelRotator extends AbstractWheelRotator {
 
-    protected AnticlockwiseWheelRotator(AbstractWheelLayoutManager wheelLayoutManager, WheelComputationHelper computationHelper) {
+    public AnticlockwiseWheelRotator(AbstractWheelLayoutManager wheelLayoutManager, WheelComputationHelper computationHelper) {
         super(wheelLayoutManager, computationHelper);
     }
 

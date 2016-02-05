@@ -14,6 +14,8 @@ import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
 import com.sss.magicwheel.manager.WheelOfFortuneLayoutManager;
 import com.sss.magicwheel.manager.rotator.AbstractWheelRotator;
+import com.sss.magicwheel.manager.rotator.AnticlockwiseWheelRotator;
+import com.sss.magicwheel.manager.rotator.ClockwiseWheelRotator;
 import com.sss.magicwheel.manager.widget.WheelBigWrapperView;
 
 import java.util.HashSet;
@@ -40,6 +42,9 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         ALLOWED_METHOD_NAMES.add("scrollVerticallyBy");
         ALLOWED_METHOD_NAMES.add("onLayoutChildren");
     }
+
+    private final AbstractWheelRotator clockwiseRotator;
+    private final AbstractWheelRotator anticlockwiseRotator;
 
     private static boolean isMessageContainsAllowedMethod(String logMessage) {
         if (logMessage == null || logMessage.isEmpty()) {
@@ -86,8 +91,8 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         this.layoutStartAngleInRad = computeLayoutStartAngleInRad();
         this.layoutEndAngleInRad = computeLayoutEndAngleInRad();
 
-
-        AbstractWheelRotator.initialize(this, computationHelper);
+        this.clockwiseRotator = new ClockwiseWheelRotator(this, computationHelper);
+        this.anticlockwiseRotator = new AnticlockwiseWheelRotator(this, computationHelper);
     }
 
 
@@ -208,8 +213,12 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
 
     private void rotateWheel(double rotationAngleInRad, WheelRotationDirection rotationDirection,
                              RecyclerView.Recycler recycler, RecyclerView.State state) {
-        final AbstractWheelRotator wheelRotator = AbstractWheelRotator.of(rotationDirection);
+        final AbstractWheelRotator wheelRotator = resolveRotatorByDirection(rotationDirection);
         wheelRotator.rotateWheel(rotationAngleInRad, recycler, state);
+    }
+
+    private AbstractWheelRotator resolveRotatorByDirection(WheelRotationDirection rotationDirection) {
+        return rotationDirection == WheelRotationDirection.Clockwise ? clockwiseRotator : anticlockwiseRotator;
     }
 
     /**

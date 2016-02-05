@@ -20,8 +20,8 @@ public abstract class AbstractWheelRotator {
 
     public static void initialize(AbstractWheelLayoutManager wheelLayoutManager, WheelComputationHelper computationHelper) {
         if (!isInitialized()) {
-            clockwiseRotator = new ClockwiseWheelRotator(wheelLayoutManager, computationHelper);
-            antiClockwiseRotator = new AnticlockwiseWheelRotator(wheelLayoutManager, computationHelper);
+//            clockwiseRotator = new ClockwiseWheelRotator(wheelLayoutManager, computationHelper);
+//            antiClockwiseRotator = new AnticlockwiseWheelRotator(wheelLayoutManager, computationHelper);
         }
     }
 
@@ -29,7 +29,11 @@ public abstract class AbstractWheelRotator {
         return clockwiseRotator != null && antiClockwiseRotator != null;
     }
 
+    @Deprecated
     public static AbstractWheelRotator of(WheelRotationDirection rotationDirection) {
+        if (true) {
+            throw new UnsupportedOperationException();
+        }
         if (!isInitialized()) {
             throw new IllegalStateException();
         }

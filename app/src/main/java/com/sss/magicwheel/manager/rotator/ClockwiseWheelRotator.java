@@ -17,7 +17,7 @@ public final class ClockwiseWheelRotator extends AbstractWheelRotator {
 
     private static final String TAG = ClockwiseWheelRotator.class.getCanonicalName();
 
-    protected ClockwiseWheelRotator(AbstractWheelLayoutManager wheelLayoutManager, WheelComputationHelper computationHelper) {
+    public ClockwiseWheelRotator(AbstractWheelLayoutManager wheelLayoutManager, WheelComputationHelper computationHelper) {
         super(wheelLayoutManager, computationHelper);
     }
 
