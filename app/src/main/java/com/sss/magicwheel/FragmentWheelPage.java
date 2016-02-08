@@ -106,7 +106,7 @@ public final class FragmentWheelPage extends Fragment {
         return new WheelAdapter(getActivity(), adapterDataSet, new WheelAdapter.OnWheelItemClickListener() {
             @Override
             public void onItemClicked(WheelDataItem dataItem) {
-                topWheelContainer.smoothlySelectDataItem(SAMPLE_DATA_ITEM);
+                topWheelContainer.smoothlySelectDataItem(dataItem);
             }
         });
     }

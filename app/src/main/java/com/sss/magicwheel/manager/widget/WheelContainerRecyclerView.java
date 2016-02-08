@@ -17,6 +17,8 @@ import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
 import com.sss.magicwheel.manager.wheel.AbstractWheelLayoutManager;
 
+import java.util.List;
+
 /**
  * @author Alexey Kovalev
  * @since 02.02.2016.
@@ -57,7 +59,30 @@ public final class WheelContainerRecyclerView extends RecyclerView {
     }
 
     public void smoothlySelectDataItem(WheelDataItem dataItemToSelect) {
-        super.smoothScrollToPosition(getAdapter().getVirtualPositionForDataItem(dataItemToSelect));
+        super.smoothScrollToPosition(getVirtualPositionForDataItem(dataItemToSelect));
+    }
+
+    private int getVirtualPositionForDataItem(WheelDataItem dataItemToSelect) {
+        final int dataItemToSelectRealPosition = getRealPositionForDataItem(dataItemToSelect);
+        // RecyclerView.NO_POSITION
+        final int firstChildVirtualAdapterPosition = getChildAdapterPosition(getChildAt(0));
+        final int firstChildRealAdapterPosition = getAdapter().toRealPosition(firstChildVirtualAdapterPosition);
+
+        final int positionDelta = dataItemToSelectRealPosition - firstChildRealAdapterPosition;
+        return firstChildVirtualAdapterPosition + positionDelta;
+    }
+
+    // TODO: 08.02.2016 Guava's find method has to be here
+    private int getRealPositionForDataItem(WheelDataItem dataItemToFind) {
+        final List<WheelDataItem> dataItems = getAdapter().getData();
+        int res = 0;
+        for (WheelDataItem dataItem : dataItems) {
+            if (dataItem.equals(dataItemToFind)) {
+                break;
+            }
+            res++;
+        }
+        return res;
     }
 
     @Override

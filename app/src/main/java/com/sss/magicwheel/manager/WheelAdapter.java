@@ -10,6 +10,7 @@ import com.sss.magicwheel.R;
 import com.sss.magicwheel.entity.WheelDataItem;
 import com.sss.magicwheel.manager.widget.WheelBigWrapperView;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -34,22 +35,6 @@ public final class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelI
         this.inflater = LayoutInflater.from(context);
         this.dataItems = dataItems;
         this.itemClickListener = itemClickListener;
-    }
-
-    public int getVirtualPositionForDataItem(WheelDataItem dataItemToSelect) {
-        return MIDDLE_VIRTUAL_ITEMS_COUNT + findRealPositionForDataItem(dataItemToSelect);
-    }
-
-    // TODO: 08.02.2016 Guava's find method has to be here
-    private int findRealPositionForDataItem(WheelDataItem dataItemToFind) {
-        int res = 0;
-        for (WheelDataItem dataItem : dataItems) {
-            if (dataItem.equals(dataItemToFind)) {
-                break;
-            }
-            res++;
-        }
-        return res;
     }
 
     // TODO: 29.01.2016 Optional<WheelDataItem> here
@@ -77,15 +62,19 @@ public final class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelI
         return VIRTUAL_ITEMS_COUNT;
     }
 
+    public List<WheelDataItem> getData() {
+        return Collections.unmodifiableList(dataItems);
+    }
+
     public int getRealItemCount() {
         return dataItems.size();
     }
 
-    private int toRealPosition(int virtualPosition) {
-        final int shift = (virtualPosition - MIDDLE_VIRTUAL_ITEMS_COUNT) % dataItems.size();
+    public int toRealPosition(int virtualPosition) {
+        final int realItemsCount = getRealItemCount();
+        final int shift = (virtualPosition - MIDDLE_VIRTUAL_ITEMS_COUNT) % realItemsCount;
         final boolean isPositiveShift = shift >= 0;
-        return isPositiveShift ?
-                shift : (dataItems.size() + shift);
+        return isPositiveShift ? shift : (realItemsCount + shift);
     }
 
     static class WheelItemViewHolder extends RecyclerView.ViewHolder {
