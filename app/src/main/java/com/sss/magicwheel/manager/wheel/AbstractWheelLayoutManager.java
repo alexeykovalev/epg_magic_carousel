@@ -173,14 +173,15 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
             return 0;
         }
 
-        final double absRotationAngleInRad = computeRotationAngleInRadBasedOnCurrentState(dy, state);
+        final int normalizedDy = dy % getOuterDiameter();
+        final double absRotationAngleInRad = computeRotationAngleInRadBasedOnCurrentState(normalizedDy, state);
 
         if (absRotationAngleInRad == NOT_DEFINED_ROTATION_ANGLE) {
             Log.i(TAG, "HIT INTO NOT_DEFINED_ROTATION_ANGLE");
             return 0;
         }
 
-        final WheelRotationDirection rotationDirection = WheelRotationDirection.of(dy);
+        final WheelRotationDirection rotationDirection = WheelRotationDirection.of(normalizedDy);
 
         rotateWheel(absRotationAngleInRad, rotationDirection, recycler, state);
 
@@ -189,7 +190,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         final int resultSwipeDistanceAbs = (int) Math.round(fromWheelRotationAngleToTraveledDistance(absRotationAngleInRad));
         logI(
                 "scrollVerticallyBy() " +
-                        "dy [" + dy + "], " +
+                        "normalizedDy [" + normalizedDy + "], " +
                         "resultSwipeDistanceAbs [" + resultSwipeDistanceAbs + "], " +
                         "rotationAngleInDegree [" + WheelComputationHelper.radToDegree(absRotationAngleInRad) + "]"
         );
@@ -232,14 +233,18 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
      * wheel rotation angle.
      */
     private double fromTraveledDistanceToWheelRotationAngle(int scrollDelta) {
-        final int outerDiameter = 2 * wheelConfig.getOuterRadius();
+        final int outerDiameter = getOuterDiameter();
         final double asinArg = Math.abs(scrollDelta) / (double) outerDiameter;
         return Math.asin(asinArg);
     }
 
     private double fromWheelRotationAngleToTraveledDistance(double rotationAngleInRad) {
-        final int outerDiameter = 2 * wheelConfig.getOuterRadius();
+        final int outerDiameter = getOuterDiameter();
         return outerDiameter * Math.sin(rotationAngleInRad);
+    }
+
+    private int getOuterDiameter() {
+        return 2 * wheelConfig.getOuterRadius();
     }
 
     private void rotateWheel(double rotationAngleInRad, WheelRotationDirection rotationDirection,

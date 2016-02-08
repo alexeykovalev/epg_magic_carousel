@@ -40,6 +40,8 @@ public final class FragmentWheelPage extends Fragment {
 
     private BottomWheelLayoutManager bottomWheelLayoutManager;
 
+    private WheelDataItem SAMPLE_DATA_ITEM;
+
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
 
@@ -104,7 +106,7 @@ public final class FragmentWheelPage extends Fragment {
         return new WheelAdapter(getActivity(), adapterDataSet, new WheelAdapter.OnWheelItemClickListener() {
             @Override
             public void onItemClicked(WheelDataItem dataItem) {
-
+                topWheelContainer.smoothlySelectDataItem(SAMPLE_DATA_ITEM);
             }
         });
     }
@@ -114,6 +116,7 @@ public final class FragmentWheelPage extends Fragment {
         for (int i = 0; i < 30; i++) {
             items.add(new WheelDataItem("item.Num [" + i + "]"));
         }
+        SAMPLE_DATA_ITEM = items.get(8);
         return Collections.unmodifiableList(items);
     }
 
