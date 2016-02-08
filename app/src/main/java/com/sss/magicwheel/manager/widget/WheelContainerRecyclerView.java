@@ -12,7 +12,10 @@ import android.util.AttributeSet;
 
 import com.sss.magicwheel.entity.CoordinatesHolder;
 import com.sss.magicwheel.entity.WheelConfig;
+import com.sss.magicwheel.entity.WheelDataItem;
+import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
+import com.sss.magicwheel.manager.wheel.AbstractWheelLayoutManager;
 
 /**
  * @author Alexey Kovalev
@@ -52,6 +55,31 @@ public final class WheelContainerRecyclerView extends RecyclerView {
         this.gapClipRectInRvCoords = createGapClipRect();
         this.gapPath = createGapClipPath(gapClipRectInRvCoords);
     }
+
+    public void smoothlySelectDataItem(WheelDataItem dataItemToSelect) {
+        super.smoothScrollToPosition(getAdapter().getVirtualPositionForDataItem(dataItemToSelect));
+    }
+
+    @Override
+    public void scrollToPosition(int position) {
+        throw new UnsupportedOperationException("Don't call this method directly.");
+    }
+
+    @Override
+    public void smoothScrollToPosition(int position) {
+        throw new UnsupportedOperationException("Don't call this method directly.");
+    }
+
+    @Override
+    public AbstractWheelLayoutManager getLayoutManager() {
+        return (AbstractWheelLayoutManager) super.getLayoutManager();
+    }
+
+    @Override
+    public WheelAdapter getAdapter() {
+        return (WheelAdapter) super.getAdapter();
+    }
+
 
     private PointF computeGapTopRayPosition() {
         final PointF pos = CoordinatesHolder.ofPolar(2 * wheelConfig.getOuterRadius(),

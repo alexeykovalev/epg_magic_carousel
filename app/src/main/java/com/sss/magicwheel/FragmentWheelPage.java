@@ -17,6 +17,7 @@ import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
 import com.sss.magicwheel.manager.decor.WheelFrameItemDecoration;
 import com.sss.magicwheel.manager.wheel.TopWheelLayoutManager;
+import com.sss.magicwheel.manager.widget.WheelContainerRecyclerView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +34,10 @@ public final class FragmentWheelPage extends Fragment {
     private boolean isWheelContainerInitialized;
 
     private final Handler handler = new Handler();
+
+    private WheelContainerRecyclerView topWheelContainer;
+    private WheelContainerRecyclerView bootomWheelContainer;
+
     private BottomWheelLayoutManager bottomWheelLayoutManager;
 
     @Override
@@ -43,12 +48,12 @@ public final class FragmentWheelPage extends Fragment {
         WheelComputationHelper.initialize(createWheelConfig(0));
 
         final View rootView = inflater.inflate(R.layout.fragment_wheel_page_layout, container, false);
-        final RecyclerView topWheelContainerView = (RecyclerView) rootView.findViewById(R.id.top_wheel_container);
-        final RecyclerView bottomWheelContainerView = (RecyclerView) rootView.findViewById(R.id.bottom_wheel_container);
+        topWheelContainer = (WheelContainerRecyclerView) rootView.findViewById(R.id.top_wheel_container);
+        bootomWheelContainer = (WheelContainerRecyclerView) rootView.findViewById(R.id.bottom_wheel_container);
 
         bottomWheelLayoutManager = new BottomWheelLayoutManager(WheelComputationHelper.getInstance(), null);
-        initBottomWheelContainer(bottomWheelContainerView);
-        initTopWheelContainer(topWheelContainerView);
+//        initBottomWheelContainer(bottomWheelContainerView);
+        initTopWheelContainer(topWheelContainer);
 
 /*
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -96,7 +101,12 @@ public final class FragmentWheelPage extends Fragment {
     }
 
     private WheelAdapter createWheelAdapter(List<WheelDataItem> adapterDataSet) {
-        return new WheelAdapter(getActivity(), adapterDataSet);
+        return new WheelAdapter(getActivity(), adapterDataSet, new WheelAdapter.OnWheelItemClickListener() {
+            @Override
+            public void onItemClicked(WheelDataItem dataItem) {
+
+            }
+        });
     }
 
     private List<WheelDataItem> createDataSet() {

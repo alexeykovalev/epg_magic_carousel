@@ -21,13 +21,13 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
 
     @Override
     protected double computeLayoutStartAngleInRad() {
-        return wheelConfig.getAngularRestrictions().getWheelLayoutStartAngleInRad()
-                + wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 2;
+        return wheelConfig.getAngularRestrictions().getWheelLayoutStartAngleInRad();
     }
 
     @Override
     protected double computeLayoutEndAngleInRad() {
         return wheelConfig.getAngularRestrictions().getGapAreaTopEdgeAngleRestrictionInRad();
+//                - wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 2;
     }
 
     @Override

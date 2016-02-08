@@ -1,7 +1,9 @@
 package com.sss.magicwheel.manager.wheel;
 
 import android.content.Context;
+import android.graphics.PointF;
 import android.graphics.RectF;
+import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -10,7 +12,6 @@ import android.view.ViewGroup;
 
 import com.sss.magicwheel.entity.WheelConfig;
 import com.sss.magicwheel.entity.WheelRotationDirection;
-import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
 import com.sss.magicwheel.manager.WheelOfFortuneLayoutManager;
 import com.sss.magicwheel.manager.rotator.AbstractWheelRotator;
@@ -31,7 +32,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     private static final double NOT_DEFINED_ROTATION_ANGLE = Double.MIN_VALUE;
 
     public static final int NOT_DEFINED_ADAPTER_POSITION = Integer.MAX_VALUE;
-    public static final int START_LAYOUT_FROM_ADAPTER_POSITION = WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT;
+//    public static final int START_LAYOUT_FROM_ADAPTER_POSITION = WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT;
 
     private static final boolean IS_LOG_ACTIVATED = true;
     private static final boolean IS_FILTER_LOG_BY_METHOD_NAME = true;
@@ -194,6 +195,36 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         );
         return rotationDirection == WheelRotationDirection.Anticlockwise ?
                 resultSwipeDistanceAbs : -resultSwipeDistanceAbs;
+    }
+
+    @Override
+    public void scrollToPosition(int positionToScroll) {
+        throw new UnsupportedOperationException("Not implemented feature yet.");
+    }
+
+    @Override
+    public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
+        LinearSmoothScroller linearSmoothScroller =
+                new LinearSmoothScroller(recyclerView.getContext()) {
+                    @Override
+                    public PointF computeScrollVectorForPosition(int targetPosition) {
+                        return AbstractWheelLayoutManager.this
+                                .computeScrollVectorForPosition(targetPosition);
+                    }
+                };
+        linearSmoothScroller.setTargetPosition(position);
+        startSmoothScroll(linearSmoothScroller);
+    }
+
+    // for y: use -1 for up direction, 1 for down direction.
+    private PointF computeScrollVectorForPosition(int targetPosition) {
+        if (getChildCount() == 0) {
+            return null;
+        }
+        final int firstChildPos = getPosition(getChildAt(0));
+        final int direction = targetPosition < firstChildPos ? -1 : 1;
+
+        return new PointF(0, direction);
     }
 
     /**
@@ -359,12 +390,12 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
 
     @Deprecated
     public View getChildClosestToBottom() {
-        return getChildAt(getChildCount() - 1);
+        return getChildClosestToLayoutEndEdge();
     }
 
     @Deprecated
     public View getChildClosestToTop() {
-        return getChildAt(0);
+        return getChildClosestToLayoutStartEdge();
     }
 
 

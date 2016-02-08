@@ -81,18 +81,21 @@ public final class ClockwiseWheelRotator extends AbstractWheelRotator {
 
         double newSectorViewLayoutAngle = sectorViewLp.anglePositionInRad + sectorAngleInRad;
         double newSectorViewBottomEdgeAngularPosInRad = computationHelper.getSectorAngleBottomEdgeInRad(newSectorViewLayoutAngle);
-        int childPos = wheelLayoutManager.getPosition(closestToStartSectorView) - 1;
+        int nextChildPos = wheelLayoutManager.getPosition(closestToStartSectorView) - 1;
+        int alreadyLayoutedChildrenCount = 0;
 
-        while (newSectorViewBottomEdgeAngularPosInRad < wheelLayoutManager.getLayoutStartAngleInRad() && childPos >= 0) {
+        while (newSectorViewBottomEdgeAngularPosInRad < wheelLayoutManager.getLayoutStartAngleInRad()
+                && alreadyLayoutedChildrenCount < state.getItemCount()) {
 //            Log.i(TAG, "addSectorsToTopIfNeeded() " +
 //                            "newSectorViewLayoutAngle [" + WheelComputationHelper.radToDegree(newSectorViewLayoutAngle) + "], " +
-//                            "childPos [" + childPos + "]"
+//                            "nextChildPos [" + nextChildPos + "]"
 //            );
             Log.e(AbstractWheelLayoutManager.TAG, "addSectorsToTopIfNeeded()");
-            wheelLayoutManager.setupSectorForPosition(recycler, childPos, newSectorViewLayoutAngle, false);
+            wheelLayoutManager.setupSectorForPosition(recycler, nextChildPos, newSectorViewLayoutAngle, false);
             newSectorViewLayoutAngle += sectorAngleInRad;
             newSectorViewBottomEdgeAngularPosInRad = computationHelper.getSectorAngleBottomEdgeInRad(newSectorViewLayoutAngle);
-            childPos--;
+            nextChildPos--;
+            alreadyLayoutedChildrenCount++;
         }
     }
 }
