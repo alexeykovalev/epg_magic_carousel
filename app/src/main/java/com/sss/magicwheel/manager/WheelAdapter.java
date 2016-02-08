@@ -85,8 +85,7 @@ public final class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelI
         final int shift = (virtualPosition - MIDDLE_VIRTUAL_ITEMS_COUNT) % dataItems.size();
         final boolean isPositiveShift = shift >= 0;
         return isPositiveShift ?
-                shift :
-                (dataItems.size() + shift - 1);
+                shift : (dataItems.size() + shift);
     }
 
     static class WheelItemViewHolder extends RecyclerView.ViewHolder {
