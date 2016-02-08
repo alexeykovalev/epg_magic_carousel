@@ -207,21 +207,20 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
 
         final double targetSeekScrollDistanceInRad = wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 4;
-        final WheelSmoothScroller wheelScroller = new WheelSmoothScroller(this, targetSeekScrollDistanceInRad);
+        final WheelSmoothScroller wheelScroller = new WheelSmoothScroller(this, computationHelper, targetSeekScrollDistanceInRad);
         wheelScroller.setTargetPosition(position);
-//        startSmoothScroll(wheelScroller);
+        startSmoothScroll(wheelScroller);
 
-
-        LinearSmoothScroller linearSmoothScroller =
-                new LinearSmoothScroller(recyclerView.getContext()) {
-                    @Override
-                    public PointF computeScrollVectorForPosition(int targetPosition) {
-                        return AbstractWheelLayoutManager.this
-                                .computeScrollVectorForPosition(targetPosition);
-                    }
-                };
-        linearSmoothScroller.setTargetPosition(position);
-        startSmoothScroll(linearSmoothScroller);
+//        LinearSmoothScroller linearSmoothScroller =
+//                new LinearSmoothScroller(recyclerView.getContext()) {
+//                    @Override
+//                    public PointF computeScrollVectorForPosition(int targetPosition) {
+//                        return AbstractWheelLayoutManager.this
+//                                .computeScrollVectorForPosition(targetPosition);
+//                    }
+//                };
+//        linearSmoothScroller.setTargetPosition(position);
+//        startSmoothScroll(linearSmoothScroller);
     }
 
     // for y: use -1 for up direction, 1 for down direction.
@@ -271,9 +270,11 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         final WheelRotationDirection rotationDirection = WheelRotationDirection.of(dy);
         final double angleToRotate = fromTraveledDistanceToWheelRotationAngle(dy);
 
-        return rotationDirection == WheelRotationDirection.Anticlockwise ?
+        return angleToRotate;
+
+        /*return rotationDirection == WheelRotationDirection.Anticlockwise ?
                 computeRotationAngleInRadForAnticlockwiseRotation(state, angleToRotate) :
-                computeRotationAngleInRadForClockwiseRotation(angleToRotate);
+                computeRotationAngleInRadForClockwiseRotation(angleToRotate);*/
     }
 
     private double computeRotationAngleInRadForAnticlockwiseRotation(RecyclerView.State state, double angleToRotate) {
