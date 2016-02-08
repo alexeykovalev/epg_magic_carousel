@@ -205,6 +205,13 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
 
     @Override
     public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
+
+        final double targetSeekScrollDistanceInRad = wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 4;
+        final WheelSmoothScroller wheelScroller = new WheelSmoothScroller(this, targetSeekScrollDistanceInRad);
+        wheelScroller.setTargetPosition(position);
+//        startSmoothScroll(wheelScroller);
+
+
         LinearSmoothScroller linearSmoothScroller =
                 new LinearSmoothScroller(recyclerView.getContext()) {
                     @Override

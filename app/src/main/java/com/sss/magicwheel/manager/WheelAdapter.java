@@ -82,7 +82,11 @@ public final class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelI
     }
 
     private int toRealPosition(int virtualPosition) {
-        return Math.abs((virtualPosition - MIDDLE_VIRTUAL_ITEMS_COUNT) % dataItems.size());
+        final int shift = virtualPosition - MIDDLE_VIRTUAL_ITEMS_COUNT;
+        final boolean isPositiveShift = shift >= 0;
+        return isPositiveShift ?
+                (shift % dataItems.size()) :
+                (dataItems.size() + shift - 1);
     }
 
     static class WheelItemViewHolder extends RecyclerView.ViewHolder {
