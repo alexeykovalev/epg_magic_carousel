@@ -9,11 +9,13 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.sss.magicwheel.entity.CoordinatesHolder;
 import com.sss.magicwheel.entity.WheelConfig;
 import com.sss.magicwheel.entity.WheelDataItem;
+import com.sss.magicwheel.entity.WheelRotationDirection;
 import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
 import com.sss.magicwheel.manager.wheel.AbstractWheelLayoutManager;
@@ -26,6 +28,8 @@ import java.util.List;
  */
 public final class WheelContainerRecyclerView extends RecyclerView {
 
+    private static final String TAG = WheelContainerRecyclerView.class.getCanonicalName();
+
     private final WheelComputationHelper computationHelper;
     private final WheelConfig wheelConfig;
 
@@ -36,6 +40,22 @@ public final class WheelContainerRecyclerView extends RecyclerView {
     private final RectF gapClipRectInRvCoords;
     private final Path gapPath;
 
+    private class AutoAngleAdjustmentScrollListener extends OnScrollListener {
+
+        private WheelRotationDirection rotationDirection = null;
+
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            if (newState == RecyclerView.SCROLL_STATE_IDLE && rotationDirection != null) {
+//                final View sectorViewClosestToLayoutEndEdge = getLayoutManager().getChildClosestToLayoutEndEdge();
+            }
+        }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            rotationDirection = WheelRotationDirection.of(dy);
+        }
+    }
 
     public WheelContainerRecyclerView(Context context) {
         this(context, null);
@@ -56,15 +76,41 @@ public final class WheelContainerRecyclerView extends RecyclerView {
 
         this.gapClipRectInRvCoords = createGapClipRect();
         this.gapPath = createGapClipPath(gapClipRectInRvCoords);
+
+        addOnScrollListener(new AutoAngleAdjustmentScrollListener());
     }
 
     @Deprecated
     public void smoothlySelectDataItem(WheelDataItem dataItemToSelect) {
-        super.smoothScrollToPosition(getVirtualPositionForDataItem(dataItemToSelect));
+//        super.smoothScrollToPosition(getVirtualPositionForDataItem(dataItemToSelect));
+        throw new UnsupportedOperationException("Not implemented feature yet.");
     }
 
     public void smoothlySelectSectorView(View sectorViewToSelect) {
-        super.smoothScrollToPosition(getChildAdapterPosition(sectorViewToSelect));
+//        super.smoothScrollToPosition(getChildAdapterPosition(sectorViewToSelect));
+
+        final double sectorAngleInRad = computationHelper.getWheelConfig().getAngularRestrictions().getSectorAngleInRad();
+
+        smoothScrollByAngleInRad(sectorAngleInRad, WheelRotationDirection.Anticlockwise);
+    }
+
+    public void smoothScrollByAngleInRad(double absAngleInRad, WheelRotationDirection rotationDirection) {
+        // TODO: 09.02.2016 ensure absAngleInRad is positive
+        View sectorViewClosestToLayoutEndEdge = getLayoutManager().getChildClosestToLayoutEndEdge();
+        final int referenceSectorViewVirtualAdapterPosition = getChildAdapterPosition(sectorViewClosestToLayoutEndEdge);
+
+        final double sectorAngleInRad = computationHelper.getWheelConfig().getAngularRestrictions().getSectorAngleInRad();
+
+        final int positionIncrement = rotationDirection == WheelRotationDirection.Clockwise ? -1 : +1;
+
+        int virtualPositionToScroll = referenceSectorViewVirtualAdapterPosition;
+        double tmpAngleInRad = absAngleInRad;
+        while (tmpAngleInRad >= 0) {
+            tmpAngleInRad -= sectorAngleInRad;
+            virtualPositionToScroll += positionIncrement;
+        }
+
+        super.smoothScrollToPosition(virtualPositionToScroll);
     }
 
     private int getVirtualPositionForDataItem(WheelDataItem dataItemToSelect) {

@@ -215,7 +215,12 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     @Override
     public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
         final double targetSeekScrollDistanceInRad = wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 4;
-        final WheelSmoothScroller wheelScroller = new WheelSmoothScroller(context, this, computationHelper, targetSeekScrollDistanceInRad);
+        final WheelSmoothScroller wheelScroller = new WheelSmoothScroller(context, this, computationHelper, targetSeekScrollDistanceInRad) {
+            @Override
+            protected WheelRotationDirection computeRotationDirectionForPosition(int targetPosition) {
+                return AbstractWheelLayoutManager.this.detectRotationDirection(targetPosition);
+            }
+        };
         wheelScroller.setTargetPosition(position);
         startSmoothScroll(wheelScroller);
 
@@ -231,7 +236,14 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
 //        startSmoothScroll(linearSmoothScroller);
     }
 
+    private WheelRotationDirection detectRotationDirection(int targetPosition) {
+        final int referenceSectorViewVirtualAdapterPosition = getPosition(getChildClosestToLayoutEndEdge());
+        return targetPosition < referenceSectorViewVirtualAdapterPosition ?
+                WheelRotationDirection.Clockwise : WheelRotationDirection.Anticlockwise;
+    }
+
     // for y: use -1 for up direction, 1 for down direction.
+    @Deprecated
     private PointF computeScrollVectorForPosition(int targetPosition) {
         if (getChildCount() == 0) {
             return null;
