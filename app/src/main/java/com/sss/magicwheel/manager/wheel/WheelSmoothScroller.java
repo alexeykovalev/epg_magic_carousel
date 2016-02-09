@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
 import com.sss.magicwheel.manager.WheelComputationHelper;
+import com.sss.magicwheel.manager.widget.WheelBigWrapperView;
 
 /**
  * @author Alexey Kovalev
@@ -15,7 +16,7 @@ import com.sss.magicwheel.manager.WheelComputationHelper;
  */
 public final class WheelSmoothScroller extends RecyclerView.SmoothScroller {
 
-    private static final String TAG = WheelSmoothScroller.class.getCanonicalName();
+    public static final String TAG = WheelSmoothScroller.class.getCanonicalName();
 
     private static final float MILLISECONDS_PER_INCH = 25f;
     private static float MILLISECONDS_PER_PX;
@@ -64,11 +65,18 @@ public final class WheelSmoothScroller extends RecyclerView.SmoothScroller {
 
     @Override
     protected void onTargetFound(View targetView, RecyclerView.State state, Action action) {
-        final int dy = (int) Math.round(layoutManager.fromWheelRotationAngleToTraveledDistance(calculateAngleInRadToMakeSectorInvisible(targetView)));
+        String title = ((WheelBigWrapperView) targetView).getTitle();
+        final double rotationAngleInRad = calculateAngleInRadToMakeSectorInvisible(targetView);
+        Log.e(TAG, "title [" + title + "], rotationAngleInRad [" + WheelComputationHelper.radToDegree(rotationAngleInRad) + "]");
+
+
+//        final int dy = (int) Math.round(layoutManager.fromWheelRotationAngleToTraveledDistance(rotationAngleInRad));
+        int dy = (int) layoutManager.fromWheelRotationAngleToTraveledDistance(rotationAngleInRad);
+        dy %= layoutManager.getOuterDiameter();
 
         final int time = calculateTimeForDeceleration(dy);
         if (time > 0) {
-            action.update(-0, -dy, time, decelerateInterpolator);
+            action.update(0, -dy, time, decelerateInterpolator);
         }
     }
 

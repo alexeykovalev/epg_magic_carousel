@@ -3,7 +3,6 @@ package com.sss.magicwheel.manager.wheel;
 import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -13,7 +12,6 @@ import android.view.ViewGroup;
 import com.sss.magicwheel.entity.WheelConfig;
 import com.sss.magicwheel.entity.WheelRotationDirection;
 import com.sss.magicwheel.manager.WheelComputationHelper;
-import com.sss.magicwheel.manager.WheelOfFortuneLayoutManager;
 import com.sss.magicwheel.manager.rotator.AbstractWheelRotator;
 import com.sss.magicwheel.manager.rotator.AnticlockwiseWheelRotator;
 import com.sss.magicwheel.manager.rotator.ClockwiseWheelRotator;
@@ -28,7 +26,7 @@ import java.util.Set;
  */
 public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutManager {
 
-    public static final String TAG = WheelOfFortuneLayoutManager.class.getCanonicalName();
+    private static final String TAG = AbstractWheelLayoutManager.class.getCanonicalName();
     private static final double NOT_DEFINED_ROTATION_ANGLE = Double.MIN_VALUE;
 
     public static final int NOT_DEFINED_ADAPTER_POSITION = Integer.MAX_VALUE;
@@ -41,7 +39,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
 
     static {
         ALLOWED_METHOD_NAMES.add("scrollVerticallyBy");
-        ALLOWED_METHOD_NAMES.add("onLayoutChildren");
+//        ALLOWED_METHOD_NAMES.add("onLayoutChildren");
     }
 
     private final Context context;
@@ -179,26 +177,32 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         final int normalizedDy = dy % getOuterDiameter();
         final double absRotationAngleInRad = computeRotationAngleInRadBasedOnCurrentState(normalizedDy, state);
 
+        Log.e(WheelSmoothScroller.TAG, "AbstractWheelLayoutManager " +
+                "absRotationAngleInRad [" + WheelComputationHelper.radToDegree(absRotationAngleInRad) + "]");
+
         if (absRotationAngleInRad == NOT_DEFINED_ROTATION_ANGLE) {
             Log.i(TAG, "HIT INTO NOT_DEFINED_ROTATION_ANGLE");
             return 0;
         }
 
         final WheelRotationDirection rotationDirection = WheelRotationDirection.of(normalizedDy);
-
         rotateWheel(absRotationAngleInRad, rotationDirection, recycler, state);
 
-//        recycleAndAddSectors(rotationDirection, recycler, state);
-
+        /*
         final int resultSwipeDistanceAbs = (int) Math.round(fromWheelRotationAngleToTraveledDistance(absRotationAngleInRad));
         logI(
                 "scrollVerticallyBy() " +
+                        "dy [" + dy + "], " +
                         "normalizedDy [" + normalizedDy + "], " +
                         "resultSwipeDistanceAbs [" + resultSwipeDistanceAbs + "], " +
                         "rotationAngleInDegree [" + WheelComputationHelper.radToDegree(absRotationAngleInRad) + "]"
         );
+
         return rotationDirection == WheelRotationDirection.Anticlockwise ?
                 resultSwipeDistanceAbs : -resultSwipeDistanceAbs;
+        */
+
+        return normalizedDy;
     }
 
     @Override
@@ -252,7 +256,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         return outerDiameter * Math.sin(rotationAngleInRad);
     }
 
-    private int getOuterDiameter() {
+    int getOuterDiameter() {
         return 2 * wheelConfig.getOuterRadius();
     }
 
@@ -350,10 +354,10 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         LayoutParams lp = (LayoutParams) bigWrapperView.getLayoutParams();
         lp.anglePositionInRad = angularPositionInRad;
 
-        Log.e(TAG,
+        /*Log.e(TAG,
                 "setupSectorForPosition() add viewTitle [" + getBigWrapperTitle(bigWrapperView) + "], " +
                         "angleInRad [" + WheelComputationHelper.radToDegree(lp.anglePositionInRad) + "]"
-        );
+        );*/
 
         if (isAddViewToBottom) {
             addView(bigWrapperView);

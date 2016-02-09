@@ -74,8 +74,8 @@ public final class ClockwiseWheelRotator extends AbstractWheelRotator {
         final View closestToStartSectorView = wheelLayoutManager.getChildClosestToLayoutStartEdge();
         final AbstractWheelLayoutManager.LayoutParams sectorViewLp = AbstractWheelLayoutManager.getChildLayoutParams(closestToStartSectorView);
 
-        Log.e(AbstractWheelLayoutManager.TAG, "addSectorsToTopIfNeeded() " +
-                "closestToStartSectorView [" + AbstractWheelLayoutManager.getBigWrapperTitle(closestToStartSectorView) + "]");
+//        Log.e(AbstractWheelLayoutManager.TAG, "addSectorsToTopIfNeeded() " +
+//                "closestToStartSectorView [" + AbstractWheelLayoutManager.getBigWrapperTitle(closestToStartSectorView) + "]");
 
         final double sectorAngleInRad = computationHelper.getWheelConfig().getAngularRestrictions().getSectorAngleInRad();
 
@@ -90,7 +90,7 @@ public final class ClockwiseWheelRotator extends AbstractWheelRotator {
 //                            "newSectorViewLayoutAngle [" + WheelComputationHelper.radToDegree(newSectorViewLayoutAngle) + "], " +
 //                            "nextChildPos [" + nextChildPos + "]"
 //            );
-            Log.e(AbstractWheelLayoutManager.TAG, "addSectorsToTopIfNeeded()");
+//            Log.e(AbstractWheelLayoutManager.TAG, "addSectorsToTopIfNeeded()");
             wheelLayoutManager.setupSectorForPosition(recycler, nextChildPos, newSectorViewLayoutAngle, false);
             newSectorViewLayoutAngle += sectorAngleInRad;
             newSectorViewBottomEdgeAngularPosInRad = computationHelper.getSectorAngleBottomEdgeInRad(newSectorViewLayoutAngle);
