@@ -97,7 +97,8 @@ public abstract class WheelSmoothScroller extends RecyclerView.SmoothScroller {
         final int newDy = rotationDirection == WheelRotationDirection.Anticlockwise ?
                 targetSeekScrollDistanceAsInt : -targetSeekScrollDistanceAsInt;
 
-        action.update(0, newDy, time, mLinearInterpolator); }
+        action.update(0, newDy, time, mLinearInterpolator);
+    }
 
 
     private double calculateAngleInRadToMakeSectorInvisible(View sectorToHide) {

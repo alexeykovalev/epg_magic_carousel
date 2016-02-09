@@ -87,11 +87,10 @@ public final class WheelContainerRecyclerView extends RecyclerView {
     }
 
     public void handleTapOnSectorView(View sectorViewToSelect) {
-//        super.smoothScrollToPosition(getChildAdapterPosition(sectorViewToSelect));
+        super.smoothScrollToPosition(getChildAdapterPosition(sectorViewToSelect));
 
-        final double sectorAngleInRad = computationHelper.getWheelConfig().getAngularRestrictions().getSectorAngleInRad();
-
-        smoothScrollByAngleInRad(sectorAngleInRad, WheelRotationDirection.Clockwise);
+//        final double sectorAngleInRad = computationHelper.getWheelConfig().getAngularRestrictions().getSectorAngleInRad();
+//        smoothScrollByAngleInRad(sectorAngleInRad, WheelRotationDirection.Clockwise);
     }
 
     public void smoothScrollByAngleInRad(double absAngleInRad, WheelRotationDirection rotationDirection) {
