@@ -53,7 +53,7 @@ public final class FragmentWheelPage extends Fragment {
         topWheelContainer = (WheelContainerRecyclerView) rootView.findViewById(R.id.top_wheel_container);
         bootomWheelContainer = (WheelContainerRecyclerView) rootView.findViewById(R.id.bottom_wheel_container);
 
-        bottomWheelLayoutManager = new BottomWheelLayoutManager(WheelComputationHelper.getInstance(), null);
+        bottomWheelLayoutManager = new BottomWheelLayoutManager(getActivity(), WheelComputationHelper.getInstance(), null);
 //        initBottomWheelContainer(bottomWheelContainerView);
         initTopWheelContainer(topWheelContainer);
 
@@ -73,12 +73,12 @@ public final class FragmentWheelPage extends Fragment {
 */
 
 
-
         return rootView;
     }
 
     private void initTopWheelContainer(RecyclerView topWheelContainerView) {
-        topWheelContainerView.setLayoutManager(new TopWheelLayoutManager(WheelComputationHelper.getInstance(), new AbstractWheelLayoutManager.OnInitialLayoutFinishingListener() {
+        topWheelContainerView.setLayoutManager(new TopWheelLayoutManager(getActivity(),
+                WheelComputationHelper.getInstance(), new AbstractWheelLayoutManager.OnInitialLayoutFinishingListener() {
             @Override
             public void onInitialLayoutFinished(int finishedAtAdapterPosition) {
                 if (bottomWheelLayoutManager != null) {
@@ -105,8 +105,9 @@ public final class FragmentWheelPage extends Fragment {
     private WheelAdapter createWheelAdapter(List<WheelDataItem> adapterDataSet) {
         return new WheelAdapter(getActivity(), adapterDataSet, new WheelAdapter.OnWheelItemClickListener() {
             @Override
-            public void onItemClicked(WheelDataItem dataItem) {
-                topWheelContainer.smoothlySelectDataItem(dataItem);
+            public void onItemClicked(View clickedSectorView, WheelDataItem dataItem) {
+                topWheelContainer.smoothlySelectSectorView(clickedSectorView);
+//                topWheelContainer.smoothlySelectDataItem(dataItem);
             }
         });
     }
@@ -116,18 +117,18 @@ public final class FragmentWheelPage extends Fragment {
         for (int i = 0; i < 30; i++) {
             items.add(new WheelDataItem("item.Num [" + i + "]"));
         }
-        SAMPLE_DATA_ITEM = items.get(8);
+//        SAMPLE_DATA_ITEM = items.get(8);
         return Collections.unmodifiableList(items);
     }
 
     private WheelConfig createWheelConfig(int fragmentContainerTopEdge) {
         final int screenHeight = WheelComputationHelper.getScreenDimensions(getActivity()).getHeight();
 
-        final int yWheelCenterPosition = (screenHeight - fragmentContainerTopEdge) / 2 ;
+        final int yWheelCenterPosition = (screenHeight - fragmentContainerTopEdge) / 2;
         final PointF circleCenter = new PointF(0, yWheelCenterPosition);
 
         // TODO: 03.12.2015 Not good hardcoded values
-        final int outerRadius =  (screenHeight - fragmentContainerTopEdge) / 2;
+        final int outerRadius = (screenHeight - fragmentContainerTopEdge) / 2;
         final int innerRadius = outerRadius - 300;
 
         final double sectorAngleInRad = WheelComputationHelper.degreeToRadian(DEFAULT_SECTOR_ANGLE_IN_DEGREE);

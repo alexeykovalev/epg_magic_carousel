@@ -1,5 +1,7 @@
 package com.sss.magicwheel.manager.wheel;
 
+import android.content.Context;
+
 import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
 
@@ -14,9 +16,8 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
      */
     private static final int START_LAYOUT_FROM_ADAPTER_POSITION = WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT;
 
-    public TopWheelLayoutManager(WheelComputationHelper computationHelper,
-                                 OnInitialLayoutFinishingListener initialLayoutFinishingListener) {
-        super(computationHelper, initialLayoutFinishingListener);
+    public TopWheelLayoutManager(Context context, WheelComputationHelper computationHelper, OnInitialLayoutFinishingListener initialLayoutFinishingListener) {
+        super(context, computationHelper, initialLayoutFinishingListener);
     }
 
     @Override

@@ -44,6 +44,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         ALLOWED_METHOD_NAMES.add("onLayoutChildren");
     }
 
+    private final Context context;
     private final AbstractWheelRotator clockwiseRotator;
     private final AbstractWheelRotator anticlockwiseRotator;
 
@@ -83,8 +84,10 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         void onInitialLayoutFinished(int finishedAtAdapterPosition);
     }
 
-    protected AbstractWheelLayoutManager(WheelComputationHelper computationHelper,
+    protected AbstractWheelLayoutManager(Context context,
+                                         WheelComputationHelper computationHelper,
                                          OnInitialLayoutFinishingListener initialLayoutFinishingListener) {
+        this.context = context;
         this.computationHelper = computationHelper;
         this.wheelConfig = computationHelper.getWheelConfig();
         this.initialLayoutFinishingListener = initialLayoutFinishingListener;
@@ -207,7 +210,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
 
         final double targetSeekScrollDistanceInRad = wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 4;
-        final WheelSmoothScroller wheelScroller = new WheelSmoothScroller(this, computationHelper, targetSeekScrollDistanceInRad);
+        final WheelSmoothScroller wheelScroller = new WheelSmoothScroller(context, this, computationHelper, targetSeekScrollDistanceInRad);
         wheelScroller.setTargetPosition(position);
         startSmoothScroll(wheelScroller);
 
@@ -238,13 +241,13 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
      * Transforms swipe gesture's travelled distance {@code scrollDelta} into relevant
      * wheel rotation angle.
      */
-    private double fromTraveledDistanceToWheelRotationAngle(int scrollDelta) {
+    double fromTraveledDistanceToWheelRotationAngle(int scrollDelta) {
         final int outerDiameter = getOuterDiameter();
         final double asinArg = Math.abs(scrollDelta) / (double) outerDiameter;
         return Math.asin(asinArg);
     }
 
-    private double fromWheelRotationAngleToTraveledDistance(double rotationAngleInRad) {
+    double fromWheelRotationAngleToTraveledDistance(double rotationAngleInRad) {
         final int outerDiameter = getOuterDiameter();
         return outerDiameter * Math.sin(rotationAngleInRad);
     }

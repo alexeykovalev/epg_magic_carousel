@@ -9,6 +9,7 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.View;
 
 import com.sss.magicwheel.entity.CoordinatesHolder;
 import com.sss.magicwheel.entity.WheelConfig;
@@ -24,7 +25,6 @@ import java.util.List;
  * @since 02.02.2016.
  */
 public final class WheelContainerRecyclerView extends RecyclerView {
-
 
     private final WheelComputationHelper computationHelper;
     private final WheelConfig wheelConfig;
@@ -58,18 +58,30 @@ public final class WheelContainerRecyclerView extends RecyclerView {
         this.gapPath = createGapClipPath(gapClipRectInRvCoords);
     }
 
+    @Deprecated
     public void smoothlySelectDataItem(WheelDataItem dataItemToSelect) {
         super.smoothScrollToPosition(getVirtualPositionForDataItem(dataItemToSelect));
     }
 
+    public void smoothlySelectSectorView(View sectorViewToSelect) {
+        super.smoothScrollToPosition(getChildAdapterPosition(sectorViewToSelect));
+    }
+
     private int getVirtualPositionForDataItem(WheelDataItem dataItemToSelect) {
         final int dataItemToSelectRealPosition = getRealPositionForDataItem(dataItemToSelect);
-        // RecyclerView.NO_POSITION
         final int firstChildVirtualAdapterPosition = getChildAdapterPosition(getChildAt(0));
         final int firstChildRealAdapterPosition = getAdapter().toRealPosition(firstChildVirtualAdapterPosition);
 
         final int positionDelta = dataItemToSelectRealPosition - firstChildRealAdapterPosition;
         return firstChildVirtualAdapterPosition + positionDelta;
+
+//        final int realItemsCount = getAdapter().getRealItemCount();
+//        final int dataItemToSelectRealPosition = getRealPositionForDataItem(dataItemToSelect);
+//        final int firstChildVirtualAdapterPosition = getChildAdapterPosition(getChildAt(0));
+//
+//        final int chunksAmount = (firstChildVirtualAdapterPosition - WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT) / realItemsCount;
+//
+//        return
     }
 
     // TODO: 08.02.2016 Guava's find method has to be here

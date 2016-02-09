@@ -27,7 +27,7 @@ public final class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelI
     private final LayoutInflater inflater;
 
     public interface OnWheelItemClickListener {
-        void onItemClicked(WheelDataItem dataItem);
+        void onItemClicked(View clickedSectorView, WheelDataItem dataItem);
     }
 
     // TODO: 29.01.2016 Check for Preconditions here
@@ -92,7 +92,7 @@ public final class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelI
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    itemClickListener.onItemClicked(dataItem);
+                    itemClickListener.onItemClicked(itemView, dataItem);
                 }
             });
             bigWrapperView.bindData(dataItem);
