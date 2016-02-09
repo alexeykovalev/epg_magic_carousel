@@ -3,7 +3,6 @@ package com.sss.magicwheel.manager.wheel;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
@@ -21,16 +20,11 @@ public abstract class WheelSmoothScroller extends RecyclerView.SmoothScroller {
 
     private static final float MILLISECONDS_PER_INCH = 25f;
 
-    // Trigger a scroll to a further distance than TARGET_SEEK_SCROLL_DISTANCE_PX so that if target
-    // view is not laid out until interim target position is reached, we can detect the case before
-    // scrolling slows down and reschedule another interim target scroll
-    private static final float TARGET_SEEK_EXTRA_SCROLL_RATIO = 1.2f;
-
     private static float MILLISECONDS_PER_PX;
 
     private final AbstractWheelLayoutManager layoutManager;
     private final WheelComputationHelper computationHelper;
-    private final double targetSeekScrollDistance;
+    private final double targetSeekScrollAngleInRad;
 
     private final LinearInterpolator mLinearInterpolator = new LinearInterpolator();
     private final DecelerateInterpolator decelerateInterpolator = new DecelerateInterpolator();
@@ -42,7 +36,7 @@ public abstract class WheelSmoothScroller extends RecyclerView.SmoothScroller {
 
         this.layoutManager = layoutManager;
         this.computationHelper = computationHelper;
-        this.targetSeekScrollDistance = computationHelper.getWheelConfig().getOuterRadius() * targetSeekScrollAngleInRad;
+        this.targetSeekScrollAngleInRad = targetSeekScrollAngleInRad;
 
         MILLISECONDS_PER_PX = calculateSpeedPerPixel(context.getResources().getDisplayMetrics());
     }
@@ -54,10 +48,11 @@ public abstract class WheelSmoothScroller extends RecyclerView.SmoothScroller {
      * @return The time (in ms) it should take for each pixel. For instance, if returned value is
      * 2 ms, it means scrolling 1000 pixels with LinearInterpolation should take 2 seconds.
      */
-    protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
+    private static float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
         return MILLISECONDS_PER_INCH / displayMetrics.densityDpi;
     }
 
+    protected abstract WheelRotationDirection computeRotationDirectionForPosition(int targetPosition);
 
     @Override
     protected void onStart() {
@@ -85,62 +80,24 @@ public abstract class WheelSmoothScroller extends RecyclerView.SmoothScroller {
         }
     }
 
+
     @Override
     protected void onSeekTargetStep(int dx, int dy, RecyclerView.State state, Action action) {
-        Log.e(TAG, "");
-
         if (getChildCount() == 0) {
             stop();
             return;
         }
 
-//        mInterimTargetDx = clampApplyScroll(mInterimTargetDx, dx);
-//        mInterimTargetDy = clampApplyScroll(mInterimTargetDy, dy);
-
-//        if (mInterimTargetDx == 0 && mInterimTargetDy == 0) {
-            updateActionForInterimTarget(action);
-//        } // everything is valid, keep going
-    }
-
-    /**
-     * When the target scroll position is not a child of the RecyclerView, this method calculates
-     * a direction vector towards that child and triggers a smooth scroll.
-     *
-     * @see #computeRotationDirectionForPosition(int)
-     */
-    protected void updateActionForInterimTarget(Action action) {
-        // find an interim target position
         final WheelRotationDirection rotationDirection = computeRotationDirectionForPosition(getTargetPosition());
 
-//        if (scrollVector == null || (scrollVector.x == 0 && scrollVector.y == 0)) {
-//            Log.e(TAG, "To support smooth scrolling, you should override \n"
-//                    + "LayoutManager#computeRotationDirectionForPosition.\n"
-//                    + "Falling back to instant scroll");
-//            final int target = getTargetPosition();
-//            action.jumpTo(target);
-//            stop();
-//            return;
-//        }
-//        normalize(scrollVector);
-//
-//        mTargetVector = scrollVector;
-
-//        mInterimTargetDx = (int) (TARGET_SEEK_SCROLL_DISTANCE_PX * scrollVector.x);
-//        mInterimTargetDy = (int) (TARGET_SEEK_SCROLL_DISTANCE_PX * scrollVector.y);
-
-
-        final int targetSeekScrollDistanceAsInt = (int) this.targetSeekScrollDistance;
+        final int targetSeekScrollDistanceAsInt = (int) layoutManager.fromWheelRotationAngleToTraveledDistance(targetSeekScrollAngleInRad);
         final int time = calculateTimeForScrolling(targetSeekScrollDistanceAsInt);
 
-        // To avoid UI hiccups, trigger a smooth scroll to a distance little further than the
-        // interim target. Since we track the distance travelled in onSeekTargetStep callback, it
-        // won't actually scroll more than what we need.
-        action.update((int) (targetSeekScrollDistanceAsInt * TARGET_SEEK_EXTRA_SCROLL_RATIO)
-                , (int) (targetSeekScrollDistanceAsInt * TARGET_SEEK_EXTRA_SCROLL_RATIO)
-                , (int) (time * TARGET_SEEK_EXTRA_SCROLL_RATIO), mLinearInterpolator);
-    }
+//        final int newDy = (int) (targetSeekScrollDistanceAsInt * TARGET_SEEK_EXTRA_SCROLL_RATIO);
+        final int newDy = rotationDirection == WheelRotationDirection.Anticlockwise ?
+                targetSeekScrollDistanceAsInt : -targetSeekScrollDistanceAsInt;
 
-    protected abstract WheelRotationDirection computeRotationDirectionForPosition(int targetPosition);
+        action.update(0, newDy, time, mLinearInterpolator); }
 
 
     private double calculateAngleInRadToMakeSectorInvisible(View sectorToHide) {
@@ -180,6 +137,5 @@ public abstract class WheelSmoothScroller extends RecyclerView.SmoothScroller {
         // time.
         return (int) Math.ceil(Math.abs(dx) * MILLISECONDS_PER_PX);
     }
-
 
 }

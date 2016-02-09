@@ -86,12 +86,12 @@ public final class WheelContainerRecyclerView extends RecyclerView {
         throw new UnsupportedOperationException("Not implemented feature yet.");
     }
 
-    public void smoothlySelectSectorView(View sectorViewToSelect) {
+    public void handleTapOnSectorView(View sectorViewToSelect) {
 //        super.smoothScrollToPosition(getChildAdapterPosition(sectorViewToSelect));
 
         final double sectorAngleInRad = computationHelper.getWheelConfig().getAngularRestrictions().getSectorAngleInRad();
 
-        smoothScrollByAngleInRad(sectorAngleInRad, WheelRotationDirection.Anticlockwise);
+        smoothScrollByAngleInRad(sectorAngleInRad, WheelRotationDirection.Clockwise);
     }
 
     public void smoothScrollByAngleInRad(double absAngleInRad, WheelRotationDirection rotationDirection) {
@@ -105,7 +105,7 @@ public final class WheelContainerRecyclerView extends RecyclerView {
 
         int virtualPositionToScroll = referenceSectorViewVirtualAdapterPosition;
         double tmpAngleInRad = absAngleInRad;
-        while (tmpAngleInRad >= 0) {
+        while (tmpAngleInRad > 0) {
             tmpAngleInRad -= sectorAngleInRad;
             virtualPositionToScroll += positionIncrement;
         }

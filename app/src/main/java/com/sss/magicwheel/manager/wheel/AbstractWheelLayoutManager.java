@@ -42,7 +42,6 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
 //        ALLOWED_METHOD_NAMES.add("onLayoutChildren");
     }
 
-    private final Context context;
     private final AbstractWheelRotator clockwiseRotator;
     private final AbstractWheelRotator anticlockwiseRotator;
 
@@ -82,10 +81,8 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         void onInitialLayoutFinished(int finishedAtAdapterPosition);
     }
 
-    protected AbstractWheelLayoutManager(Context context,
-                                         WheelComputationHelper computationHelper,
+    protected AbstractWheelLayoutManager(WheelComputationHelper computationHelper,
                                          OnInitialLayoutFinishingListener initialLayoutFinishingListener) {
-        this.context = context;
         this.computationHelper = computationHelper;
         this.wheelConfig = computationHelper.getWheelConfig();
         this.initialLayoutFinishingListener = initialLayoutFinishingListener;
@@ -212,10 +209,10 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         throw new UnsupportedOperationException("Not implemented feature yet.");
     }
 
-    @Override
     public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
-        final double targetSeekScrollDistanceInRad = wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 4;
-        final WheelSmoothScroller wheelScroller = new WheelSmoothScroller(context, this, computationHelper, targetSeekScrollDistanceInRad) {
+        final double targetSeekScrollDistanceInRad = wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 10;
+        final WheelSmoothScroller wheelScroller = new WheelSmoothScroller(recyclerView.getContext(),
+                this, computationHelper, targetSeekScrollDistanceInRad) {
             @Override
             protected WheelRotationDirection computeRotationDirectionForPosition(int targetPosition) {
                 return AbstractWheelLayoutManager.this.detectRotationDirection(targetPosition);
@@ -223,17 +220,6 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         };
         wheelScroller.setTargetPosition(position);
         startSmoothScroll(wheelScroller);
-
-//        LinearSmoothScroller linearSmoothScroller =
-//                new LinearSmoothScroller(recyclerView.getContext()) {
-//                    @Override
-//                    public PointF computeScrollVectorForPosition(int targetPosition) {
-//                        return AbstractWheelLayoutManager.this
-//                                .computeScrollVectorForPosition(targetPosition);
-//                    }
-//                };
-//        linearSmoothScroller.setTargetPosition(position);
-//        startSmoothScroll(linearSmoothScroller);
     }
 
     private WheelRotationDirection detectRotationDirection(int targetPosition) {
@@ -262,9 +248,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
 //        final int outerDiameter = getOuterDiameter();
 //        final double asinArg = Math.abs(scrollDelta) / (double) outerDiameter;
 //        return Math.asin(asinArg);
-
-        final double scrollDeltaAsDouble = scrollDelta;
-        return scrollDeltaAsDouble / wheelConfig.getOuterRadius();
+        return (double) scrollDelta / wheelConfig.getOuterRadius();
     }
 
     double fromWheelRotationAngleToTraveledDistance(double rotationAngleInRad) {

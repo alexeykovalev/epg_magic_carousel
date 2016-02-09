@@ -17,7 +17,7 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
     private static final int START_LAYOUT_FROM_ADAPTER_POSITION = WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT;
 
     public TopWheelLayoutManager(Context context, WheelComputationHelper computationHelper, OnInitialLayoutFinishingListener initialLayoutFinishingListener) {
-        super(context, computationHelper, initialLayoutFinishingListener);
+        super(computationHelper, initialLayoutFinishingListener);
     }
 
     @Override
