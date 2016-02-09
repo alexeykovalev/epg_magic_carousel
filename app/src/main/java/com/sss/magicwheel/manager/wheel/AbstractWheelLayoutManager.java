@@ -174,8 +174,10 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
             return 0;
         }
 
-        final int normalizedDy = dy % getOuterDiameter();
-        final double absRotationAngleInRad = computeRotationAngleInRadBasedOnCurrentState(normalizedDy, state);
+//        final int normalizedDy = dy % getOuterDiameter();
+//        final double absRotationAngleInRad = computeRotationAngleInRadBasedOnCurrentState(normalizedDy, state);
+
+        final double absRotationAngleInRad = Math.abs(fromTraveledDistanceToWheelRotationAngle(dy));
 
         Log.e(WheelSmoothScroller.TAG, "AbstractWheelLayoutManager " +
                 "absRotationAngleInRad [" + WheelComputationHelper.radToDegree(absRotationAngleInRad) + "]");
@@ -185,7 +187,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
             return 0;
         }
 
-        final WheelRotationDirection rotationDirection = WheelRotationDirection.of(normalizedDy);
+        final WheelRotationDirection rotationDirection = WheelRotationDirection.of(dy);
         rotateWheel(absRotationAngleInRad, rotationDirection, recycler, state);
 
         /*
@@ -202,7 +204,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
                 resultSwipeDistanceAbs : -resultSwipeDistanceAbs;
         */
 
-        return normalizedDy;
+        return dy;
     }
 
     @Override
@@ -212,7 +214,6 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
 
     @Override
     public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
-
         final double targetSeekScrollDistanceInRad = wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 4;
         final WheelSmoothScroller wheelScroller = new WheelSmoothScroller(context, this, computationHelper, targetSeekScrollDistanceInRad);
         wheelScroller.setTargetPosition(position);
@@ -246,16 +247,22 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
      * wheel rotation angle.
      */
     double fromTraveledDistanceToWheelRotationAngle(int scrollDelta) {
-        final int outerDiameter = getOuterDiameter();
-        final double asinArg = Math.abs(scrollDelta) / (double) outerDiameter;
-        return Math.asin(asinArg);
+//        final int outerDiameter = getOuterDiameter();
+//        final double asinArg = Math.abs(scrollDelta) / (double) outerDiameter;
+//        return Math.asin(asinArg);
+
+        final double scrollDeltaAsDouble = scrollDelta;
+        return scrollDeltaAsDouble / wheelConfig.getOuterRadius();
     }
 
     double fromWheelRotationAngleToTraveledDistance(double rotationAngleInRad) {
-        final int outerDiameter = getOuterDiameter();
-        return outerDiameter * Math.sin(rotationAngleInRad);
+//        final int outerDiameter = getOuterDiameter();
+//        return outerDiameter * Math.sin(rotationAngleInRad);
+
+        return rotationAngleInRad * wheelConfig.getOuterRadius();
     }
 
+    @Deprecated
     int getOuterDiameter() {
         return 2 * wheelConfig.getOuterRadius();
     }
