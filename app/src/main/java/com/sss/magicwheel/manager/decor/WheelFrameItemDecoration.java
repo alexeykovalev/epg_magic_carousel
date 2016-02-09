@@ -40,7 +40,7 @@ public final class WheelFrameItemDecoration extends WheelBaseItemDecoration {
                 (int) WheelComputationHelper.radToDegree(computationHelper.getWheelLayoutStartAngleInRad());
 
         final int wheelBottomEdgeAngleInDegree = (int) WheelComputationHelper.radToDegree(
-                computationHelper.getWheelConfig().getAngularRestrictions().getWheelBottomEdgeAngleRestrictionInRad()
+                computationHelper.getWheelConfig().getAngularRestrictions().getGapAreaTopEdgeAngleRestrictionInRad()
         );
         this.wheelFrameSweepAngleInDegree = wheelTopEdgeAngleInDegree - wheelBottomEdgeAngleInDegree;
     }

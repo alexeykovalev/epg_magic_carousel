@@ -22,7 +22,7 @@ public final class BottomSubWheel /*extends BaseSubWheel*/ {
 //    public void doInitialChildrenLayout(RecyclerView.Recycler recycler,
 //                                              RecyclerView.State state,
 //                                              int startLayoutFromAdapterPosition,
-//                                              OnInitialLayoutFinishingListener layoutFinishingListener) {
+//                                              WheelOnInitialLayoutFinishingListener layoutFinishingListener) {
 //
 //        final double sectorAngleInRad = wheelConfig.getAngularRestrictions().getSectorAngleInRad();
 //        final double bottomLimitAngle = layoutEndAngleInRad - sectorAngleInRad;

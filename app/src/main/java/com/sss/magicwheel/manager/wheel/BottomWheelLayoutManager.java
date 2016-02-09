@@ -15,7 +15,7 @@ public final class BottomWheelLayoutManager extends AbstractWheelLayoutManager {
     @Deprecated
     private static final int START_LAYOUT_FROM_ADAPTER_POSITION = WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT;
 
-    public BottomWheelLayoutManager(Context context, WheelComputationHelper computationHelper, OnInitialLayoutFinishingListener initialLayoutFinishingListener) {
+    public BottomWheelLayoutManager(Context context, WheelComputationHelper computationHelper, WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener) {
         super(computationHelper, initialLayoutFinishingListener);
     }
 

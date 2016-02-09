@@ -102,7 +102,7 @@ public final class WheelOfFortuneLayoutManager /*extends RecyclerView.LayoutMana
 //        removeAndRecycleAllViews(recycler);
 //
 //        topSubWheel.doInitialChildrenLayout(recycler, state, START_LAYOUT_FROM_ADAPTER_POSITION,
-//                new BaseSubWheel.OnInitialLayoutFinishingListener() {
+//                new BaseSubWheel.WheelOnInitialLayoutFinishingListener() {
 //                    @Override
 //                    public void onInitialLayoutFinished(int finishedAtAdapterPosition) {
 ////                        bottomSubWheel.doInitialChildrenLayout(recycler, state, finishedAtAdapterPosition, null);

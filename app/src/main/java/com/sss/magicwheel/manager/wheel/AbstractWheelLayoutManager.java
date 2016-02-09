@@ -64,7 +64,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     private final double layoutStartAngleInRad;
     private final double layoutEndAngleInRad;
 
-    private final OnInitialLayoutFinishingListener initialLayoutFinishingListener;
+    private final WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener;
 
     private int startLayoutFromAdapterPosition = NOT_DEFINED_ADAPTER_POSITION;
 
@@ -77,12 +77,13 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         return ((WheelBigWrapperView) bigWrapperView).getTitle();
     }
 
-    public interface OnInitialLayoutFinishingListener {
+    public interface WheelOnInitialLayoutFinishingListener {
         void onInitialLayoutFinished(int finishedAtAdapterPosition);
     }
 
     protected AbstractWheelLayoutManager(WheelComputationHelper computationHelper,
-                                         OnInitialLayoutFinishingListener initialLayoutFinishingListener) {
+                                         WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener) {
+
         this.computationHelper = computationHelper;
         this.wheelConfig = computationHelper.getWheelConfig();
         this.initialLayoutFinishingListener = initialLayoutFinishingListener;

@@ -54,7 +54,7 @@ public final class FragmentWheelPage extends Fragment {
         bootomWheelContainer = (WheelContainerRecyclerView) rootView.findViewById(R.id.bottom_wheel_container);
 
         bottomWheelLayoutManager = new BottomWheelLayoutManager(getActivity(), WheelComputationHelper.getInstance(), null);
-//        initBottomWheelContainer(bottomWheelContainerView);
+        initBottomWheelContainer(bootomWheelContainer);
         initTopWheelContainer(topWheelContainer);
 
 /*
@@ -78,7 +78,7 @@ public final class FragmentWheelPage extends Fragment {
 
     private void initTopWheelContainer(RecyclerView topWheelContainerView) {
         topWheelContainerView.setLayoutManager(new TopWheelLayoutManager(getActivity(),
-                WheelComputationHelper.getInstance(), new AbstractWheelLayoutManager.OnInitialLayoutFinishingListener() {
+                WheelComputationHelper.getInstance(), new AbstractWheelLayoutManager.WheelOnInitialLayoutFinishingListener() {
             @Override
             public void onInitialLayoutFinished(int finishedAtAdapterPosition) {
                 if (bottomWheelLayoutManager != null) {

@@ -63,7 +63,7 @@ public abstract class BaseSubWheel {
 //
 //
 //    @Deprecated
-//    public interface OnInitialLayoutFinishingListener {
+//    public interface WheelOnInitialLayoutFinishingListener {
 //        void onInitialLayoutFinished(int finishedAtAdapterPosition);
 //    }
 //
@@ -81,7 +81,7 @@ public abstract class BaseSubWheel {
 //    public abstract void doInitialChildrenLayout(RecyclerView.Recycler recycler,
 //                                                 RecyclerView.State state,
 //                                                 int startLayoutFromAdapterPosition,
-//                                                 OnInitialLayoutFinishingListener layoutFinishingListener);
+//                                                 WheelOnInitialLayoutFinishingListener layoutFinishingListener);
 //
 //    public abstract String getUniqueMarker();
 //
