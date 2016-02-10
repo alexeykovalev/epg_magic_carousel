@@ -19,6 +19,7 @@ import com.sss.magicwheel.manager.WheelComputationHelper;
 import com.sss.magicwheel.manager.decor.WheelFrameItemDecoration;
 import com.sss.magicwheel.manager.wheel.TopWheelLayoutManager;
 import com.sss.magicwheel.manager.widget.WheelContainerRecyclerView;
+import com.sss.magicwheel.manager.widget.WheelOfFortuneContainerFrameView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,12 +37,7 @@ public final class FragmentWheelPage extends Fragment {
 
     private final Handler handler = new Handler();
 
-    private WheelContainerRecyclerView topWheelContainer;
-    private WheelContainerRecyclerView bootomWheelContainer;
-
-    private BottomWheelLayoutManager bottomWheelLayoutManager;
-
-    private WheelDataItem SAMPLE_DATA_ITEM;
+    private WheelOfFortuneContainerFrameView wheelOfFortuneContainerFrameView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
@@ -51,12 +47,8 @@ public final class FragmentWheelPage extends Fragment {
         WheelComputationHelper.initialize(createWheelConfig(0));
 
         final View rootView = inflater.inflate(R.layout.fragment_wheel_page_layout, container, false);
-        topWheelContainer = (WheelContainerRecyclerView) rootView.findViewById(R.id.top_wheel_container);
-        bootomWheelContainer = (WheelContainerRecyclerView) rootView.findViewById(R.id.bottom_wheel_container);
 
-        bottomWheelLayoutManager = new BottomWheelLayoutManager(getActivity(), WheelComputationHelper.getInstance(), null);
-        initBottomWheelContainer(bootomWheelContainer);
-        initTopWheelContainer(topWheelContainer);
+        wheelOfFortuneContainerFrameView = (WheelOfFortuneContainerFrameView) rootView.findViewById(R.id.wheel_of_fortune_container_frame);
 
 /*
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -72,61 +64,9 @@ public final class FragmentWheelPage extends Fragment {
             }
         });
 */
-        topWheelContainer.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                bootomWheelContainer.dispatchTouchEvent(event);
-                return false;
-            }
-        });
-
         return rootView;
     }
 
-    private void initTopWheelContainer(RecyclerView topWheelContainerView) {
-        topWheelContainerView.setLayoutManager(new TopWheelLayoutManager(getActivity(),
-                WheelComputationHelper.getInstance(), new AbstractWheelLayoutManager.WheelOnInitialLayoutFinishingListener() {
-            @Override
-            public void onInitialLayoutFinished(int finishedAtAdapterPosition) {
-                if (bottomWheelLayoutManager != null) {
-                    bottomWheelLayoutManager.setStartLayoutFromAdapterPosition(finishedAtAdapterPosition);
-                }
-            }
-        }));
-        topWheelContainerView.setAdapter(createWheelAdapter(createDataSet()));
-        addWheelItemDecorations(topWheelContainerView);
-    }
-
-    private void initBottomWheelContainer(RecyclerView topWheelContainerView) {
-        topWheelContainerView.setLayoutManager(bottomWheelLayoutManager);
-        topWheelContainerView.setAdapter(createWheelAdapter(createDataSet()));
-        addWheelItemDecorations(topWheelContainerView);
-    }
-
-    private void addWheelItemDecorations(RecyclerView wheelContainerView) {
-        wheelContainerView.addItemDecoration(new WheelFrameItemDecoration(getActivity()));
-//        wheelContainerView.addItemDecoration(new WheelSectorRayItemDecoration(getActivity()));
-//        wheelContainerView.addItemDecoration(new WheelSectorLeftEdgeColorItemDecoration(getActivity()));
-    }
-
-    private WheelAdapter createWheelAdapter(List<WheelDataItem> adapterDataSet) {
-        return new WheelAdapter(getActivity(), adapterDataSet, new WheelAdapter.OnWheelItemClickListener() {
-            @Override
-            public void onItemClicked(View clickedSectorView, WheelDataItem dataItem) {
-                topWheelContainer.handleTapOnSectorView(clickedSectorView);
-//                topWheelContainer.smoothlySelectDataItem(dataItem);
-            }
-        });
-    }
-
-    private List<WheelDataItem> createDataSet() {
-        List<WheelDataItem> items = new ArrayList<>();
-        for (int i = 0; i < 30; i++) {
-            items.add(new WheelDataItem("item.Num [" + i + "]"));
-        }
-//        SAMPLE_DATA_ITEM = items.get(8);
-        return Collections.unmodifiableList(items);
-    }
 
     private WheelConfig createWheelConfig(int fragmentContainerTopEdge) {
         final int screenHeight = WheelComputationHelper.getScreenDimensions(getActivity()).getHeight();
