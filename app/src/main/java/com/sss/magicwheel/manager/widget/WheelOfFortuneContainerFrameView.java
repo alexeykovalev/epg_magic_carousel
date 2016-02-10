@@ -16,7 +16,6 @@ import com.sss.magicwheel.manager.wheel.AbstractWheelLayoutManager;
 import com.sss.magicwheel.manager.wheel.BottomWheelLayoutManager;
 import com.sss.magicwheel.manager.wheel.TopWheelLayoutManager;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,11 +25,13 @@ import java.util.List;
  */
 public final class WheelOfFortuneContainerFrameView extends FrameLayout {
 
+    private WheelComputationHelper computationHelper;
+
     private WheelContainerRecyclerView topWheelContainer;
     private WheelContainerRecyclerView bottomWheelContainer;
     private BottomWheelLayoutManager bottomWheelLayoutManager;
 
-    private AbstractWheelLayoutManager.WheelOnInitialLayoutFinishingListener bottomWheelInitialLayoutFinishingListener;
+//    private AbstractWheelLayoutManager.WheelOnInitialLayoutFinishingListener bottomWheelInitialLayoutFinishingListener;
 
     public WheelOfFortuneContainerFrameView(Context context) {
         this(context, null);
@@ -42,19 +43,11 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
 
     public WheelOfFortuneContainerFrameView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        computationHelper = WheelComputationHelper.getInstance();
         inflateAndBindContainerView(context);
 
-        bottomWheelLayoutManager = new BottomWheelLayoutManager(context, WheelComputationHelper.getInstance(), null);
         initBottomWheelContainer(bottomWheelContainer);
         initTopWheelContainer(topWheelContainer);
-
-//        topWheelContainer.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                bottomWheelContainer.dispatchTouchEvent(event);
-//                return false;
-//            }
-//        });
     }
 
     @Override
@@ -70,13 +63,13 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
     }
 
     public void swapData(List<WheelDataItem> newData) {
-        ensureListenerIsSet();
+//        ensureListenerIsSet();
         final List<WheelDataItem> unmodifiableNewData = Collections.unmodifiableList(newData);
         topWheelContainer.getAdapter().swapData(unmodifiableNewData);
         bottomWheelContainer.getAdapter().swapData(unmodifiableNewData);
     }
 
-    private void ensureListenerIsSet() {
+    /*private void ensureListenerIsSet() {
         if (bottomWheelInitialLayoutFinishingListener == null) {
             throw new IllegalStateException("You have to set bottom wheel initial layout finishing " +
                     "listener before data swapping.");
@@ -88,7 +81,7 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
             throw new IllegalArgumentException("Listener has to be NOT NULL.");
         }
         this.bottomWheelInitialLayoutFinishingListener = bottomWheelInitialLayoutFinishingListener;
-    }
+    }*/
 
     private void inflateAndBindContainerView(Context context) {
         inflate(context, R.layout.wheel_container_layout, this);
@@ -97,13 +90,11 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
     }
 
     private void initTopWheelContainer(RecyclerView topWheelContainerView) {
-        topWheelContainerView.setLayoutManager(new TopWheelLayoutManager(getContext(),
-                WheelComputationHelper.getInstance(), new AbstractWheelLayoutManager.WheelOnInitialLayoutFinishingListener() {
+        topWheelContainerView.setLayoutManager(new TopWheelLayoutManager(getContext(), computationHelper,
+                new AbstractWheelLayoutManager.WheelOnInitialLayoutFinishingListener() {
             @Override
             public void onInitialLayoutFinished(int finishedAtAdapterPosition) {
-                if (bottomWheelLayoutManager != null) {
                     bottomWheelLayoutManager.setStartLayoutFromAdapterPosition(finishedAtAdapterPosition);
-                }
             }
         }));
         topWheelContainerView.setAdapter(createEmptyWheelAdapter());
@@ -111,9 +102,20 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
     }
 
     private void initBottomWheelContainer(RecyclerView topWheelContainerView) {
+        bottomWheelLayoutManager = new BottomWheelLayoutManager(getContext(), computationHelper,
+                new AbstractWheelLayoutManager.WheelOnInitialLayoutFinishingListener() {
+            @Override
+            public void onInitialLayoutFinished(int finishedAtAdapterPosition) {
+                startWheelAppearingAnimation();
+            }
+        });
         topWheelContainerView.setLayoutManager(bottomWheelLayoutManager);
         topWheelContainerView.setAdapter(createEmptyWheelAdapter());
         addWheelItemDecorations(topWheelContainerView);
+    }
+
+    private void startWheelAppearingAnimation() {
+
     }
 
     private void addWheelItemDecorations(RecyclerView wheelContainerView) {
@@ -131,6 +133,5 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
             }
         });
     }
-
 
 }

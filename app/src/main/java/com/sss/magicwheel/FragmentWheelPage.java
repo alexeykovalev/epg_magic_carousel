@@ -4,25 +4,16 @@ import android.app.Fragment;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.sss.magicwheel.entity.WheelConfig;
 import com.sss.magicwheel.entity.WheelDataItem;
-import com.sss.magicwheel.manager.wheel.AbstractWheelLayoutManager;
-import com.sss.magicwheel.manager.wheel.BottomWheelLayoutManager;
-import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
-import com.sss.magicwheel.manager.decor.WheelFrameItemDecoration;
-import com.sss.magicwheel.manager.wheel.TopWheelLayoutManager;
-import com.sss.magicwheel.manager.widget.WheelContainerRecyclerView;
 import com.sss.magicwheel.manager.widget.WheelOfFortuneContainerFrameView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -49,13 +40,7 @@ public final class FragmentWheelPage extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_wheel_page_layout, container, false);
 
         wheelOfFortuneContainerFrameView = (WheelOfFortuneContainerFrameView) rootView.findViewById(R.id.wheel_of_fortune_container_frame);
-        wheelOfFortuneContainerFrameView.setBottomWheelInitialLayoutFinishingListener(new AbstractWheelLayoutManager.WheelOnInitialLayoutFinishingListener() {
-            @Override
-            public void onInitialLayoutFinished(int finishedAtAdapterPosition) {
-                // TODO: 10.02.2016 start wheel appearing animation. Handler might be should be in container itself.
-            }
-        });
-        wheelOfFortuneContainerFrameView.swapData(createDataSet());
+        wheelOfFortuneContainerFrameView.swapData(createSampleDataSet());
 /*
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -73,7 +58,7 @@ public final class FragmentWheelPage extends Fragment {
         return rootView;
     }
 
-    private List<WheelDataItem> createDataSet() {
+    private List<WheelDataItem> createSampleDataSet() {
         List<WheelDataItem> items = new ArrayList<>();
         for (int i = 0; i < 30; i++) {
             items.add(new WheelDataItem("item.Num [" + i + "]"));
