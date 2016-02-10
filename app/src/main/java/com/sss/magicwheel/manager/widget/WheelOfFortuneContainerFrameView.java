@@ -56,6 +56,12 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         });
     }
 
+    public void swapData(List<WheelDataItem> newData) {
+        final List<WheelDataItem> unmodifiableNewData = Collections.unmodifiableList(newData);
+        topWheelContainer.getAdapter().swapData(unmodifiableNewData);
+        bottomWheelContainer.getAdapter().swapData(unmodifiableNewData);
+    }
+
     private void inflateAndBindContainerView(Context context) {
         inflate(context, R.layout.wheel_container_layout, this);
         topWheelContainer = (WheelContainerRecyclerView) findViewById(R.id.top_wheel_container);
@@ -72,13 +78,13 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
                 }
             }
         }));
-        topWheelContainerView.setAdapter(createWheelAdapter(createDataSet()));
+        topWheelContainerView.setAdapter(createEmptyWheelAdapter());
         addWheelItemDecorations(topWheelContainerView);
     }
 
     private void initBottomWheelContainer(RecyclerView topWheelContainerView) {
         topWheelContainerView.setLayoutManager(bottomWheelLayoutManager);
-        topWheelContainerView.setAdapter(createWheelAdapter(createDataSet()));
+        topWheelContainerView.setAdapter(createEmptyWheelAdapter());
         addWheelItemDecorations(topWheelContainerView);
     }
 
@@ -88,8 +94,8 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
 //        wheelContainerView.addItemDecoration(new WheelSectorLeftEdgeColorItemDecoration(getActivity()));
     }
 
-    private WheelAdapter createWheelAdapter(List<WheelDataItem> adapterDataSet) {
-        return new WheelAdapter(getContext(), adapterDataSet, new WheelAdapter.OnWheelItemClickListener() {
+    private WheelAdapter createEmptyWheelAdapter() {
+        return new WheelAdapter(getContext(), Collections.<WheelDataItem>emptyList(), new WheelAdapter.OnWheelItemClickListener() {
             @Override
             public void onItemClicked(View clickedSectorView, WheelDataItem dataItem) {
                 topWheelContainer.handleTapOnSectorView(clickedSectorView);
@@ -98,12 +104,5 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         });
     }
 
-    private List<WheelDataItem> createDataSet() {
-        List<WheelDataItem> items = new ArrayList<>();
-        for (int i = 0; i < 30; i++) {
-            items.add(new WheelDataItem("item.Num [" + i + "]"));
-        }
-        return Collections.unmodifiableList(items);
-    }
 
 }

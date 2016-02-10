@@ -49,7 +49,7 @@ public final class FragmentWheelPage extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_wheel_page_layout, container, false);
 
         wheelOfFortuneContainerFrameView = (WheelOfFortuneContainerFrameView) rootView.findViewById(R.id.wheel_of_fortune_container_frame);
-
+        wheelOfFortuneContainerFrameView.swapData(createDataSet());
 /*
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -65,6 +65,14 @@ public final class FragmentWheelPage extends Fragment {
         });
 */
         return rootView;
+    }
+
+    private List<WheelDataItem> createDataSet() {
+        List<WheelDataItem> items = new ArrayList<>();
+        for (int i = 0; i < 30; i++) {
+            items.add(new WheelDataItem("item.Num [" + i + "]"));
+        }
+        return items;
     }
 
 

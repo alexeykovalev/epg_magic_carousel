@@ -10,6 +10,7 @@ import com.sss.magicwheel.R;
 import com.sss.magicwheel.entity.WheelDataItem;
 import com.sss.magicwheel.manager.widget.WheelBigWrapperView;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,8 +34,14 @@ public final class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelI
     // TODO: 29.01.2016 Check for Preconditions here
     public WheelAdapter(Context context, List<WheelDataItem> dataItems, OnWheelItemClickListener itemClickListener) {
         this.inflater = LayoutInflater.from(context);
-        this.dataItems = dataItems;
+        this.dataItems = new ArrayList<>(dataItems);
         this.itemClickListener = itemClickListener;
+    }
+
+    public void swapData(List<WheelDataItem> newData) {
+        dataItems.clear();
+        dataItems.addAll(newData);
+        notifyDataSetChanged();
     }
 
     // TODO: 29.01.2016 Optional<WheelDataItem> here
@@ -59,7 +66,7 @@ public final class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelI
      */
     @Override
     public int getItemCount() {
-        return VIRTUAL_ITEMS_COUNT;
+        return getRealItemCount() == 0 ? 0 : VIRTUAL_ITEMS_COUNT;
     }
 
     public List<WheelDataItem> getData() {
