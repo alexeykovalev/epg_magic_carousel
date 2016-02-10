@@ -24,9 +24,6 @@ public final class ClockwiseWheelRotator extends AbstractWheelRotator {
 
     @Override
     public void rotateWheel(double rotationAngleInRad, RecyclerView.Recycler recycler, RecyclerView.State state) {
-
-//        logChildren(subWheelToRotate.getChildren());
-
         for (int i = 0; i < wheelLayoutManager.getChildCount(); i++) {
             final View sectorView = wheelLayoutManager.getChildAt(i);
             final AbstractWheelLayoutManager.LayoutParams sectorViewLp = AbstractWheelLayoutManager.getChildLayoutParams(sectorView);
@@ -54,11 +51,14 @@ public final class ClockwiseWheelRotator extends AbstractWheelRotator {
 
     @Override
     protected void recycleAndAddSectors(RecyclerView.Recycler recycler, RecyclerView.State state) {
-        recycleSectorsFromBottomIfNeeded(recycler);
-        addSectorsToTopIfNeeded(recycler, state);
+        recycleSectorsFromLayoutEndEdge(recycler);
+        addSectorsToLayoutStartEdge(recycler, state);
     }
 
-    private void recycleSectorsFromBottomIfNeeded(RecyclerView.Recycler recycler) {
+    /**
+     * When sectorView's top edge goes outside layoutEndAngle then recycle this sector.
+     */
+    private void recycleSectorsFromLayoutEndEdge(RecyclerView.Recycler recycler) {
         for (int i = wheelLayoutManager.getChildCount() - 1; i >= 0; i--) {
             final View sectorView = wheelLayoutManager.getChildAt(i);
             final AbstractWheelLayoutManager.LayoutParams sectorViewLp = AbstractWheelLayoutManager.getChildLayoutParams(sectorView);
@@ -71,11 +71,15 @@ public final class ClockwiseWheelRotator extends AbstractWheelRotator {
         }
     }
 
-    private void addSectorsToTopIfNeeded(RecyclerView.Recycler recycler, RecyclerView.State state) {
+    /**
+     * Add new sector views until lastly added sectorView's bottom edge be greater than
+     * layoutStartEdge
+     */
+    private void addSectorsToLayoutStartEdge(RecyclerView.Recycler recycler, RecyclerView.State state) {
         final View closestToStartSectorView = wheelLayoutManager.getChildClosestToLayoutStartEdge();
         final AbstractWheelLayoutManager.LayoutParams sectorViewLp = AbstractWheelLayoutManager.getChildLayoutParams(closestToStartSectorView);
 
-//        Log.e(AbstractWheelLayoutManager.TAG, "addSectorsToTopIfNeeded() " +
+//        Log.e(AbstractWheelLayoutManager.TAG, "addSectorsToLayoutStartEdge() " +
 //                "closestToStartSectorView [" + AbstractWheelLayoutManager.getBigWrapperTitle(closestToStartSectorView) + "]");
 
         final double sectorAngleInRad = computationHelper.getWheelConfig().getAngularRestrictions().getSectorAngleInRad();
@@ -85,13 +89,14 @@ public final class ClockwiseWheelRotator extends AbstractWheelRotator {
         int nextChildPos = wheelLayoutManager.getPosition(closestToStartSectorView) - 1;
         int alreadyLayoutedChildrenCount = 0;
 
+        // TODO: 10.02.2016 might be concernes for bottom wheel part - disappearing of bottom most sectorView
         while (newSectorViewBottomEdgeAngularPosInRad < wheelLayoutManager.getLayoutStartAngleInRad()
                 && alreadyLayoutedChildrenCount < state.getItemCount()) {
-//            Log.i(TAG, "addSectorsToTopIfNeeded() " +
+//            Log.i(TAG, "addSectorsToLayoutStartEdge() " +
 //                            "newSectorViewLayoutAngle [" + WheelComputationHelper.radToDegree(newSectorViewLayoutAngle) + "], " +
 //                            "nextChildPos [" + nextChildPos + "]"
 //            );
-//            Log.e(AbstractWheelLayoutManager.TAG, "addSectorsToTopIfNeeded()");
+//            Log.e(AbstractWheelLayoutManager.TAG, "addSectorsToLayoutStartEdge()");
             wheelLayoutManager.setupSectorForPosition(recycler, nextChildPos, newSectorViewLayoutAngle, false);
             newSectorViewLayoutAngle += sectorAngleInRad;
             newSectorViewBottomEdgeAngularPosInRad = computationHelper.getSectorAngleBottomEdgeInRad(newSectorViewLayoutAngle);
