@@ -10,6 +10,7 @@ import com.sss.magicwheel.entity.WheelRotationDirection;
  * @author Alexey Kovalev
  * @since 03.02.2016.
  */
+@Deprecated
 public abstract class AbstractWheelRotator {
 
     private static AbstractWheelRotator clockwiseRotator;

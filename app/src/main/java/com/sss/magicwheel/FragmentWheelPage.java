@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -71,7 +72,13 @@ public final class FragmentWheelPage extends Fragment {
             }
         });
 */
-
+        topWheelContainer.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                bootomWheelContainer.dispatchTouchEvent(event);
+                return false;
+            }
+        });
 
         return rootView;
     }

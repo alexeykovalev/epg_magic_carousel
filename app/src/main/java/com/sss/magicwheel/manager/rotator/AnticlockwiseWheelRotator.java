@@ -11,6 +11,7 @@ import com.sss.magicwheel.manager.WheelComputationHelper;
  * @author Alexey Kovalev
  * @since 03.02.2016.
  */
+@Deprecated
 public final class AnticlockwiseWheelRotator extends AbstractWheelRotator {
 
     public AnticlockwiseWheelRotator(AbstractWheelLayoutManager wheelLayoutManager, WheelComputationHelper computationHelper) {
@@ -42,7 +43,7 @@ public final class AnticlockwiseWheelRotator extends AbstractWheelRotator {
             final AbstractWheelLayoutManager.LayoutParams sectorViewLp = AbstractWheelLayoutManager.getChildLayoutParams(sectorView);
             final double sectorViewBottomEdgeAngularPosInRad = computationHelper.getSectorAngleBottomEdgeInRad(sectorViewLp.anglePositionInRad);
 
-            if (sectorViewBottomEdgeAngularPosInRad > computationHelper.getWheelLayoutStartAngleInRad()) {
+            if (sectorViewBottomEdgeAngularPosInRad > wheelLayoutManager.getLayoutStartAngleInRad()) {
                 wheelLayoutManager.removeAndRecycleViewAt(i, recycler);
 //                Log.i(TAG, "Recycle view at index [" + i + "]");
             }

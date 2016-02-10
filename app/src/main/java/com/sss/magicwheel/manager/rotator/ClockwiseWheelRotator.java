@@ -13,6 +13,7 @@ import java.util.List;
  * @author Alexey Kovalev
  * @since 03.02.2016.
  */
+@Deprecated
 public final class ClockwiseWheelRotator extends AbstractWheelRotator {
 
     private static final String TAG = ClockwiseWheelRotator.class.getCanonicalName();
