@@ -11,6 +11,8 @@ public final class WheelConfig {
 
     public static final class AngularRestrictions {
 
+        public static final double NOT_DEFINED_ANGLE = Double.MAX_VALUE;
+
         private final double sectorAngleInRad;
 
         private final double wheelTopEdgeAngleRestrictionInRad;
@@ -23,7 +25,7 @@ public final class WheelConfig {
          * Angle from which we have to actually start sectors layout.
          * Does not equal to {@link #wheelTopEdgeAngleRestrictionInRad}
          */
-        private double wheelLayoutStartAngle;
+        private double wheelLayoutStartAngle = NOT_DEFINED_ANGLE;
 
         public static Builder builder(double sectorAngleInRad) {
             return new Builder(sectorAngleInRad);
@@ -49,8 +51,8 @@ public final class WheelConfig {
          * So the firstly layouted sector's top edge will be aligned by this angle.
          */
         public double getWheelLayoutStartAngleInRad() {
-            if (wheelLayoutStartAngle == 0) {
-                double res = 0;
+            if (wheelLayoutStartAngle == NOT_DEFINED_ANGLE) {
+                double res = gapAreaTopEdgeAngleRestrictionInRad;
                 while (res <= wheelTopEdgeAngleRestrictionInRad) {
                     res += sectorAngleInRad;
                 }

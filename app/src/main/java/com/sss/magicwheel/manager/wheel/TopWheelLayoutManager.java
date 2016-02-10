@@ -1,6 +1,7 @@
 package com.sss.magicwheel.manager.wheel;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 
 import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
@@ -18,6 +19,38 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
 
     public TopWheelLayoutManager(Context context, WheelComputationHelper computationHelper, WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener) {
         super(computationHelper, initialLayoutFinishingListener);
+    }
+
+    @Override
+    public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+        // We have nothing to show for an empty data set but clear any existing views
+        int itemCount = getItemCount();
+        if (itemCount == 0) {
+            removeAndRecycleAllViews(recycler);
+            return;
+        }
+
+        removeAndRecycleAllViews(recycler);
+
+        if (getStartLayoutFromAdapterPosition() == NOT_DEFINED_ADAPTER_POSITION) {
+            return;
+        }
+
+        final double sectorAngleInRad = wheelConfig.getAngularRestrictions().getSectorAngleInRad();
+        final double halfSectorAngleInRad = wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 2;
+        final double bottomLimitAngle = getLayoutEndAngleInRad();
+
+        double layoutAngle = getLayoutStartAngleInRad() + halfSectorAngleInRad;
+        int childPos = getStartLayoutFromAdapterPosition();
+        while (layoutAngle > bottomLimitAngle && childPos < state.getItemCount()) {
+            setupSectorForPosition(recycler, childPos, layoutAngle, true);
+            layoutAngle -= sectorAngleInRad;
+            childPos++;
+        }
+
+        if (initialLayoutFinishingListener != null) {
+            initialLayoutFinishingListener.onInitialLayoutFinished(childPos - 1);
+        }
     }
 
     @Override

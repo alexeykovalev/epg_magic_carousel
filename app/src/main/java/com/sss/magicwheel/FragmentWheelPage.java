@@ -49,6 +49,12 @@ public final class FragmentWheelPage extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_wheel_page_layout, container, false);
 
         wheelOfFortuneContainerFrameView = (WheelOfFortuneContainerFrameView) rootView.findViewById(R.id.wheel_of_fortune_container_frame);
+        wheelOfFortuneContainerFrameView.setBottomWheelInitialLayoutFinishingListener(new AbstractWheelLayoutManager.WheelOnInitialLayoutFinishingListener() {
+            @Override
+            public void onInitialLayoutFinished(int finishedAtAdapterPosition) {
+                // TODO: 10.02.2016 start wheel appearing animation. Handler might be should be in container itself.
+            }
+        });
         wheelOfFortuneContainerFrameView.swapData(createDataSet());
 /*
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {

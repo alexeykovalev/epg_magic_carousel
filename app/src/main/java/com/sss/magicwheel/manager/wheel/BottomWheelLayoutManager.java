@@ -23,9 +23,41 @@ public final class BottomWheelLayoutManager extends AbstractWheelLayoutManager {
     }
 
     @Override
+    public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+        // We have nothing to show for an empty data set but clear any existing views
+        int itemCount = getItemCount();
+        if (itemCount == 0) {
+            removeAndRecycleAllViews(recycler);
+            return;
+        }
+
+        removeAndRecycleAllViews(recycler);
+
+        if (getStartLayoutFromAdapterPosition() == NOT_DEFINED_ADAPTER_POSITION) {
+            return;
+        }
+
+        final double sectorAngleInRad = wheelConfig.getAngularRestrictions().getSectorAngleInRad();
+        final double halfSectorAngleInRad = wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 2;
+        final double bottomLimitAngle = getLayoutEndAngleInRad();
+
+        double layoutAngle = getLayoutStartAngleInRad() + halfSectorAngleInRad;
+        int childPos = getStartLayoutFromAdapterPosition();
+        while (layoutAngle > bottomLimitAngle && childPos < state.getItemCount()) {
+            setupSectorForPosition(recycler, childPos, layoutAngle, true);
+            layoutAngle -= sectorAngleInRad;
+            childPos++;
+        }
+
+        if (initialLayoutFinishingListener != null) {
+            initialLayoutFinishingListener.onInitialLayoutFinished(childPos - 1);
+        }
+    }
+
+    @Override
     protected double computeLayoutStartAngleInRad() {
-        return wheelConfig.getAngularRestrictions().getGapAreaBottomEdgeAngleRestrictionInRad()
-                + wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 2;
+        return wheelConfig.getAngularRestrictions().getGapAreaBottomEdgeAngleRestrictionInRad();
+//                + wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 2;
     }
 
     @Override

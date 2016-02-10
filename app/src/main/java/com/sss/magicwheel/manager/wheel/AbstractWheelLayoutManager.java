@@ -64,7 +64,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     private final double layoutStartAngleInRad;
     private final double layoutEndAngleInRad;
 
-    private final WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener;
+    protected final WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener;
 
     private int startLayoutFromAdapterPosition = NOT_DEFINED_ADAPTER_POSITION;
 
@@ -134,35 +134,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     }
 
     @Override
-    public void onLayoutChildren(final RecyclerView.Recycler recycler, final RecyclerView.State state) {
-        // We have nothing to show for an empty data set but clear any existing views
-        int itemCount = getItemCount();
-        if (itemCount == 0) {
-            removeAndRecycleAllViews(recycler);
-            return;
-        }
-
-        removeAndRecycleAllViews(recycler);
-
-        if (getStartLayoutFromAdapterPosition() == NOT_DEFINED_ADAPTER_POSITION) {
-            return;
-        }
-
-        final double sectorAngleInRad = wheelConfig.getAngularRestrictions().getSectorAngleInRad();
-        final double bottomLimitAngle = layoutEndAngleInRad - sectorAngleInRad;
-
-        double layoutAngle = layoutStartAngleInRad;
-        int childPos = getStartLayoutFromAdapterPosition();
-        while (layoutAngle > bottomLimitAngle && childPos < state.getItemCount()) {
-            setupSectorForPosition(recycler, childPos, layoutAngle, true);
-            layoutAngle -= sectorAngleInRad;
-            childPos++;
-        }
-
-        if (initialLayoutFinishingListener != null) {
-            initialLayoutFinishingListener.onInitialLayoutFinished(childPos - 1);
-        }
-    }
+    public abstract void onLayoutChildren(final RecyclerView.Recycler recycler, final RecyclerView.State state);
 
     @Override
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {

@@ -30,6 +30,7 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
     private WheelContainerRecyclerView bottomWheelContainer;
     private BottomWheelLayoutManager bottomWheelLayoutManager;
 
+    private AbstractWheelLayoutManager.WheelOnInitialLayoutFinishingListener bottomWheelInitialLayoutFinishingListener;
 
     public WheelOfFortuneContainerFrameView(Context context) {
         this(context, null);
@@ -69,9 +70,24 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
     }
 
     public void swapData(List<WheelDataItem> newData) {
+        ensureListenerIsSet();
         final List<WheelDataItem> unmodifiableNewData = Collections.unmodifiableList(newData);
         topWheelContainer.getAdapter().swapData(unmodifiableNewData);
         bottomWheelContainer.getAdapter().swapData(unmodifiableNewData);
+    }
+
+    private void ensureListenerIsSet() {
+        if (bottomWheelInitialLayoutFinishingListener == null) {
+            throw new IllegalStateException("You have to set bottom wheel initial layout finishing " +
+                    "listener before data swapping.");
+        }
+    }
+
+    public void setBottomWheelInitialLayoutFinishingListener(AbstractWheelLayoutManager.WheelOnInitialLayoutFinishingListener bottomWheelInitialLayoutFinishingListener) {
+        if (bottomWheelInitialLayoutFinishingListener == null) {
+            throw new IllegalArgumentException("Listener has to be NOT NULL.");
+        }
+        this.bottomWheelInitialLayoutFinishingListener = bottomWheelInitialLayoutFinishingListener;
     }
 
     private void inflateAndBindContainerView(Context context) {
