@@ -47,13 +47,25 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         initBottomWheelContainer(bottomWheelContainer);
         initTopWheelContainer(topWheelContainer);
 
-        topWheelContainer.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                bottomWheelContainer.dispatchTouchEvent(event);
-                return false;
-            }
-        });
+//        topWheelContainer.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                bottomWheelContainer.dispatchTouchEvent(event);
+//                return false;
+//            }
+//        });
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        return true;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        topWheelContainer.dispatchTouchEvent(event);
+        bottomWheelContainer.dispatchTouchEvent(event);
+        return true;
     }
 
     public void swapData(List<WheelDataItem> newData) {
