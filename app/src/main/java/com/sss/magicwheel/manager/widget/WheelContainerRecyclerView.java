@@ -6,10 +6,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
-import android.graphics.RectF;
+import android.graphics.Region;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import com.sss.magicwheel.entity.CoordinatesHolder;
@@ -37,7 +36,6 @@ public final class WheelContainerRecyclerView extends RecyclerView {
     private final PointF gapTopRay;
     private final PointF gapBottomRay;
 
-    private final RectF gapClipRectInRvCoords;
     private final Path gapPath;
 
     private class AutoAngleAdjustmentScrollListener extends OnScrollListener {
@@ -74,8 +72,7 @@ public final class WheelContainerRecyclerView extends RecyclerView {
         this.gapTopRay = computeGapTopRayPosition();
         this.gapBottomRay = computeGapBottomRayPosition();
 
-        this.gapClipRectInRvCoords = createGapClipRect();
-        this.gapPath = createGapClipPath(gapClipRectInRvCoords);
+        this.gapPath = createGapClipPath();
 
         addOnScrollListener(new AutoAngleAdjustmentScrollListener());
     }
@@ -162,6 +159,20 @@ public final class WheelContainerRecyclerView extends RecyclerView {
         return (WheelAdapter) super.getAdapter();
     }
 
+    @Override
+    public void onDraw(Canvas canvas) {
+        drawHelperGapLines(canvas);
+        canvas.clipPath(gapPath, Region.Op.DIFFERENCE);
+        super.onDraw(canvas);
+    }
+
+    private static Paint createGapRaysDrawingPaint() {
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(Color.RED);
+        paint.setStrokeWidth(8);
+        return paint;
+    }
 
     private PointF computeGapTopRayPosition() {
         final PointF pos = CoordinatesHolder.ofPolar(2 * wheelConfig.getOuterRadius(),
@@ -179,61 +190,26 @@ public final class WheelContainerRecyclerView extends RecyclerView {
         return WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(pos);
     }
 
-    private static Paint createGapRaysDrawingPaint() {
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(Color.RED);
-        paint.setStrokeWidth(8);
-        return paint;
-    }
-
-    private RectF createGapClipRect() {
-        return WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(
-                new RectF(
-                        0,
-                        150,
-                        computationHelper.getWheelConfig().getOuterRadius() + 150,
-                        -150
-                )
-        );
-    }
-
-
-
-    private Path createGapClipPath(RectF gapClipRect) {
+    private Path createGapClipPath() {
         final Path res = new Path();
+        final PointF circleCenterRelToRecyclerView = wheelConfig.getCircleCenterRelToRecyclerView();
 
-        /*res.moveTo(gapClipRect.left, gapClipRect.top);
-        res.lineTo(gapClipRect.right, gapClipRect.top);
-        res.lineTo(gapClipRect.right, gapClipRect.bottom);
-        res.lineTo(gapClipRect.left, gapClipRect.bottom);
-        res.lineTo(gapClipRect.left, gapClipRect.top);
-        res.close();*/
-
-        res.addRect(gapClipRect, Path.Direction.CW);
+        res.moveTo(circleCenterRelToRecyclerView.x, circleCenterRelToRecyclerView.y);
+        res.lineTo(gapTopRay.x, gapTopRay.y);
+        res.lineTo(gapBottomRay.x, gapBottomRay.y);
+        res.lineTo(circleCenterRelToRecyclerView.x, circleCenterRelToRecyclerView.y);
+        res.close();
 
         return res;
     }
 
+    private void drawHelperGapLines(Canvas canvas) {
+        final PointF circleCenterRelToRecyclerView = wheelConfig.getCircleCenterRelToRecyclerView();
+        canvas.drawLine(circleCenterRelToRecyclerView.x, circleCenterRelToRecyclerView.y,
+                gapTopRay.x, gapTopRay.y, gapDrawingPaint);
 
-    @Override
-    public void onDraw(Canvas canvas) {
-        if (true) {
-
-            final PointF circleCenterRelToRecyclerView = wheelConfig.getCircleCenterRelToRecyclerView();
-            canvas.drawLine(circleCenterRelToRecyclerView.x, circleCenterRelToRecyclerView.y,
-                    gapTopRay.x, gapTopRay.y, gapDrawingPaint);
-
-            canvas.drawLine(circleCenterRelToRecyclerView.x, circleCenterRelToRecyclerView.y,
-                    gapBottomRay.x, gapBottomRay.y, gapDrawingPaint);
-
-            super.onDraw(canvas);
-
-            return;
-        }
-
-        canvas.clipPath(gapPath);
-        super.onDraw(canvas);
+        canvas.drawLine(circleCenterRelToRecyclerView.x, circleCenterRelToRecyclerView.y,
+                gapBottomRay.x, gapBottomRay.y, gapDrawingPaint);
     }
 
 }
