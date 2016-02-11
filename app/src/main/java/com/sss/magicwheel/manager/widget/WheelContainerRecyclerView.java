@@ -162,7 +162,7 @@ public final class WheelContainerRecyclerView extends RecyclerView {
     @Override
     public void onDraw(Canvas canvas) {
 //        drawHelperGapLines(canvas);
-        cutGapArea(canvas);
+//        cutGapArea(canvas);
         super.onDraw(canvas);
     }
 

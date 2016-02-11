@@ -56,7 +56,9 @@ public final class BottomWheelLayoutManager extends AbstractWheelLayoutManager {
 
     @Override
     protected double computeLayoutStartAngleInRad() {
-        return wheelConfig.getAngularRestrictions().getGapAreaBottomEdgeAngleRestrictionInRad();
+        return wheelConfig.getAngularRestrictions().getWheelLayoutStartAngleInRad();
+//        return wheelConfig.getAngularRestrictions().getGapAreaBottomEdgeAngleRestrictionInRad();
+
 //                + wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 2;
     }
 

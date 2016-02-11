@@ -44,6 +44,14 @@ public final class WheelConfig {
         }
 
         /**
+         * Be careful of using this. Don't confuse with {@link #getWheelLayoutStartAngleInRad}
+         * which most probably has to be used instead of this.
+         */
+        public double getWheelTopEdgeAngleRestrictionInRad() {
+            return wheelTopEdgeAngleRestrictionInRad;
+        }
+
+        /**
          * Layout will be performed from top to bottom direction. And we should have sector
          * positioned parallel to central diameter. So taking into account imposed angular restrictions
          * we should compute actual layout start angle.

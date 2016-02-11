@@ -4,10 +4,12 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.PointF;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -35,14 +37,17 @@ import java.util.List;
  */
 public final class WheelOfFortuneContainerFrameView extends FrameLayout {
 
-    private static final int TOP_WHEEL_APPEARING_ANIMATION_DURATION = 1000;
-    private static final int BOTTOM_WHEEL_APPEARING_ANIMATION_DURATION = 1000;
+    private static final int TOP_WHEEL_APPEARING_ANIMATION_DURATION = 5000;
+    private static final int BOTTOM_WHEEL_APPEARING_ANIMATION_DURATION = 3000;
 
-    private WheelComputationHelper computationHelper;
+    private final WheelComputationHelper computationHelper;
+    private final WheelConfig.AngularRestrictions angularRestrictions;
+
+    private BottomWheelLayoutManager bottomWheelLayoutManager;
 
     private WheelContainerRecyclerView topWheelContainer;
     private WheelContainerRecyclerView bottomWheelContainer;
-    private BottomWheelLayoutManager bottomWheelLayoutManager;
+    private WheelStartupAnimationHelper wheelStartupAnimationHelper;
 
     public WheelOfFortuneContainerFrameView(Context context) {
         this(context, null);
@@ -55,16 +60,20 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
     public WheelOfFortuneContainerFrameView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         computationHelper = WheelComputationHelper.getInstance();
+        angularRestrictions = computationHelper.getWheelConfig().getAngularRestrictions();
         inflateAndBindContainerView(context);
 
         // in order to simplify wheel appearing animation angle computation
-        bottomWheelContainer.setVisibility(INVISIBLE);
+//        topWheelContainer.setVisibility(INVISIBLE);
+//        bottomWheelContainer.setVisibility(INVISIBLE);
 
         initBottomWheelContainer(bottomWheelContainer);
         initTopWheelContainer(topWheelContainer);
 
-        setInitialTopWheelRotation();
-        setInitialBottomWheelRotation();
+        wheelStartupAnimationHelper = new WheelStartupAnimationHelper(computationHelper, topWheelContainer, bottomWheelContainer);
+
+//        setInitialTopWheelRotation();
+//        setInitialBottomWheelRotation();
     }
 
     private void inflateAndBindContainerView(Context context) {
@@ -73,21 +82,10 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         bottomWheelContainer = (WheelContainerRecyclerView) findViewById(R.id.bottom_wheel_container);
     }
 
-    private void setInitialTopWheelRotation() {
-        final float rotationAngleInDegree = getInitialTopWheelRotationAngleInDegree();
-        setInitialRotationForWheelContainer(topWheelContainer, rotationAngleInDegree, WheelRotationDirection.Anticlockwise);
-    }
-
-    private float getInitialTopWheelRotationAngleInDegree() {
-        final WheelConfig.AngularRestrictions angularRestrictions = computationHelper.getWheelConfig().getAngularRestrictions();
-        final double rotationAngleInRad = angularRestrictions.getWheelLayoutStartAngleInRad()
-                - angularRestrictions.getGapAreaTopEdgeAngleRestrictionInRad();
-        return (float) WheelComputationHelper.radToDegree(rotationAngleInRad);
-    }
-
+    @Deprecated
     private void setInitialBottomWheelRotation() {
         final float rotationAngleInDegree = getInitialBottomWheelRotationAngleInDegree();
-        setInitialRotationForWheelContainer(bottomWheelContainer, rotationAngleInDegree, WheelRotationDirection.Anticlockwise);
+//        setInitialRotationForWheelContainer(bottomWheelContainer, rotationAngleInDegree, WheelRotationDirection.Anticlockwise);
     }
 
     private float getInitialBottomWheelRotationAngleInDegree() {
@@ -97,20 +95,7 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         return (float) WheelComputationHelper.radToDegree(rotationAngleInRad);
     }
 
-    /**
-     * @param wheelContainer - either top or bottom wheel part
-     */
-    private void setInitialRotationForWheelContainer(WheelContainerRecyclerView wheelContainer,
-                                                     float absRotationAngleInDegree,
-                                                     WheelRotationDirection rotationDirection) {
-        final int rotationSign = rotationDirection == WheelRotationDirection.Clockwise ? +1 : -1;
-        final float rotationAngleWithSign = rotationSign * Math.abs(absRotationAngleInDegree);
 
-        final PointF circleCenterRelToRecyclerView = computationHelper.getWheelConfig().getCircleCenterRelToRecyclerView();
-        wheelContainer.setPivotX(circleCenterRelToRecyclerView.x);
-        wheelContainer.setPivotY(circleCenterRelToRecyclerView.y);
-        wheelContainer.setRotation(rotationAngleWithSign);
-    }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
@@ -147,7 +132,10 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
                 new AbstractWheelLayoutManager.WheelOnInitialLayoutFinishingListener() {
             @Override
             public void onInitialLayoutFinished(int finishedAtAdapterPosition) {
-                createStartWheelAppearingAnimation().start();
+//                createStartWheelAppearingAnimation().start();
+//                createAlternativeStartAnimation().start();
+
+                wheelStartupAnimationHelper.playWheelStartupAnimation();
             }
         });
         topWheelContainerView.setLayoutManager(bottomWheelLayoutManager);
@@ -167,43 +155,43 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
 //        wheelContainerView.addItemDecoration(new WheelSectorLeftEdgeColorItemDecoration(getActivity()));
     }
 
-    private Animator createStartWheelAppearingAnimation() {
-
-        // top wheel part rotation
-        final float topWheelStartRotationAngle = topWheelContainer.getRotation();
-        final float topWheelEndRotationAngle = topWheelStartRotationAngle + getInitialTopWheelRotationAngleInDegree();
-        final ObjectAnimator topWheelRotateAnimator = ObjectAnimator.ofFloat(
-                topWheelContainer,
-                View.ROTATION,
-                topWheelStartRotationAngle, topWheelEndRotationAngle
-        );
-
-        topWheelRotateAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                bottomWheelContainer.setVisibility(VISIBLE);
-            }
-        });
-        topWheelRotateAnimator.setInterpolator(new LinearInterpolator());
-        topWheelRotateAnimator.setDuration(TOP_WHEEL_APPEARING_ANIMATION_DURATION);
-
-        // bottom wheel part rotation
-        final float bottomWheelStartRotationAngle = bottomWheelContainer.getRotation();
-        final float bottomWheelEndRotationAngle = bottomWheelStartRotationAngle + getInitialBottomWheelRotationAngleInDegree();
-        final ObjectAnimator bottomWheelRotateAnimator = ObjectAnimator.ofFloat(
-                bottomWheelContainer,
-                View.ROTATION,
-                bottomWheelStartRotationAngle, bottomWheelEndRotationAngle
-        );
-
-        bottomWheelRotateAnimator.setInterpolator(new LinearInterpolator());
-        bottomWheelRotateAnimator.setDuration(BOTTOM_WHEEL_APPEARING_ANIMATION_DURATION);
-
-        final AnimatorSet wheelAppearingAnimator = new AnimatorSet();
-        wheelAppearingAnimator.playSequentially(topWheelRotateAnimator, bottomWheelRotateAnimator);
-
-        return wheelAppearingAnimator;
-    }
+//    private Animator createStartWheelAppearingAnimation() {
+//
+//        // top wheel part rotation
+//        final float topWheelStartRotationAngle = topWheelContainer.getRotation();
+//        final float topWheelEndRotationAngle = topWheelStartRotationAngle + getInitialTopWheelRotationAngleInDegree();
+//        final ObjectAnimator topWheelRotateAnimator = ObjectAnimator.ofFloat(
+//                topWheelContainer,
+//                View.ROTATION,
+//                topWheelStartRotationAngle, topWheelEndRotationAngle
+//        );
+//
+//        topWheelRotateAnimator.addListener(new AnimatorListenerAdapter() {
+//            @Override
+//            public void onAnimationEnd(Animator animation) {
+//                bottomWheelContainer.setVisibility(VISIBLE);
+//            }
+//        });
+//        topWheelRotateAnimator.setInterpolator(new LinearInterpolator());
+//        topWheelRotateAnimator.setDuration(TOP_WHEEL_APPEARING_ANIMATION_DURATION);
+//
+//        // bottom wheel part rotation
+//        final float bottomWheelStartRotationAngle = bottomWheelContainer.getRotation();
+//        final float bottomWheelEndRotationAngle = bottomWheelStartRotationAngle + getInitialBottomWheelRotationAngleInDegree();
+//        final ObjectAnimator bottomWheelRotateAnimator = ObjectAnimator.ofFloat(
+//                bottomWheelContainer,
+//                View.ROTATION,
+//                bottomWheelStartRotationAngle, bottomWheelEndRotationAngle
+//        );
+//
+//        bottomWheelRotateAnimator.setInterpolator(new LinearInterpolator());
+//        bottomWheelRotateAnimator.setDuration(BOTTOM_WHEEL_APPEARING_ANIMATION_DURATION);
+//
+//        final AnimatorSet wheelAppearingAnimator = new AnimatorSet();
+//        wheelAppearingAnimator.playSequentially(topWheelRotateAnimator, bottomWheelRotateAnimator);
+//
+//        return wheelAppearingAnimator;
+//    }
 
     private WheelAdapter createEmptyWheelAdapter() {
         return new WheelAdapter(getContext(), Collections.<WheelDataItem>emptyList(), new WheelAdapter.OnWheelItemClickListener() {
