@@ -4,9 +4,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.graphics.PointF;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 
 import com.sss.magicwheel.entity.WheelConfig;
@@ -79,14 +81,15 @@ final class WheelStartupAnimationHelper {
     private Animator createWheelStartupAnimator() {
         final AnimatorSet startupWheelAnimator = new AnimatorSet();
 
-        final Animator bottomWheelAnimatorFromTopWheelEdgeToBottomGapEdge = createBottomWheelAnimatorFromTopWheelEdgeToTopGapEdge();
-        final Animator topWheelStartupAnimator = createTopWheelStartupAnimator();
+        final TimeInterpolator timeInterpolator = new AccelerateDecelerateInterpolator();
+        final Animator bottomWheelAnimatorFromTopWheelEdgeToBottomGapEdge = createBottomWheelAnimatorFromTopWheelEdgeToTopGapEdge(timeInterpolator);
+        final Animator topWheelStartupAnimator = createTopWheelStartupAnimator(timeInterpolator);
 
         startupWheelAnimator.playTogether(topWheelStartupAnimator, bottomWheelAnimatorFromTopWheelEdgeToBottomGapEdge);
         return startupWheelAnimator;
     }
 
-    private Animator createBottomWheelAnimatorFromTopWheelEdgeToTopGapEdge() {
+    private Animator createBottomWheelAnimatorFromTopWheelEdgeToTopGapEdge(TimeInterpolator timeInterpolator) {
         final double rotationAngleInRad = angularRestrictions.getWheelTopEdgeAngleRestrictionInRad()
                 - angularRestrictions.getGapAreaTopEdgeAngleRestrictionInRad();
         float endRotationAngleInDegree = (float) WheelComputationHelper.radToDegree(rotationAngleInRad);
@@ -111,13 +114,13 @@ final class WheelStartupAnimationHelper {
                 }
             }
         });
-        res.setInterpolator(new LinearInterpolator());
+        res.setInterpolator(timeInterpolator);
         res.setDuration(TOP_WHEEL_APPEARING_ANIMATION_DURATION);
 
         return res;
     }
 
-    private Animator createTopWheelStartupAnimator() {
+    private Animator createTopWheelStartupAnimator(TimeInterpolator timeInterpolator) {
         // top wheel part rotation
         final float topWheelStartRotationAngle = topWheelContainer.getRotation();
         final float topWheelEndRotationAngle = topWheelStartRotationAngle + getInitialTopWheelRotationAngleInDegree();
@@ -127,7 +130,7 @@ final class WheelStartupAnimationHelper {
                 topWheelStartRotationAngle, topWheelEndRotationAngle
         );
 
-        topWheelRotateAnimator.setInterpolator(new LinearInterpolator());
+        topWheelRotateAnimator.setInterpolator(timeInterpolator);
         topWheelRotateAnimator.setDuration(TOP_WHEEL_APPEARING_ANIMATION_DURATION);
 
         return topWheelRotateAnimator;
