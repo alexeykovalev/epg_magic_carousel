@@ -37,6 +37,7 @@ public final class WheelContainerRecyclerView extends RecyclerView {
     private final PointF gapBottomRay;
 
     private final Path gapPath;
+    private boolean isCutGapAreaActivated;
 
     private class AutoAngleAdjustmentScrollListener extends OnScrollListener {
 
@@ -162,12 +163,19 @@ public final class WheelContainerRecyclerView extends RecyclerView {
     @Override
     public void onDraw(Canvas canvas) {
 //        drawHelperGapLines(canvas);
-//        cutGapArea(canvas);
+        cutGapArea(canvas);
         super.onDraw(canvas);
     }
 
+
+    public void setIsCutGapAreaActivated(boolean isCutGapAreaActivated) {
+        this.isCutGapAreaActivated = isCutGapAreaActivated;
+    }
+
     private void cutGapArea(Canvas canvas) {
-        canvas.clipPath(gapPath, Region.Op.DIFFERENCE);
+        if (isCutGapAreaActivated) {
+            canvas.clipPath(gapPath, Region.Op.DIFFERENCE);
+        }
     }
 
     private void drawHelperGapLines(Canvas canvas) {
