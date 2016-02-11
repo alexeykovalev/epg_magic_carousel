@@ -161,9 +161,22 @@ public final class WheelContainerRecyclerView extends RecyclerView {
 
     @Override
     public void onDraw(Canvas canvas) {
-        drawHelperGapLines(canvas);
-        canvas.clipPath(gapPath, Region.Op.DIFFERENCE);
+//        drawHelperGapLines(canvas);
+        cutGapArea(canvas);
         super.onDraw(canvas);
+    }
+
+    private void cutGapArea(Canvas canvas) {
+        canvas.clipPath(gapPath, Region.Op.DIFFERENCE);
+    }
+
+    private void drawHelperGapLines(Canvas canvas) {
+        final PointF circleCenterRelToRecyclerView = wheelConfig.getCircleCenterRelToRecyclerView();
+        canvas.drawLine(circleCenterRelToRecyclerView.x, circleCenterRelToRecyclerView.y,
+                gapTopRay.x, gapTopRay.y, gapDrawingPaint);
+
+        canvas.drawLine(circleCenterRelToRecyclerView.x, circleCenterRelToRecyclerView.y,
+                gapBottomRay.x, gapBottomRay.y, gapDrawingPaint);
     }
 
     private static Paint createGapRaysDrawingPaint() {
@@ -201,15 +214,6 @@ public final class WheelContainerRecyclerView extends RecyclerView {
         res.close();
 
         return res;
-    }
-
-    private void drawHelperGapLines(Canvas canvas) {
-        final PointF circleCenterRelToRecyclerView = wheelConfig.getCircleCenterRelToRecyclerView();
-        canvas.drawLine(circleCenterRelToRecyclerView.x, circleCenterRelToRecyclerView.y,
-                gapTopRay.x, gapTopRay.y, gapDrawingPaint);
-
-        canvas.drawLine(circleCenterRelToRecyclerView.x, circleCenterRelToRecyclerView.y,
-                gapBottomRay.x, gapBottomRay.y, gapDrawingPaint);
     }
 
 }

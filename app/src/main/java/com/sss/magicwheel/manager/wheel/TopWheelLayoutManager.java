@@ -49,7 +49,7 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
         }
 
         if (initialLayoutFinishingListener != null) {
-            initialLayoutFinishingListener.onInitialLayoutFinished(childPos - 1);
+            initialLayoutFinishingListener.onInitialLayoutFinished(childPos);
         }
     }
 
