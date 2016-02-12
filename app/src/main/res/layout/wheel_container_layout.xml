@@ -6,13 +6,16 @@
     <com.sss.magicwheel.manager.widget.WheelContainerRecyclerView
         android:id="@+id/bottom_wheel_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent" />
 
     <com.sss.magicwheel.manager.widget.WheelContainerRecyclerView
         android:id="@+id/top_wheel_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent" />
+
+    <com.sss.magicwheel.manager.widget.WheelSectorRaysDecorationFrame
+        android:id="@+id/wheel_decoration_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </merge>

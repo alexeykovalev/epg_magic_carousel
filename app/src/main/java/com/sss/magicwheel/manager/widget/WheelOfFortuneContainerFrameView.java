@@ -11,7 +11,6 @@ import com.sss.magicwheel.R;
 import com.sss.magicwheel.entity.WheelDataItem;
 import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
-import com.sss.magicwheel.manager.decor.WheelFrameItemDecoration;
 import com.sss.magicwheel.manager.wheel.AbstractWheelLayoutManager;
 import com.sss.magicwheel.manager.wheel.BottomWheelLayoutManager;
 import com.sss.magicwheel.manager.wheel.TopWheelLayoutManager;
@@ -31,6 +30,7 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
 
     private WheelContainerRecyclerView topWheelContainer;
     private WheelContainerRecyclerView bottomWheelContainer;
+    private WheelSectorRaysDecorationFrame wheelSectorsRaysDecorationFrame;
 
     private WheelStartupAnimationHelper wheelStartupAnimationHelper;
 
@@ -47,6 +47,9 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         computationHelper = WheelComputationHelper.getInstance();
         inflateAndBindContainerView(context);
         wheelStartupAnimationHelper = new WheelStartupAnimationHelper(computationHelper, topWheelContainer, bottomWheelContainer);
+        wheelSectorsRaysDecorationFrame.setWheelViews(topWheelContainer, bottomWheelContainer);
+
+        topWheelContainer.setVisibility(INVISIBLE);
 
         initBottomWheelContainer(bottomWheelContainer);
         initTopWheelContainer(topWheelContainer);
@@ -56,6 +59,7 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         inflate(context, R.layout.wheel_container_layout, this);
         topWheelContainer = (WheelContainerRecyclerView) findViewById(R.id.top_wheel_container);
         bottomWheelContainer = (WheelContainerRecyclerView) findViewById(R.id.bottom_wheel_container);
+        wheelSectorsRaysDecorationFrame = (WheelSectorRaysDecorationFrame) findViewById(R.id.wheel_decoration_frame);
     }
 
     @Override
@@ -102,7 +106,7 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
     }
 
     private void addTopWheelItemDecorations(RecyclerView wheelContainerView) {
-        wheelContainerView.addItemDecoration(new WheelFrameItemDecoration(getContext()));
+//        wheelContainerView.addItemDecoration(new WheelFrameItemDecoration(getContext()));
 //        wheelContainerView.addItemDecoration(new WheelSectorRayItemDecoration(getContext()));
 //        wheelContainerView.addItemDecoration(new WheelSectorLeftEdgeColorItemDecoration(getActivity()));
     }
