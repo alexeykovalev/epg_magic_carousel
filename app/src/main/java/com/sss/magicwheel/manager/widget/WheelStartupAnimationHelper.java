@@ -30,8 +30,6 @@ final class WheelStartupAnimationHelper {
     private final WheelContainerRecyclerView topWheelContainer;
     private final WheelContainerRecyclerView bottomWheelContainer;
 
-    private boolean isThresholdAngleReached = false;
-
     public WheelStartupAnimationHelper(WheelComputationHelper computationHelper,
                                        WheelContainerRecyclerView topWheelContainer,
                                        WheelContainerRecyclerView bottomWheelContainer) {
@@ -85,39 +83,19 @@ final class WheelStartupAnimationHelper {
         final Animator bottomWheelAnimatorFromTopWheelEdgeToBottomGapEdge = createBottomWheelAnimatorFromTopWheelEdgeToTopGapEdge(timeInterpolator);
         final Animator topWheelStartupAnimator = createTopWheelStartupAnimator(timeInterpolator);
 
+        startupWheelAnimator.playSequentially(
+                bottomWheelAnimatorFromTopWheelEdgeToBottomGapEdge,
+                createBottomWheelAnimatorFromTopGapEdgeToBottomGapEdge());
         startupWheelAnimator.playTogether(topWheelStartupAnimator, bottomWheelAnimatorFromTopWheelEdgeToBottomGapEdge);
-        return startupWheelAnimator;
-    }
 
-    private Animator createBottomWheelAnimatorFromTopWheelEdgeToTopGapEdge(TimeInterpolator timeInterpolator) {
-        final double rotationAngleInRad = angularRestrictions.getWheelTopEdgeAngleRestrictionInRad()
-                - angularRestrictions.getGapAreaTopEdgeAngleRestrictionInRad();
-        float endRotationAngleInDegree = (float) WheelComputationHelper.radToDegree(rotationAngleInRad);
-
-        final ObjectAnimator res = ObjectAnimator.ofFloat(
-                bottomWheelContainer,
-                View.ROTATION,
-                bottomWheelContainer.getRotation(),
-                endRotationAngleInDegree
-        );
-
-        final float thresholdAngleInDegree = (float) WheelComputationHelper.radToDegree(
-                angularRestrictions.getWheelTopEdgeAngleRestrictionInRad() - angularRestrictions.getGapAreaTopEdgeAngleRestrictionInRad()
-        );
-        res.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        startupWheelAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                final float animatedValue = (Float) animation.getAnimatedValue();
-                if (animatedValue >= thresholdAngleInDegree && !isThresholdAngleReached) {
-                    isThresholdAngleReached = true;
-                    createBottomWheelAnimatorFromTopGapEdgeToBottomGapEdge().start();
-                }
+            public void onAnimationEnd(Animator animation) {
+                topWheelContainer.setIsCutGapAreaActivated(true);
             }
         });
-        res.setInterpolator(timeInterpolator);
-        res.setDuration(TOP_WHEEL_APPEARING_ANIMATION_DURATION);
 
-        return res;
+        return startupWheelAnimator;
     }
 
     private Animator createTopWheelStartupAnimator(TimeInterpolator timeInterpolator) {
@@ -136,29 +114,50 @@ final class WheelStartupAnimationHelper {
         return topWheelRotateAnimator;
     }
 
-    private Animator createBottomWheelAnimatorFromTopGapEdgeToBottomGapEdge() {
-        final double rotationAngleInRad = angularRestrictions.getGapAreaTopEdgeAngleRestrictionInRad()
-                - angularRestrictions.getGapAreaBottomEdgeAngleRestrictionInRad();
+    private Animator createBottomWheelAnimatorFromTopWheelEdgeToTopGapEdge(TimeInterpolator timeInterpolator) {
+        float endRotationAngleInDegree = getRotationAngleInDegreeForFirstStageBottomWheelAnimation();
 
-        final float startRotationAngle = bottomWheelContainer.getRotation();
-        final float endRotationAngleInDegree = startRotationAngle + (float) WheelComputationHelper.radToDegree(rotationAngleInRad);
         final ObjectAnimator res = ObjectAnimator.ofFloat(
                 bottomWheelContainer,
                 View.ROTATION,
-                startRotationAngle,
+                bottomWheelContainer.getRotation(),
                 endRotationAngleInDegree
         );
-        res.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                topWheelContainer.setIsCutGapAreaActivated(true);
-//                bottomWheelContainer.setIsCutGapAreaActivated(true);
-            }
-        });
+
+        res.setInterpolator(timeInterpolator);
+        res.setDuration(TOP_WHEEL_APPEARING_ANIMATION_DURATION);
+
+        return res;
+    }
+
+    private Animator createBottomWheelAnimatorFromTopGapEdgeToBottomGapEdge() {
+        float startRotationAngleInDegree = getRotationAngleInDegreeForFirstStageBottomWheelAnimation();
+        final double rotationAngleInRad = angularRestrictions.getGapAreaTopEdgeAngleRestrictionInRad()
+                - angularRestrictions.getGapAreaBottomEdgeAngleRestrictionInRad();
+        final float endRotationAngleInDegree = startRotationAngleInDegree
+                + (float) WheelComputationHelper.radToDegree(rotationAngleInRad);
+
+        final ObjectAnimator res = ObjectAnimator.ofFloat(
+                bottomWheelContainer,
+                View.ROTATION,
+                startRotationAngleInDegree,
+                endRotationAngleInDegree
+        );
+
         res.setInterpolator(new LinearInterpolator());
         res.setDuration(FROM_TOP_GAP_EDGE_TO_BOTTOM_GAP_EDGE_BOTTOM_WHEEL_ANIMATION_DURATION);
 
         return res;
+    }
+
+    /**
+     * First stage is animation from top wheel angular restriction to top gap edge
+     * angular restriction.
+     */
+    private float getRotationAngleInDegreeForFirstStageBottomWheelAnimation() {
+        final double rotationAngleInRad = angularRestrictions.getWheelTopEdgeAngleRestrictionInRad()
+                - angularRestrictions.getGapAreaTopEdgeAngleRestrictionInRad();
+        return (float) WheelComputationHelper.radToDegree(rotationAngleInRad);
     }
 
 }

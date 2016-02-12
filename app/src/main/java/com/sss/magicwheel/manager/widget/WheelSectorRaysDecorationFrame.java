@@ -46,7 +46,7 @@ public final class WheelSectorRaysDecorationFrame extends FrameLayout {
         this.rayDrawable = context.getResources().getDrawable(R.drawable.wheel_sector_ray_drawable);
     }
 
-    public void setWheelViews(WheelContainerRecyclerView topWheelContainerView, WheelContainerRecyclerView bottomWheelContainer) {
+    public void setWheelContainerViews(WheelContainerRecyclerView topWheelContainerView, WheelContainerRecyclerView bottomWheelContainer) {
         this.topWheelContainerView = topWheelContainerView;
         this.bottomWheelContainerView = bottomWheelContainer;
 

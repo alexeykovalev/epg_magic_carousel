@@ -47,9 +47,7 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         computationHelper = WheelComputationHelper.getInstance();
         inflateAndBindContainerView(context);
         wheelStartupAnimationHelper = new WheelStartupAnimationHelper(computationHelper, topWheelContainer, bottomWheelContainer);
-        wheelSectorsRaysDecorationFrame.setWheelViews(topWheelContainer, bottomWheelContainer);
-
-        topWheelContainer.setVisibility(INVISIBLE);
+        wheelSectorsRaysDecorationFrame.setWheelContainerViews(topWheelContainer, bottomWheelContainer);
 
         initBottomWheelContainer(bottomWheelContainer);
         initTopWheelContainer(topWheelContainer);
