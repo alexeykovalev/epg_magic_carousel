@@ -59,7 +59,7 @@ public final class WheelSectorRaysDecorationFrame extends FrameLayout {
 
     public void setConfig(final WheelStartupAnimationHelper wheelStartupAnimationHelper,
                           final WheelContainerRecyclerView topWheelContainerView,
-                          WheelContainerRecyclerView bottomWheelContainer) {
+                          final WheelContainerRecyclerView bottomWheelContainer) {
 
         this.topWheelContainerView = topWheelContainerView;
         this.bottomWheelContainerView = bottomWheelContainer;
@@ -68,9 +68,10 @@ public final class WheelSectorRaysDecorationFrame extends FrameLayout {
             @Override
             public void onAnimationUpdate(WheelStartupAnimationHelper.WheelStartupAnimationStatus animationStatus) {
                 if (animationStatus == WheelStartupAnimationHelper.WheelStartupAnimationStatus.Finished) {
-                    invalidate();
                     isActivateRayDrawing = true;
-                    // self remove after finishing
+                    invalidate();
+                    topWheelContainerView.removeSectorRayItemDecorations();
+                    bottomWheelContainer.removeSectorRayItemDecorations();
                     wheelStartupAnimationHelper.removeAnimationListener(this);
                 }
             }

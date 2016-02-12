@@ -17,8 +17,10 @@ import com.sss.magicwheel.entity.WheelDataItem;
 import com.sss.magicwheel.entity.WheelRotationDirection;
 import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
+import com.sss.magicwheel.manager.decor.WheelSectorRayItemDecoration;
 import com.sss.magicwheel.manager.wheel.AbstractWheelLayoutManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,6 +40,8 @@ public final class WheelContainerRecyclerView extends RecyclerView {
 
     private final Path gapPath;
     private boolean isCutGapAreaActivated;
+
+    private final List<ItemDecoration> itemDecorators = new ArrayList<>();
 
     private class AutoAngleAdjustmentScrollListener extends OnScrollListener {
 
@@ -82,6 +86,38 @@ public final class WheelContainerRecyclerView extends RecyclerView {
     public void smoothlySelectDataItem(WheelDataItem dataItemToSelect) {
 //        super.smoothScrollToPosition(getVirtualPositionForDataItem(dataItemToSelect));
         throw new UnsupportedOperationException("Not implemented feature yet.");
+    }
+
+    @Override
+    public void addItemDecoration(ItemDecoration decor, int index) {
+        super.addItemDecoration(decor, index);
+        itemDecorators.add(decor);
+    }
+
+    @Override
+    public void addItemDecoration(ItemDecoration decor) {
+        super.addItemDecoration(decor);
+        itemDecorators.add(decor);
+    }
+
+    @Override
+    public void removeItemDecoration(ItemDecoration decor) {
+        super.removeItemDecoration(decor);
+        itemDecorators.remove(decor);
+    }
+
+    public void removeSectorRayItemDecorations() {
+        // two for looping in order to eliminate ConcurrentModificationException
+        final List<ItemDecoration> itemsToRemove = new ArrayList<>();
+        for (ItemDecoration itemDecorator : itemDecorators) {
+            if (itemDecorator instanceof WheelSectorRayItemDecoration) {
+                itemsToRemove.add(itemDecorator);
+            }
+        }
+
+        for (ItemDecoration itemDecoration : itemsToRemove) {
+            removeItemDecoration(itemDecoration);
+        }
     }
 
     public void handleTapOnSectorView(View sectorViewToSelect) {
