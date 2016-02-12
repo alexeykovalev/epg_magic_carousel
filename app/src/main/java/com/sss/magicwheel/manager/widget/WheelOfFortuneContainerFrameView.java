@@ -11,7 +11,6 @@ import com.sss.magicwheel.R;
 import com.sss.magicwheel.entity.WheelDataItem;
 import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
-import com.sss.magicwheel.manager.decor.WheelSectorRayItemDecoration;
 import com.sss.magicwheel.manager.wheel.AbstractWheelLayoutManager;
 import com.sss.magicwheel.manager.wheel.BottomWheelLayoutManager;
 import com.sss.magicwheel.manager.wheel.TopWheelLayoutManager;
@@ -77,6 +76,7 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         final List<WheelDataItem> unmodifiableNewData = Collections.unmodifiableList(newData);
         topWheelContainer.getAdapter().swapData(unmodifiableNewData);
         bottomWheelContainer.getAdapter().swapData(unmodifiableNewData);
+        wheelSectorsRaysDecorationFrame.invalidate();
     }
 
     private void initTopWheelContainer(RecyclerView topWheelContainerView) {

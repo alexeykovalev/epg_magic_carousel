@@ -41,6 +41,14 @@ public final class FragmentWheelPage extends Fragment {
 
         wheelOfFortuneContainerFrameView = (WheelOfFortuneContainerFrameView) rootView.findViewById(R.id.wheel_of_fortune_container_frame);
         wheelOfFortuneContainerFrameView.swapData(createSampleDataSet());
+
+        /*rootView.findViewById(R.id.fragment_request_layout_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                wheelOfFortuneContainerFrameView.requestLayout();
+            }
+        });*/
+
 /*
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override

@@ -35,13 +35,15 @@ final class WheelStartupAnimationHelper {
         void onAnimationUpdate(WheelStartupAnimationStatus animationStatus);
     }
 
+    private final List<OnWheelStartupAnimationListener> animationListeners = new ArrayList<>();
+
     private final WheelComputationHelper computationHelper;
     private final WheelConfig.AngularRestrictions angularRestrictions;
 
     private final WheelContainerRecyclerView topWheelContainer;
     private final WheelContainerRecyclerView bottomWheelContainer;
 
-    private final List<OnWheelStartupAnimationListener> animationListeners = new ArrayList<>();
+    private boolean isStartupAnimationPlayed;
 
     public WheelStartupAnimationHelper(WheelComputationHelper computationHelper,
                                        WheelContainerRecyclerView topWheelContainer,
@@ -58,7 +60,10 @@ final class WheelStartupAnimationHelper {
     }
 
     public void playWheelStartupAnimation() {
-        createWheelStartupAnimator().start();
+        if (!isStartupAnimationPlayed) {
+            createWheelStartupAnimator().start();
+            isStartupAnimationPlayed = true;
+        }
     }
 
     public void addAnimationListener(OnWheelStartupAnimationListener animationListener) {
