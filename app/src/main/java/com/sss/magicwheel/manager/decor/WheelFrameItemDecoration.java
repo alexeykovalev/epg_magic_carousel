@@ -17,6 +17,11 @@ public final class WheelFrameItemDecoration extends WheelBaseItemDecoration {
 
     private static final int FRAME_LINE_COLOR = Color.GRAY;
     private static final int FRAME_LINE_THICKNESS = 35;
+
+    /**
+     * 0 - fully transparent.
+     * 255 - Fully opaque.
+     */
     private static final int FRAME_LINE_TRANSPARENCY = 170;
 
     private final Paint framePaint;
@@ -40,7 +45,7 @@ public final class WheelFrameItemDecoration extends WheelBaseItemDecoration {
                 (int) WheelComputationHelper.radToDegree(computationHelper.getWheelLayoutStartAngleInRad());
 
         final int wheelBottomEdgeAngleInDegree = (int) WheelComputationHelper.radToDegree(
-                computationHelper.getWheelConfig().getAngularRestrictions().getGapAreaTopEdgeAngleRestrictionInRad()
+                computationHelper.getWheelConfig().getAngularRestrictions().getWheelBottomEdgeAngleRestrictionInRad()
         );
         this.wheelFrameSweepAngleInDegree = wheelTopEdgeAngleInDegree - wheelBottomEdgeAngleInDegree;
     }

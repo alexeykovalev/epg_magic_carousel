@@ -1,6 +1,7 @@
 package com.sss.magicwheel.manager.widget;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -11,6 +12,7 @@ import com.sss.magicwheel.R;
 import com.sss.magicwheel.entity.WheelDataItem;
 import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
+import com.sss.magicwheel.manager.decor.WheelFrameItemDecoration;
 import com.sss.magicwheel.manager.decor.WheelSectorRayItemDecoration;
 import com.sss.magicwheel.manager.wheel.AbstractWheelLayoutManager;
 import com.sss.magicwheel.manager.wheel.BottomWheelLayoutManager;
@@ -33,7 +35,13 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
     private WheelContainerRecyclerView bottomWheelContainer;
     private WheelSectorRaysDecorationFrame wheelSectorsRaysDecorationFrame;
 
-    private WheelStartupAnimationHelper wheelStartupAnimationHelper;
+    private final WheelStartupAnimationHelper wheelStartupAnimationHelper;
+
+    /**
+     * We use it as not recycler view item decoration because RecyclerView's
+     * containers rotated in order to implement wheel startup animation.
+     */
+    private final WheelFrameItemDecoration wheelFrameItemDecoration;
 
     public WheelOfFortuneContainerFrameView(Context context) {
         this(context, null);
@@ -47,8 +55,10 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         super(context, attrs, defStyleAttr);
         computationHelper = WheelComputationHelper.getInstance();
         inflateAndBindContainerView(context);
+
         wheelStartupAnimationHelper = new WheelStartupAnimationHelper(computationHelper, topWheelContainer, bottomWheelContainer);
         wheelSectorsRaysDecorationFrame.setConfig(wheelStartupAnimationHelper, topWheelContainer, bottomWheelContainer);
+        wheelFrameItemDecoration = new WheelFrameItemDecoration(getContext());
 
         initBottomWheelContainer(bottomWheelContainer);
         initTopWheelContainer(topWheelContainer);
@@ -59,6 +69,12 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         topWheelContainer = (WheelContainerRecyclerView) findViewById(R.id.top_wheel_container);
         bottomWheelContainer = (WheelContainerRecyclerView) findViewById(R.id.bottom_wheel_container);
         wheelSectorsRaysDecorationFrame = (WheelSectorRaysDecorationFrame) findViewById(R.id.wheel_decoration_frame);
+    }
+
+    @Override
+    protected void dispatchDraw(Canvas canvas) {
+        wheelFrameItemDecoration.onDraw(canvas, null, null);
+        super.dispatchDraw(canvas);
     }
 
     @Override
@@ -122,7 +138,6 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
             @Override
             public void onItemClicked(View clickedSectorView, WheelDataItem dataItem) {
                 topWheelContainer.handleTapOnSectorView(clickedSectorView);
-//                topWheelContainer.smoothlySelectDataItem(dataItem);
             }
         });
     }
