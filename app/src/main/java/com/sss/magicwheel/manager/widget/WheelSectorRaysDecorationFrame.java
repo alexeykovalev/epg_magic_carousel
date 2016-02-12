@@ -6,6 +6,7 @@ import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -37,6 +38,8 @@ public final class WheelSectorRaysDecorationFrame extends FrameLayout {
      */
     private final double bottomWheelContainerRotationRelativeToBaseLineInDegree;
 
+    private boolean isActivateRayDrawing;
+
     public WheelSectorRaysDecorationFrame(Context context) {
         this(context, null);
     }
@@ -54,9 +57,24 @@ public final class WheelSectorRaysDecorationFrame extends FrameLayout {
         this.rayDrawable = context.getResources().getDrawable(R.drawable.wheel_sector_ray_drawable);
     }
 
-    public void setWheelContainerViews(WheelContainerRecyclerView topWheelContainerView, WheelContainerRecyclerView bottomWheelContainer) {
+    public void setConfig(final WheelStartupAnimationHelper wheelStartupAnimationHelper,
+                          final WheelContainerRecyclerView topWheelContainerView,
+                          WheelContainerRecyclerView bottomWheelContainer) {
+
         this.topWheelContainerView = topWheelContainerView;
         this.bottomWheelContainerView = bottomWheelContainer;
+
+        wheelStartupAnimationHelper.addAnimationListener(new WheelStartupAnimationHelper.OnWheelStartupAnimationListener() {
+            @Override
+            public void onAnimationUpdate(WheelStartupAnimationHelper.WheelStartupAnimationStatus animationStatus) {
+                if (animationStatus == WheelStartupAnimationHelper.WheelStartupAnimationStatus.Finished) {
+                    invalidate();
+                    isActivateRayDrawing = true;
+                    // self remove after finishing
+                    wheelStartupAnimationHelper.removeAnimationListener(this);
+                }
+            }
+        });
 
         topWheelContainerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -68,8 +86,10 @@ public final class WheelSectorRaysDecorationFrame extends FrameLayout {
 
     @Override
     protected void dispatchDraw(Canvas canvas) {
-        drawRaysForTopWheelContainer(canvas);
-        drawRaysForBottomWheelContainer(canvas);
+        if (isActivateRayDrawing) {
+            drawRaysForTopWheelContainer(canvas);
+            drawRaysForBottomWheelContainer(canvas);
+        }
         super.dispatchDraw(canvas);
     }
 

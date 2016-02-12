@@ -11,6 +11,7 @@ import com.sss.magicwheel.R;
 import com.sss.magicwheel.entity.WheelDataItem;
 import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
+import com.sss.magicwheel.manager.decor.WheelSectorRayItemDecoration;
 import com.sss.magicwheel.manager.wheel.AbstractWheelLayoutManager;
 import com.sss.magicwheel.manager.wheel.BottomWheelLayoutManager;
 import com.sss.magicwheel.manager.wheel.TopWheelLayoutManager;
@@ -47,7 +48,7 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         computationHelper = WheelComputationHelper.getInstance();
         inflateAndBindContainerView(context);
         wheelStartupAnimationHelper = new WheelStartupAnimationHelper(computationHelper, topWheelContainer, bottomWheelContainer);
-        wheelSectorsRaysDecorationFrame.setWheelContainerViews(topWheelContainer, bottomWheelContainer);
+        wheelSectorsRaysDecorationFrame.setConfig(wheelStartupAnimationHelper, topWheelContainer, bottomWheelContainer);
 
         initBottomWheelContainer(bottomWheelContainer);
         initTopWheelContainer(topWheelContainer);

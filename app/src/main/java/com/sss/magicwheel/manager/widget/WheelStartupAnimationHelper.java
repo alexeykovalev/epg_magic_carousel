@@ -15,6 +15,9 @@ import com.sss.magicwheel.entity.WheelConfig;
 import com.sss.magicwheel.entity.WheelRotationDirection;
 import com.sss.magicwheel.manager.WheelComputationHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Alexey Kovalev
  * @since 11.02.2016.
@@ -24,11 +27,21 @@ final class WheelStartupAnimationHelper {
     private static final int TOP_WHEEL_APPEARING_ANIMATION_DURATION = 1000;
     private static final int FROM_TOP_GAP_EDGE_TO_BOTTOM_GAP_EDGE_BOTTOM_WHEEL_ANIMATION_DURATION = 1000;
 
+    public enum WheelStartupAnimationStatus {
+        Start, InProgress, Finished
+    }
+
+    public interface OnWheelStartupAnimationListener {
+        void onAnimationUpdate(WheelStartupAnimationStatus animationStatus);
+    }
+
     private final WheelComputationHelper computationHelper;
     private final WheelConfig.AngularRestrictions angularRestrictions;
 
     private final WheelContainerRecyclerView topWheelContainer;
     private final WheelContainerRecyclerView bottomWheelContainer;
+
+    private final List<OnWheelStartupAnimationListener> animationListeners = new ArrayList<>();
 
     public WheelStartupAnimationHelper(WheelComputationHelper computationHelper,
                                        WheelContainerRecyclerView topWheelContainer,
@@ -46,6 +59,14 @@ final class WheelStartupAnimationHelper {
 
     public void playWheelStartupAnimation() {
         createWheelStartupAnimator().start();
+    }
+
+    public void addAnimationListener(OnWheelStartupAnimationListener animationListener) {
+        animationListeners.add(animationListener);
+    }
+
+    public void removeAnimationListener(OnWheelStartupAnimationListener animationListener) {
+        animationListeners.remove(animationListener);
     }
 
     private void setRotationPivotForContainer(WheelContainerRecyclerView wheelContainer) {
@@ -80,22 +101,55 @@ final class WheelStartupAnimationHelper {
         final AnimatorSet startupWheelAnimator = new AnimatorSet();
 
         final TimeInterpolator timeInterpolator = new AccelerateDecelerateInterpolator();
-        final Animator bottomWheelAnimatorFromTopWheelEdgeToBottomGapEdge = createBottomWheelAnimatorFromTopWheelEdgeToTopGapEdge(timeInterpolator);
+        final Animator bottomWheelAnimatorFromTopWheelEdgeToTopGapEdge = createBottomWheelAnimatorFromTopWheelEdgeToTopGapEdge(timeInterpolator);
         final Animator topWheelStartupAnimator = createTopWheelStartupAnimator(timeInterpolator);
 
+        final ObjectAnimator bottomWheelAnimatorFromTopGapEdgeToBottomGapEdge = createBottomWheelAnimatorFromTopGapEdgeToBottomGapEdge();
         startupWheelAnimator.playSequentially(
-                bottomWheelAnimatorFromTopWheelEdgeToBottomGapEdge,
-                createBottomWheelAnimatorFromTopGapEdgeToBottomGapEdge());
-        startupWheelAnimator.playTogether(topWheelStartupAnimator, bottomWheelAnimatorFromTopWheelEdgeToBottomGapEdge);
+                bottomWheelAnimatorFromTopWheelEdgeToTopGapEdge,
+                bottomWheelAnimatorFromTopGapEdgeToBottomGapEdge
+        );
+        startupWheelAnimator.playTogether(topWheelStartupAnimator, bottomWheelAnimatorFromTopWheelEdgeToTopGapEdge);
 
         startupWheelAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
+            public void onAnimationStart(Animator animation) {
+                listenersFireOnAnimationStart();
+            }
+
+            @Override
             public void onAnimationEnd(Animator animation) {
                 topWheelContainer.setIsCutGapAreaActivated(true);
+                listenersFireOnAnimationEnd();
+            }
+        });
+
+        bottomWheelAnimatorFromTopGapEdgeToBottomGapEdge.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                listenersFireOnAnimationInProgress();
             }
         });
 
         return startupWheelAnimator;
+    }
+
+    private void listenersFireOnAnimationStart() {
+        for (OnWheelStartupAnimationListener animationListener : animationListeners) {
+            animationListener.onAnimationUpdate(WheelStartupAnimationStatus.Start);
+        }
+    }
+
+    private void listenersFireOnAnimationInProgress() {
+        for (OnWheelStartupAnimationListener animationListener : animationListeners) {
+            animationListener.onAnimationUpdate(WheelStartupAnimationStatus.InProgress);
+        }
+    }
+
+    private void listenersFireOnAnimationEnd() {
+        for (OnWheelStartupAnimationListener animationListener : animationListeners) {
+            animationListener.onAnimationUpdate(WheelStartupAnimationStatus.Finished);
+        }
     }
 
     private Animator createTopWheelStartupAnimator(TimeInterpolator timeInterpolator) {
@@ -130,7 +184,7 @@ final class WheelStartupAnimationHelper {
         return res;
     }
 
-    private Animator createBottomWheelAnimatorFromTopGapEdgeToBottomGapEdge() {
+    private ObjectAnimator createBottomWheelAnimatorFromTopGapEdgeToBottomGapEdge() {
         float startRotationAngleInDegree = getRotationAngleInDegreeForFirstStageBottomWheelAnimation();
         final double rotationAngleInRad = angularRestrictions.getGapAreaTopEdgeAngleRestrictionInRad()
                 - angularRestrictions.getGapAreaBottomEdgeAngleRestrictionInRad();
