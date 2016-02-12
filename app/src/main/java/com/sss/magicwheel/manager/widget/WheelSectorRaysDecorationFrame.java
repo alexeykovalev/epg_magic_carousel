@@ -6,7 +6,6 @@ import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -32,6 +31,12 @@ public final class WheelSectorRaysDecorationFrame extends FrameLayout {
     private WheelContainerRecyclerView topWheelContainerView;
     private WheelContainerRecyclerView bottomWheelContainerView;
 
+    /**
+     * Baseline - is wheel middle line starting from wheel center which goes
+     * directly to the screen's right side without any rotation angle.
+     */
+    private final double bottomWheelContainerRotationRelativeToBaseLineInDegree;
+
     public WheelSectorRaysDecorationFrame(Context context) {
         this(context, null);
     }
@@ -43,6 +48,9 @@ public final class WheelSectorRaysDecorationFrame extends FrameLayout {
     public WheelSectorRaysDecorationFrame(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.computationHelper = WheelComputationHelper.getInstance();
+        this.bottomWheelContainerRotationRelativeToBaseLineInDegree = WheelComputationHelper.radToDegree(
+                computationHelper.getWheelConfig().getAngularRestrictions().getGapAreaBottomEdgeAngleRestrictionInRad()
+        );
         this.rayDrawable = context.getResources().getDrawable(R.drawable.wheel_sector_ray_drawable);
     }
 
@@ -60,41 +68,30 @@ public final class WheelSectorRaysDecorationFrame extends FrameLayout {
 
     @Override
     protected void dispatchDraw(Canvas canvas) {
-
-//        WheelComputationHelper computationHelper = WheelComputationHelper.getInstance();
-//
-//        Paint paint = new Paint();
-//        paint.setColor(Color.GREEN);
-//        paint.setStrokeWidth(10);
-//        paint.setAntiAlias(true);
-//
-//        canvas.drawLine(0, getMeasuredHeight() / 2, getMeasuredWidth(), 0, paint);
-
+        drawRaysForTopWheelContainer(canvas);
+        drawRaysForBottomWheelContainer(canvas);
         super.dispatchDraw(canvas);
-
-
-        /*if (topWheelContainerView != null) {
-            for (int i = 0; i < topWheelContainerView.getChildCount(); i++) {
-                final View sectorView = topWheelContainerView.getChildAt(i);
-                drawSectorTopEdgeRay(sectorView, canvas);
-            }
-        }*/
-
-        drawRaysForBottomWheel(canvas);
-
-//        Paint myPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-//        myPaint.setStyle(Paint.Style.STROKE);
-//        int strokeWidth = 20;  // or whatever
-//        myPaint.setStrokeWidth(strokeWidth);
-//        myPaint.setColor(0xffff0000);   //color.RED
-//        float radius= computationHelper.getWheelConfig().getInnerRadius();
-//
-//
-////        canvas.drawLine(0, getMeasuredHeight() / 2, getMeasuredWidth(), 0, paint);
-//        canvas.drawCircle(0, getMeasuredHeight() / 2, radius, myPaint);
     }
 
-    private void drawSectorTopEdgeRay(View sectorView, Canvas canvas) {
+    private void drawRaysForTopWheelContainer(Canvas canvas) {
+        if (topWheelContainerView != null) {
+            for (int i = 0; i < topWheelContainerView.getChildCount(); i++) {
+                final View sectorView = topWheelContainerView.getChildAt(i);
+                drawRayForTopWheelSector(sectorView, canvas);
+            }
+        }
+    }
+
+    private void drawRaysForBottomWheelContainer(Canvas canvas) {
+        if (bottomWheelContainerView != null) {
+            for (int i = 0; i < bottomWheelContainerView.getChildCount(); i++) {
+                final View sectorView = bottomWheelContainerView.getChildAt(i);
+                drawRayForBottomWheelSector(sectorView, canvas);
+            }
+        }
+    }
+
+    private void drawRayForTopWheelSector(View sectorView, Canvas canvas) {
         final double sectorAnglePositionInRad = getSectorAnglePositionInRad(sectorView);
         final PointF sectorReferencePoint = getSectorTopLeftCornerPos(sectorView);
         final float sectorAnglePositionInDegree = (float) WheelComputationHelper.radToDegree(sectorAnglePositionInRad);
@@ -104,6 +101,22 @@ public final class WheelSectorRaysDecorationFrame extends FrameLayout {
 
         final float rotateRayByAngle = sectorAnglePositionInDegree + sectorHalfAngleInDegree;
 
+        drawRayForPosition(canvas, sectorReferencePoint, rotateRayByAngle);
+    }
+
+    private void drawRayForBottomWheelSector(View sectorView, Canvas canvas) {
+        final double sectorAnglePositionInRad = getSectorAnglePositionInRad(sectorView);
+        final double sectorHalfAngleInRad = computationHelper.getWheelConfig().getAngularRestrictions().getSectorAngleInRad() / 2;
+        final float sectorBottomEdgeAnglePositionInDegree = (float) WheelComputationHelper.radToDegree(sectorAnglePositionInRad - sectorHalfAngleInRad);
+
+        if (sectorBottomEdgeAnglePositionInDegree <= bottomWheelContainerRotationRelativeToBaseLineInDegree) {
+            final PointF sectorReferencePoint = getSectorBottomLeftCornerPos(sectorView);
+
+            drawRayForPosition(canvas, sectorReferencePoint, sectorBottomEdgeAnglePositionInDegree);
+        }
+    }
+
+    private void drawRayForPosition(Canvas canvas, PointF sectorReferencePoint, float rotateRayByAngle) {
         canvas.save();
         // negative rotation angle due to anticlockwise rotation
         canvas.rotate(-rotateRayByAngle, sectorReferencePoint.x, sectorReferencePoint.y);
@@ -126,16 +139,24 @@ public final class WheelSectorRaysDecorationFrame extends FrameLayout {
     }
 
     private PointF getSectorTopLeftCornerPos(View sectorView) {
-        final double topLeftSectorCornerAnglePosInRad = getSectorTopEdgeAnglePositionInRad(sectorView);
-        final int innerRadius = computationHelper.getWheelConfig().getInnerRadius();
+        final double topLeftCornerSectorAnglePosInRad = getSectorTopEdgeAnglePositionInRad(sectorView);
+        return getRayPositionInRecyclerViewCoordsSystem(topLeftCornerSectorAnglePosInRad);
+    }
 
-        final float refPointXPosInWheelCoordSystem = (float) (innerRadius * Math.cos(topLeftSectorCornerAnglePosInRad));
-        final float refPointYPosInWheelCoordSystem = (float) (innerRadius * Math.sin(topLeftSectorCornerAnglePosInRad));
+    private PointF getSectorBottomLeftCornerPos(View sectorView) {
+        final double sectorAngleInRad = computationHelper.getWheelConfig().getAngularRestrictions().getSectorAngleInRad();
+        final double bottomLeftCornerSectorAnglePosInRad = getSectorTopEdgeAnglePositionInRad(sectorView) - sectorAngleInRad;
+        return getRayPositionInRecyclerViewCoordsSystem(bottomLeftCornerSectorAnglePosInRad);
+    }
+
+    private PointF getRayPositionInRecyclerViewCoordsSystem(double rayReferenceAngleInRad) {
+        final int innerRadius = computationHelper.getWheelConfig().getInnerRadius();
+        final float refPointXPosInWheelCoordSystem = (float) (innerRadius * Math.cos(rayReferenceAngleInRad));
+        final float refPointYPosInWheelCoordSystem = (float) (innerRadius * Math.sin(rayReferenceAngleInRad));
         final PointF topLeftCornerPosInWheelCoordsSystem = new PointF(refPointXPosInWheelCoordSystem, refPointYPosInWheelCoordSystem);
 
         return WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(topLeftCornerPosInWheelCoordsSystem);
     }
-
 
     private double getSectorAnglePositionInRad(View sectorView) {
         final AbstractWheelLayoutManager.LayoutParams childLp = AbstractWheelLayoutManager.getChildLayoutParams(sectorView);
@@ -145,48 +166,6 @@ public final class WheelSectorRaysDecorationFrame extends FrameLayout {
     private double getSectorTopEdgeAnglePositionInRad(View sectorView) {
         final double halfSectorAngle = computationHelper.getWheelConfig().getAngularRestrictions().getSectorAngleInRad() / 2;
         return getSectorAnglePositionInRad(sectorView) + halfSectorAngle;
-    }
-
-
-
-    private void drawRaysForBottomWheel(Canvas canvas) {
-        if (bottomWheelContainerView != null) {
-            for (int i = 0; i < bottomWheelContainerView.getChildCount(); i++) {
-                final View sectorView = bottomWheelContainerView.getChildAt(i);
-                drawRayForBottomWheelSector(sectorView, canvas);
-//                drawSectorTopEdgeRay(sectorView, canvas);
-            }
-        }
-    }
-
-    private void drawRayForBottomWheelSector(View sectorView, Canvas canvas) {
-
-        final double sectorAnglePositionInRad = getSectorAnglePositionInRad(sectorView);
-        final float sectorAnglePositionInDegree = (float) WheelComputationHelper.radToDegree(sectorAnglePositionInRad);
-
-        if (sectorAnglePositionInDegree <= getBottomWheelContainerRotationInDegree()) {
-
-            Log.e("TAG", "sectorAnglePositionInDegree [" + sectorAnglePositionInDegree + "], " +
-                    "getBottomWheelContainerRotationInDegree() [" + getBottomWheelContainerRotationInDegree() + "]");
-
-            final PointF sectorReferencePoint = getSectorTopLeftCornerPos(sectorView);
-            final float sectorHalfAngleInDegree = (float) WheelComputationHelper.radToDegree(
-                    computationHelper.getWheelConfig().getAngularRestrictions().getSectorAngleInRad() / 2
-            );
-
-            final float rotateRayByAngle = sectorAnglePositionInDegree + sectorHalfAngleInDegree;
-
-            canvas.save();
-            // negative rotation angle due to anticlockwise rotation
-            canvas.rotate(-rotateRayByAngle, sectorReferencePoint.x, sectorReferencePoint.y);
-            Drawable topEdgeRayDrawable = getRayDrawable(sectorReferencePoint);
-            topEdgeRayDrawable.draw(canvas);
-            canvas.restore();
-        }
-    }
-
-    private double getBottomWheelContainerRotationInDegree() {
-        return bottomWheelContainerView.getRotation();
     }
 
 }
