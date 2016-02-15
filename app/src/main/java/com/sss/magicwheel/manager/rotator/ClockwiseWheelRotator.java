@@ -1,13 +1,10 @@
 package com.sss.magicwheel.manager.rotator;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
 import com.sss.magicwheel.manager.wheel.AbstractWheelLayoutManager;
 import com.sss.magicwheel.manager.WheelComputationHelper;
-
-import java.util.List;
 
 /**
  * @author Alexey Kovalev
@@ -23,7 +20,7 @@ public final class ClockwiseWheelRotator extends AbstractWheelRotator {
     }
 
     @Override
-    public void rotateWheel(double rotationAngleInRad, RecyclerView.Recycler recycler, RecyclerView.State state) {
+    public void rotateWheel(double rotationAngleInRad) {
         for (int i = 0; i < wheelLayoutManager.getChildCount(); i++) {
             final View sectorView = wheelLayoutManager.getChildAt(i);
             final AbstractWheelLayoutManager.LayoutParams sectorViewLp = AbstractWheelLayoutManager.getChildLayoutParams(sectorView);
@@ -31,27 +28,29 @@ public final class ClockwiseWheelRotator extends AbstractWheelRotator {
             sectorView.setLayoutParams(sectorViewLp);
             wheelLayoutManager.alignBigWrapperViewByAngle(sectorView, -sectorViewLp.anglePositionInRad);
         }
-
-        recycleAndAddSectors(recycler, state);
     }
 
-    private void logChildren(List<View> children) {
-        for (View sectorView : children) {
-            final AbstractWheelLayoutManager.LayoutParams sectorViewLp = AbstractWheelLayoutManager.getChildLayoutParams(sectorView);
-            final String title = AbstractWheelLayoutManager.getBigWrapperTitle(sectorView);
-            double topEdgeSectorInDegree = WheelComputationHelper.radToDegree(computationHelper.getSectorAngleTopEdgeInRad(sectorViewLp.anglePositionInRad));
-            double bottomEdgeSectorInDegree = WheelComputationHelper.radToDegree(computationHelper.getSectorAngleBottomEdgeInRad(sectorViewLp.anglePositionInRad));
-            Log.e(TAG,
-                    "title [" + title + "], " +
-                    "topEdgeSectorInDegree [" + topEdgeSectorInDegree + "], " +
-                    "bottomEdgeSectorInDegree [" + bottomEdgeSectorInDegree + "]"
-            );
-        }
+//    private void logChildren(List<View> children) {
+//        for (View sectorView : children) {
+//            final AbstractWheelLayoutManager.LayoutParams sectorViewLp = AbstractWheelLayoutManager.getChildLayoutParams(sectorView);
+//            final String title = AbstractWheelLayoutManager.getBigWrapperTitle(sectorView);
+//            double topEdgeSectorInDegree = WheelComputationHelper.radToDegree(computationHelper.getSectorAngleTopEdgeInRad(sectorViewLp.anglePositionInRad));
+//            double bottomEdgeSectorInDegree = WheelComputationHelper.radToDegree(computationHelper.getSectorAngleBottomEdgeInRad(sectorViewLp.anglePositionInRad));
+//            Log.e(TAG,
+//                    "title [" + title + "], " +
+//                    "topEdgeSectorInDegree [" + topEdgeSectorInDegree + "], " +
+//                    "bottomEdgeSectorInDegree [" + bottomEdgeSectorInDegree + "]"
+//            );
+//        }
+//    }
+
+    @Override
+    public void recycleSectors(RecyclerView.Recycler recycler, RecyclerView.State state) {
+        recycleSectorsFromLayoutEndEdge(recycler);
     }
 
     @Override
-    protected void recycleAndAddSectors(RecyclerView.Recycler recycler, RecyclerView.State state) {
-        recycleSectorsFromLayoutEndEdge(recycler);
+    public void addSectors(RecyclerView.Recycler recycler, RecyclerView.State state) {
         addSectorsToLayoutStartEdge(recycler, state);
     }
 

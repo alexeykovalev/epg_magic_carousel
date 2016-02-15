@@ -56,6 +56,8 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         computationHelper = WheelComputationHelper.getInstance();
         inflateAndBindContainerView(context);
 
+        topWheelContainer.setVisibility(INVISIBLE);
+
         wheelStartupAnimationHelper = new WheelStartupAnimationHelper(computationHelper, topWheelContainer, bottomWheelContainer);
         wheelSectorsRaysDecorationFrame.setConfig(wheelStartupAnimationHelper, topWheelContainer, bottomWheelContainer);
         wheelFrameItemDecoration = new WheelFrameItemDecoration(getContext());
@@ -113,7 +115,7 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
                 new AbstractWheelLayoutManager.WheelOnInitialLayoutFinishingListener() {
             @Override
             public void onInitialLayoutFinished(int finishedAtAdapterPosition) {
-                wheelStartupAnimationHelper.playWheelStartupAnimation();
+//                wheelStartupAnimationHelper.playWheelStartupAnimation();
             }
         });
         topWheelContainerView.setLayoutManager(bottomWheelLayoutManager);

@@ -239,7 +239,8 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     private void rotateWheel(double rotationAngleInRad, WheelRotationDirection rotationDirection,
                              RecyclerView.Recycler recycler, RecyclerView.State state) {
         final AbstractWheelRotator wheelRotator = resolveRotatorByDirection(rotationDirection);
-        wheelRotator.rotateWheel(rotationAngleInRad, recycler, state);
+        wheelRotator.rotateWheel(rotationAngleInRad);
+        wheelRotator.recycleAndAddSectors(recycler, state);
     }
 
     private AbstractWheelRotator resolveRotatorByDirection(WheelRotationDirection rotationDirection) {
