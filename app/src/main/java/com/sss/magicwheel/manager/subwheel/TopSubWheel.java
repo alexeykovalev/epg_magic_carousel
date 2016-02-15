@@ -69,7 +69,7 @@ public final class TopSubWheel /*extends BaseSubWheel*/ {
 //
 //    // TODO: 15.12.2015 same code snippets - remove code duplication
 ////    @Override
-////    private void rotateWheel(double rotationAngle, WheelRotationDirection rotationDirection) {
+////    private void rotateWheelBy(double rotationAngle, WheelRotationDirection rotationDirection) {
 ////        if (rotationDirection == WheelRotationDirection.Anticlockwise) {
 ////            for (int i = 0; i < wheelLayoutManager.getChildCount(); i++) {
 ////                View child = wheelLayoutManager.getChildAt(i);

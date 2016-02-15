@@ -56,7 +56,7 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         computationHelper = WheelComputationHelper.getInstance();
         inflateAndBindContainerView(context);
 
-        topWheelContainer.setVisibility(INVISIBLE);
+//        topWheelContainer.setVisibility(INVISIBLE);
 
         wheelStartupAnimationHelper = new WheelStartupAnimationHelper(computationHelper, topWheelContainer, bottomWheelContainer);
         wheelSectorsRaysDecorationFrame.setConfig(wheelStartupAnimationHelper, topWheelContainer, bottomWheelContainer);
@@ -125,13 +125,13 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
 
     private void addTopWheelItemDecorations(RecyclerView wheelContainerView) {
 //        wheelContainerView.addItemDecoration(new WheelFrameItemDecoration(getContext()));
-        wheelContainerView.addItemDecoration(new WheelSectorRayItemDecoration(getContext()));
+//        wheelContainerView.addItemDecoration(new WheelSectorRayItemDecoration(getContext()));
 //        wheelContainerView.addItemDecoration(new WheelSectorLeftEdgeColorItemDecoration(getActivity()));
     }
 
     private void addBottomWheelItemDecorations(RecyclerView wheelContainerView) {
 //        wheelContainerView.addItemDecoration(new WheelFrameItemDecoration(getContext()));
-        wheelContainerView.addItemDecoration(new WheelSectorRayItemDecoration(getContext()));
+//        wheelContainerView.addItemDecoration(new WheelSectorRayItemDecoration(getContext()));
 //        wheelContainerView.addItemDecoration(new WheelSectorLeftEdgeColorItemDecoration(getActivity()));
     }
 

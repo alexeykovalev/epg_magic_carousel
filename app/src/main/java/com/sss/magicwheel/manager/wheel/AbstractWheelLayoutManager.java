@@ -42,8 +42,8 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
 //        ALLOWED_METHOD_NAMES.add("onLayoutChildren");
     }
 
-    private final AbstractWheelRotator clockwiseRotator;
-    private final AbstractWheelRotator anticlockwiseRotator;
+    protected final AbstractWheelRotator clockwiseRotator;
+    protected final AbstractWheelRotator anticlockwiseRotator;
 
     private static boolean isMessageContainsAllowedMethod(String logMessage) {
         if (logMessage == null || logMessage.isEmpty()) {
@@ -61,8 +61,8 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     protected final WheelConfig wheelConfig;
     protected final WheelComputationHelper computationHelper;
 
-    private final double layoutStartAngleInRad;
-    private final double layoutEndAngleInRad;
+    private double layoutStartAngleInRad;
+    private double layoutEndAngleInRad;
 
     protected final WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener;
 
@@ -124,6 +124,14 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
 
     public final double getLayoutEndAngleInRad() {
         return layoutEndAngleInRad;
+    }
+
+    protected void setLayoutStartAngleInRad(double layoutStartAngleInRad) {
+        this.layoutStartAngleInRad = layoutStartAngleInRad;
+    }
+
+    protected void setLayoutEndAngleInRad(double layoutEndAngleInRad) {
+        this.layoutEndAngleInRad = layoutEndAngleInRad;
     }
 
     @Override
@@ -239,7 +247,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     private void rotateWheel(double rotationAngleInRad, WheelRotationDirection rotationDirection,
                              RecyclerView.Recycler recycler, RecyclerView.State state) {
         final AbstractWheelRotator wheelRotator = resolveRotatorByDirection(rotationDirection);
-        wheelRotator.rotateWheel(rotationAngleInRad);
+        wheelRotator.rotateWheelBy(rotationAngleInRad);
         wheelRotator.recycleAndAddSectors(recycler, state);
     }
 

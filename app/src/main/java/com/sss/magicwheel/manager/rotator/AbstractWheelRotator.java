@@ -52,7 +52,7 @@ public abstract class AbstractWheelRotator {
     }
 
 
-    public abstract void rotateWheel(double rotationAngleInRad);
+    public abstract void rotateWheelBy(double rotationAngleInRad);
 
     public final void recycleAndAddSectors(RecyclerView.Recycler recycler, RecyclerView.State state) {
         recycleSectors(recycler, state);

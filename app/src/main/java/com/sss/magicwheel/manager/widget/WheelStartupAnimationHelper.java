@@ -56,7 +56,7 @@ final class WheelStartupAnimationHelper {
         setRotationPivotForContainer(topWheelContainer);
         setRotationPivotForContainer(bottomWheelContainer);
 
-        setInitialTopWheelRotation();
+//        setInitialTopWheelRotation();
     }
 
     public void playWheelStartupAnimation() {

@@ -128,7 +128,7 @@ public final class WheelOfFortuneLayoutManager /*extends RecyclerView.LayoutMana
 //
 //        final WheelRotationDirection rotationDirection = WheelRotationDirection.of(dy);
 //
-//        rotateWheel(absRotationAngleInRad, rotationDirection, recycler, state);
+//        rotateWheelBy(absRotationAngleInRad, rotationDirection, recycler, state);
 //
 ////        recycleAndAddSectors(rotationDirection, recycler, state);
 //
@@ -158,14 +158,14 @@ public final class WheelOfFortuneLayoutManager /*extends RecyclerView.LayoutMana
 //        return outerDiameter * Math.sin(rotationAngleInRad);
 //    }
 //
-//    private void rotateWheel(double rotationAngleInRad, WheelRotationDirection rotationDirection,
+//    private void rotateWheelBy(double rotationAngleInRad, WheelRotationDirection rotationDirection,
 //                             RecyclerView.Recycler recycler, RecyclerView.State state) {
 //        final AbstractWheelRotator wheelRotator = AbstractWheelRotator.of(rotationDirection);
-//        wheelRotator.rotateWheel(topSubWheel, rotationAngleInRad, recycler, state);
-////        wheelRotator.rotateWheel(bottomSubWheel, rotationAngleInRad, recycler, state);
+//        wheelRotator.rotateWheelBy(topSubWheel, rotationAngleInRad, recycler, state);
+////        wheelRotator.rotateWheelBy(bottomSubWheel, rotationAngleInRad, recycler, state);
 //
-////        topSubWheel.rotateWheel(rotationAngleInRad, rotationDirection);
-////        bottomSubWheel.rotateWheel(rotationAngleInRad, rotationDirection);
+////        topSubWheel.rotateWheelBy(rotationAngleInRad, rotationDirection);
+////        bottomSubWheel.rotateWheelBy(rotationAngleInRad, rotationDirection);
 //    }
 //
 //    /**
