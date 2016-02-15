@@ -53,17 +53,25 @@ final class WheelStartupAnimationHelper {
         this.topWheelContainer = topWheelContainer;
         this.bottomWheelContainer = bottomWheelContainer;
 
-        setRotationPivotForContainer(topWheelContainer);
-        setRotationPivotForContainer(bottomWheelContainer);
+//        setRotationPivotForContainer(topWheelContainer);
+//        setRotationPivotForContainer(bottomWheelContainer);
 
 //        setInitialTopWheelRotation();
     }
 
     public void playWheelStartupAnimation() {
-        if (!isStartupAnimationPlayed) {
+        /*if (!isStartupAnimationPlayed) {
             createWheelStartupAnimator().start();
             isStartupAnimationPlayed = true;
-        }
+        }*/
+
+        AnimatorSet wheelStartupAnimator = new AnimatorSet();
+        wheelStartupAnimator.playTogether(
+                topWheelContainer.getLayoutManager().playStartupAnimation(),
+                bottomWheelContainer.getLayoutManager().playStartupAnimation()
+        );
+
+        wheelStartupAnimator.start();
     }
 
     public void addAnimationListener(OnWheelStartupAnimationListener animationListener) {

@@ -1,5 +1,6 @@
 package com.sss.magicwheel.manager.wheel;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.RectF;
@@ -57,6 +58,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         return false;
     }
 
+    protected final StartupAnimationValues animationValuesHolder;
 
     protected final WheelConfig wheelConfig;
     protected final WheelComputationHelper computationHelper;
@@ -93,12 +95,16 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
 
         this.clockwiseRotator = new ClockwiseWheelRotator(this, computationHelper);
         this.anticlockwiseRotator = new AnticlockwiseWheelRotator(this, computationHelper);
+
+        this.animationValuesHolder = createStartupAnimationValuesHolder();
     }
 
 
     protected abstract double computeLayoutStartAngleInRad();
 
     protected abstract double computeLayoutEndAngleInRad();
+
+    protected abstract StartupAnimationValues createStartupAnimationValuesHolder();
 
     // TODO: 05.02.2016 consider removing overriding
     protected int getStartLayoutFromAdapterPosition() {
@@ -143,6 +149,8 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
 
     @Override
     public abstract void onLayoutChildren(final RecyclerView.Recycler recycler, final RecyclerView.State state);
+
+    public abstract Animator playStartupAnimation();
 
     @Override
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
@@ -460,6 +468,25 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
 
         public LayoutParams(RecyclerView.LayoutParams source) {
             super(source);
+        }
+    }
+
+    public static final class StartupAnimationValues {
+
+        private final double startAngleInRad;
+        private final double endAngleInRad;
+
+        public StartupAnimationValues(double startAngleInRad, double endAngleInRad) {
+            this.startAngleInRad = startAngleInRad;
+            this.endAngleInRad = endAngleInRad;
+        }
+
+        public double getStartAngleInRad() {
+            return startAngleInRad;
+        }
+
+        public double getEndAngleInRad() {
+            return endAngleInRad;
         }
     }
 }
