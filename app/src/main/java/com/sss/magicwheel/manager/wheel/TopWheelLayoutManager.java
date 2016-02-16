@@ -48,7 +48,7 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
     protected int onLayoutChildrenForStartupAnimation(RecyclerView.Recycler recycler, RecyclerView.State state) {
 
         // delta angle in order to hide top wheel outside screen's left edge
-        final double additionalDeltaAngleInRad = angularRestrictions.getWheelLayoutStartAngleInRad()
+        final double additionalDeltaAngleInRad = angularRestrictions.getWheelTopEdgeAngleRestrictionInRad()
                 - angularRestrictions.getGapAreaTopEdgeAngleRestrictionInRad();
         final double startLayoutAngleInRad = angularRestrictions.getWheelLayoutStartAngleInRad() + additionalDeltaAngleInRad;
 
@@ -111,7 +111,9 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
         final LayoutParams childClosestToLayoutStartEdgeLp = getChildLayoutParams(getChildClosestToLayoutStartEdge());
 
         final float fromAngleInRad = (float) childClosestToLayoutStartEdgeLp.anglePositionInRad;
-        final float toAngleInRad = (float) angularRestrictions.getWheelLayoutStartAngleInRad();
+        final float toAngleInRad = (float) (angularRestrictions.getWheelLayoutStartAngleInRad()
+                - angularRestrictions.getSectorHalfAngleInRad()
+        );
 
         final ValueAnimator startupWheelAnimator = ValueAnimator.ofFloat(fromAngleInRad, toAngleInRad);
 
