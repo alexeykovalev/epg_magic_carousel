@@ -22,6 +22,7 @@ import java.util.List;
  * @author Alexey Kovalev
  * @since 11.02.2016.
  */
+@Deprecated
 public final class WheelStartupAnimationHelper {
 
     private static final int TOP_WHEEL_APPEARING_ANIMATION_DURATION = 1000;
@@ -59,23 +60,19 @@ public final class WheelStartupAnimationHelper {
 
 //        setRotationPivotForContainer(topWheelContainer);
 //        setRotationPivotForContainer(bottomWheelContainer);
-
 //        setInitialTopWheelRotation();
     }
 
     public void playWheelStartupAnimation() {
-        /*if (!isStartupAnimationPlayed) {
-            createWheelStartupAnimator().start();
+        if (!isStartupAnimationPlayed) {
             isStartupAnimationPlayed = true;
-        }*/
-
-        AnimatorSet wheelStartupAnimator = new AnimatorSet();
-        wheelStartupAnimator.playTogether(
-                topWheelContainer.getLayoutManager().createWheelStartupAnimator(),
-                bottomWheelContainer.getLayoutManager().createWheelStartupAnimator()
-        );
-
-        wheelStartupAnimator.start();
+            AnimatorSet wheelStartupAnimator = new AnimatorSet();
+            wheelStartupAnimator.playTogether(
+                    topWheelContainer.getLayoutManager().createWheelStartupAnimator(),
+                    bottomWheelContainer.getLayoutManager().createWheelStartupAnimator()
+            );
+            wheelStartupAnimator.start();
+        }
     }
 
     public boolean isStartupAnimationPlayed() {

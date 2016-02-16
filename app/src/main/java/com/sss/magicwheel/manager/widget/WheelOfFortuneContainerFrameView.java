@@ -101,7 +101,8 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
     }
 
     private void initTopWheelContainer(RecyclerView topWheelContainerView) {
-        topWheelContainerView.setLayoutManager(new TopWheelLayoutManager(computationHelper, wheelStartupAnimationHelper,
+        topWheelContainerView.setLayoutManager(new TopWheelLayoutManager(
+                getContext(), topWheelContainer, computationHelper,
                 new AbstractWheelLayoutManager.WheelOnInitialLayoutFinishingListener() {
                     @Override
                     public void onInitialLayoutFinished(int finishedAtAdapterPosition) {
@@ -112,17 +113,18 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         addTopWheelItemDecorations(topWheelContainerView);
     }
 
-    private void initBottomWheelContainer(RecyclerView topWheelContainerView) {
-        bottomWheelLayoutManager = new BottomWheelLayoutManager(computationHelper, wheelStartupAnimationHelper,
+    private void initBottomWheelContainer(RecyclerView bottomWheelContainerView) {
+        bottomWheelLayoutManager = new BottomWheelLayoutManager(
+                getContext(), bottomWheelContainer, computationHelper,
                 new AbstractWheelLayoutManager.WheelOnInitialLayoutFinishingListener() {
             @Override
             public void onInitialLayoutFinished(int finishedAtAdapterPosition) {
 //                wheelStartupAnimationHelper.playWheelStartupAnimation();
             }
         });
-        topWheelContainerView.setLayoutManager(bottomWheelLayoutManager);
-        topWheelContainerView.setAdapter(createEmptyWheelAdapter());
-        addBottomWheelItemDecorations(topWheelContainerView);
+        bottomWheelContainerView.setLayoutManager(bottomWheelLayoutManager);
+        bottomWheelContainerView.setAdapter(createEmptyWheelAdapter());
+        addBottomWheelItemDecorations(bottomWheelContainerView);
     }
 
     private void addTopWheelItemDecorations(RecyclerView wheelContainerView) {

@@ -5,11 +5,11 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
-import com.sss.magicwheel.entity.WheelConfig;
 import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
+import com.sss.magicwheel.manager.decor.WheelSectorRayItemDecoration;
+import com.sss.magicwheel.manager.widget.WheelContainerRecyclerView;
 import com.sss.magicwheel.manager.widget.WheelStartupAnimationHelper;
 
 /**
@@ -23,10 +23,11 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
      */
     private static final int START_LAYOUT_FROM_ADAPTER_POSITION = WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT;
 
-    public TopWheelLayoutManager(WheelComputationHelper computationHelper,
-                                 WheelStartupAnimationHelper animationHelper,
+    public TopWheelLayoutManager(Context context,
+                                 WheelContainerRecyclerView wheelRecyclerView,
+                                 WheelComputationHelper computationHelper,
                                  WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener) {
-        super(computationHelper, animationHelper, initialLayoutFinishingListener);
+        super(context, wheelRecyclerView, computationHelper, initialLayoutFinishingListener);
     }
 
     @Override
@@ -138,6 +139,8 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
             @Override
             public void onAnimationEnd(Animator animation) {
                 setLayoutStartAngleInRad(wheelConfig.getAngularRestrictions().getWheelLayoutStartAngleInRad());
+//                wheelRecyclerView.addItemDecoration(new WheelSectorRayItemDecoration(context));
+                wheelRecyclerView.setIsCutGapAreaActivated(true);
             }
         });
 

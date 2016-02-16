@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.support.v4.animation.AnimatorCompatHelper;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -18,7 +17,7 @@ import com.sss.magicwheel.manager.rotator.AbstractWheelRotator;
 import com.sss.magicwheel.manager.rotator.AnticlockwiseWheelRotator;
 import com.sss.magicwheel.manager.rotator.ClockwiseWheelRotator;
 import com.sss.magicwheel.manager.widget.WheelBigWrapperView;
-import com.sss.magicwheel.manager.widget.WheelStartupAnimationHelper;
+import com.sss.magicwheel.manager.widget.WheelContainerRecyclerView;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -60,12 +59,16 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         return false;
     }
 
+    protected final Context context;
+    protected final WheelContainerRecyclerView wheelRecyclerView;
+
     protected final WheelConfig wheelConfig;
     protected final WheelConfig.AngularRestrictions angularRestrictions;
     protected final WheelComputationHelper computationHelper;
 
-    private final WheelStartupAnimationHelper animationHelper;
     protected final WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener;
+
+    private boolean isStartupAnimationPlayed;
 
     private double layoutStartAngleInRad;
     private double layoutEndAngleInRad;
@@ -85,15 +88,17 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         void onInitialLayoutFinished(int finishedAtAdapterPosition);
     }
 
-    protected AbstractWheelLayoutManager(WheelComputationHelper computationHelper,
-                                         WheelStartupAnimationHelper animationHelper,
+    protected AbstractWheelLayoutManager(Context context,
+                                         WheelContainerRecyclerView wheelRecyclerView,
+                                         WheelComputationHelper computationHelper,
                                          WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener) {
 
+        this.context = context;
         this.computationHelper = computationHelper;
+        this.wheelRecyclerView = wheelRecyclerView;
         this.wheelConfig = computationHelper.getWheelConfig();
         this.angularRestrictions = wheelConfig.getAngularRestrictions();
 
-        this.animationHelper = animationHelper;
         this.initialLayoutFinishingListener = initialLayoutFinishingListener;
 
         this.layoutStartAngleInRad = computeLayoutStartAngleInRad();
@@ -119,12 +124,13 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         }
 
         final int lastlyLayoutedChildPos;
-        if (animationHelper.isStartupAnimationPlayed()) {
+        if (false) {
             lastlyLayoutedChildPos = onLayoutChildrenRegular(recycler, state);
         } else {
             lastlyLayoutedChildPos = onLayoutChildrenForStartupAnimation(recycler, state);
             // TODO: 16.02.2016
             createWheelStartupAnimator().start();
+//            isStartupAnimationPlayed = true;
         }
 
         informLayoutFinishingListener(lastlyLayoutedChildPos);
