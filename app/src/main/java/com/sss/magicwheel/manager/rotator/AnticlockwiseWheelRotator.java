@@ -19,11 +19,13 @@ public final class AnticlockwiseWheelRotator extends AbstractWheelRotator {
 
     @Override
     public void rotateWheelBy(double rotationAngleInRad) {
+//        final double halfSectorAngleInRad = computationHelper.getWheelConfig().getAngularRestrictions().getSectorAngleInRad() / 2;
         for (int i = 0; i < wheelLayoutManager.getChildCount(); i++) {
             final View sectorView = wheelLayoutManager.getChildAt(i);
             final AbstractWheelLayoutManager.LayoutParams sectorViewLp = AbstractWheelLayoutManager.getChildLayoutParams(sectorView);
             sectorViewLp.anglePositionInRad += rotationAngleInRad;
-//            sectorView.setLayoutParams(sectorViewLp);
+            // we store top sector angular position
+//            sectorViewLp.anglePositionInRad += halfSectorAngleInRad;
             wheelLayoutManager.alignBigWrapperViewByAngle(sectorView, -sectorViewLp.anglePositionInRad);
         }
     }

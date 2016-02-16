@@ -43,7 +43,8 @@ final class WheelStartupAnimationHelper {
     private final WheelContainerRecyclerView topWheelContainer;
     private final WheelContainerRecyclerView bottomWheelContainer;
 
-    private boolean isStartupAnimationPlayed;
+    // TODO: 16.02.2016 has to be false initially
+    private boolean isStartupAnimationPlayed = true;
 
     public WheelStartupAnimationHelper(WheelComputationHelper computationHelper,
                                        WheelContainerRecyclerView topWheelContainer,
@@ -67,11 +68,15 @@ final class WheelStartupAnimationHelper {
 
         AnimatorSet wheelStartupAnimator = new AnimatorSet();
         wheelStartupAnimator.playTogether(
-                topWheelContainer.getLayoutManager().playStartupAnimation(),
-                bottomWheelContainer.getLayoutManager().playStartupAnimation()
+                topWheelContainer.getLayoutManager().createWheelStartupAnimator(),
+                bottomWheelContainer.getLayoutManager().createWheelStartupAnimator()
         );
 
         wheelStartupAnimator.start();
+    }
+
+    public boolean isStartupAnimationPlayed() {
+        return isStartupAnimationPlayed;
     }
 
     public void addAnimationListener(OnWheelStartupAnimationListener animationListener) {

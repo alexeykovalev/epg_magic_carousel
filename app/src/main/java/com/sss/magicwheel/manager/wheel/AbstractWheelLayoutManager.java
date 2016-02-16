@@ -58,9 +58,11 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         return false;
     }
 
+    @Deprecated
     protected final StartupAnimationValues animationValuesHolder;
 
     protected final WheelConfig wheelConfig;
+    protected final WheelConfig.AngularRestrictions angularRestrictions;
     protected final WheelComputationHelper computationHelper;
 
     private double layoutStartAngleInRad;
@@ -88,6 +90,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
 
         this.computationHelper = computationHelper;
         this.wheelConfig = computationHelper.getWheelConfig();
+        this.angularRestrictions = wheelConfig.getAngularRestrictions();
         this.initialLayoutFinishingListener = initialLayoutFinishingListener;
 
         this.layoutStartAngleInRad = computeLayoutStartAngleInRad();
@@ -104,6 +107,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
 
     protected abstract double computeLayoutEndAngleInRad();
 
+    @Deprecated
     protected abstract StartupAnimationValues createStartupAnimationValuesHolder();
 
     // TODO: 05.02.2016 consider removing overriding
@@ -150,7 +154,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     @Override
     public abstract void onLayoutChildren(final RecyclerView.Recycler recycler, final RecyclerView.State state);
 
-    public abstract Animator playStartupAnimation();
+    public abstract Animator createWheelStartupAnimator();
 
     @Override
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
@@ -447,6 +451,8 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         /**
          * Defines middle (sector's wrapper view half height) edge sector's position on circle.
          * Effectively it equals to view's rotation angle.
+         *
+         * Defines sector's view top edge angular position.
          */
         public double anglePositionInRad;
 
@@ -471,6 +477,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         }
     }
 
+    @Deprecated
     public static final class StartupAnimationValues {
 
         private final double startAngleInRad;

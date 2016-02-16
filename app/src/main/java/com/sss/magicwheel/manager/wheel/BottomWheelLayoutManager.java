@@ -2,7 +2,6 @@ package com.sss.magicwheel.manager.wheel;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -20,8 +19,8 @@ import com.sss.magicwheel.manager.WheelComputationHelper;
 public final class BottomWheelLayoutManager extends AbstractWheelLayoutManager {
 
     // TODO: 05.02.2016 for testing
-    @Deprecated
-    private static final int START_LAYOUT_FROM_ADAPTER_POSITION = WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT;
+//    @Deprecated
+//    private static final int START_LAYOUT_FROM_ADAPTER_POSITION = WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT;
 
     public BottomWheelLayoutManager(Context context, WheelComputationHelper computationHelper, WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener) {
         super(computationHelper, initialLayoutFinishingListener);
@@ -55,118 +54,102 @@ public final class BottomWheelLayoutManager extends AbstractWheelLayoutManager {
             return;
         }
 
-        final double sectorAngleInRad = wheelConfig.getAngularRestrictions().getSectorAngleInRad();
-//        final double halfSectorAngleInRad = wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 2;
+        // TODO: 16.02.2016 depending on isAnimationPlayed ot not call different layout childred methods
+
+//        final int lastlyLayoutedChildPos = onLayoutChildrenRegular(recycler, state);
+        final int lastlyLayoutedChildPos = onLayoutChildrenForStartupAnimation(recycler, state);
+
+        if (initialLayoutFinishingListener != null) {
+            initialLayoutFinishingListener.onInitialLayoutFinished(lastlyLayoutedChildPos - 1);
+        }
+
+        // TODO: 16.02.2016
+        createWheelStartupAnimator().start();
+    }
+
+    private int onLayoutChildrenForStartupAnimation(RecyclerView.Recycler recycler, RecyclerView.State state) {
+
+//        setLayoutStartAngleInRad(angularRestrictions.getWheelLayoutStartAngleInRad());
+
+        final double sectorAngleInRad = angularRestrictions.getSectorAngleInRad();
         final double bottomLimitAngle = getLayoutEndAngleInRad();
 
-//        double layoutAngle = getLayoutStartAngleInRad() + halfSectorAngleInRad;
-        double layoutAngle = animationValuesHolder.getStartAngleInRad();
+        double layoutAngle = computationHelper.getSectorAlignmentAngleInRadBySectorTopEdge(
+                angularRestrictions.getWheelLayoutStartAngleInRad()
+        );
+
         int childPos = getStartLayoutFromAdapterPosition();
-        while (layoutAngle > bottomLimitAngle && childPos < state.getItemCount()) {
+        int layoutedChildrenCount = 0;
+        boolean isInsideLayoutBounds = computationHelper.getSectorAngleTopEdgeInRad(layoutAngle) > bottomLimitAngle;
+        while (isInsideLayoutBounds && layoutedChildrenCount < state.getItemCount()) {
             setupSectorForPosition(recycler, childPos, layoutAngle, true);
             layoutAngle -= sectorAngleInRad;
+            isInsideLayoutBounds = computationHelper.getSectorAngleTopEdgeInRad(layoutAngle) > bottomLimitAngle;
+            layoutedChildrenCount++;
             childPos++;
         }
 
-        if (initialLayoutFinishingListener != null) {
-            initialLayoutFinishingListener.onInitialLayoutFinished(childPos - 1);
-        }
-
-//        playStartupAnimation(recycler, state);
+        return childPos;
     }
 
-    public Animator playStartupAnimation(/*final RecyclerView.Recycler recycler, final RecyclerView.State state*/) {
+    private int onLayoutChildrenRegular(RecyclerView.Recycler recycler, RecyclerView.State state) {
 
-        final LayoutParams childClosestToLayoutStartEdgeLp = getChildLayoutParams(getChildClosestToLayoutStartEdge());
+        setLayoutStartAngleInRad(angularRestrictions.getGapAreaBottomEdgeAngleRestrictionInRad());
 
-        final WheelConfig.AngularRestrictions angularRestrictions = wheelConfig.getAngularRestrictions();
-        final double halfSectorAngleInRad = angularRestrictions.getSectorAngleInRad() / 2;
+        final double sectorAngleInRad = wheelConfig.getAngularRestrictions().getSectorAngleInRad();
+        final double bottomLimitAngle = getLayoutEndAngleInRad();
 
-        // ---------------------------------------------------
-        // ---------------------------------------------------
-        // ---------------------------------------------------
-
-        final float fistStageTopAngleInRad = (float) childClosestToLayoutStartEdgeLp.anglePositionInRad;
-        final float firstStageBottomAngleInRad = (float) animationValuesHolder.getEndAngleInRad();
-//                (float) (wheelConfig.getAngularRestrictions().getGapAreaTopEdgeAngleRestrictionInRad() - halfSectorAngleInRad);
-
-        ValueAnimator firstStageAnimator = ValueAnimator.ofFloat(
-//                (float) animationValuesHolder.getStartAngleInRad(),
-                fistStageTopAngleInRad,
-                firstStageBottomAngleInRad
+        double layoutAngle = computationHelper.getSectorAlignmentAngleInRadBySectorTopEdge(
+                angularRestrictions.getGapAreaBottomEdgeAngleRestrictionInRad()
         );
 
-        firstStageAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        int childPos = getStartLayoutFromAdapterPosition();
+        int layoutedChildrenCount = 0;
+        // when sector's top edge goes outside bottom edge layout angle - then stop children layout
+        boolean isInsideLayoutBounds = computationHelper.getSectorAngleTopEdgeInRad(layoutAngle) > bottomLimitAngle;
+        while (isInsideLayoutBounds && layoutedChildrenCount < state.getItemCount()) {
+            setupSectorForPosition(recycler, childPos, layoutAngle, true);
+            layoutAngle -= sectorAngleInRad;
+            isInsideLayoutBounds = computationHelper.getSectorAngleTopEdgeInRad(layoutAngle) > bottomLimitAngle;
+            layoutedChildrenCount++;
+            childPos++;
+        }
+
+        return childPos;
+    }
+
+    @Override
+    public Animator createWheelStartupAnimator() {
+        final LayoutParams childClosestToLayoutStartEdgeLp = getChildLayoutParams(getChildClosestToLayoutStartEdge());
+
+        final float fromAngleInRad = (float) childClosestToLayoutStartEdgeLp.anglePositionInRad;
+        final float toAngleInRad = (float) computationHelper.getSectorAlignmentAngleInRadBySectorTopEdge(
+                angularRestrictions.getGapAreaBottomEdgeAngleRestrictionInRad()
+        );
+
+        final ValueAnimator wheelStartupAnimator = ValueAnimator.ofFloat(fromAngleInRad, toAngleInRad);
+
+        wheelStartupAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 final float firstChildAnglePositionInRad = (float) childClosestToLayoutStartEdgeLp.anglePositionInRad;
-                final float newRotationAngleInRad = (Float) animation.getAnimatedValue();
+                final float currentlyAnimatedAngleInRad = (Float) animation.getAnimatedValue();
 
-                double rotationDeltaInRad = firstChildAnglePositionInRad - newRotationAngleInRad;
-
+                final double rotationDeltaInRad = firstChildAnglePositionInRad - currentlyAnimatedAngleInRad;
                 clockwiseRotator.rotateWheelBy(rotationDeltaInRad);
-
-               /* Log.e("TAG",
-                        "newRotationAngleInRad [" + WheelComputationHelper.radToDegree(newRotationAngleInRad) + "], " +
-                                "firstChildAnglePositionInRad [" + WheelComputationHelper.radToDegree(firstChildAnglePositionInRad) + "], " +
-                                "rotationDeltaInRad [" + WheelComputationHelper.radToDegree(rotationDeltaInRad) + "]"
-                );*/
             }
         });
 
-        firstStageAnimator.addListener(new AnimatorListenerAdapter() {
+        wheelStartupAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-
-                final double newLayoutStartAngleInRad = angularRestrictions.getGapAreaBottomEdgeAngleRestrictionInRad() + halfSectorAngleInRad;
-
-                Log.e("TAG", "Animation finished newLayoutStartAngleInRad ["
-                        + WheelComputationHelper.radToDegree(newLayoutStartAngleInRad) + "]");
-                setLayoutStartAngleInRad(newLayoutStartAngleInRad);
-
-               /* final Animator secondStageAnimator = createSecondStageAnimator();
-
-                secondStageAnimator.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-
-                    }
-                });
-
-                secondStageAnimator.start();*/
+                setLayoutStartAngleInRad(angularRestrictions.getGapAreaBottomEdgeAngleRestrictionInRad());
             }
         });
 
-        firstStageAnimator.setDuration(1000);
+        wheelStartupAnimator.setDuration(WheelComputationHelper.BOTTOM_WHEEL_ANIMATION_DURATION);
 
-
-        // ---------------------------------------------------
-        // ---------------------------------------------------
-        // ---------------------------------------------------
-
-
-        /*AnimatorSet bottomWheelStartupAnimator = new AnimatorSet();
-        bottomWheelStartupAnimator.playSequentially(firstStageAnimator, createSecondStageAnimator());
-
-        bottomWheelStartupAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                final double newLayoutStartAngleInRad = angularRestrictions.getGapAreaBottomEdgeAngleRestrictionInRad() + halfSectorAngleInRad;
-
-                Log.e("TAG", "Animation finished newLayoutStartAngleInRad ["
-                        + WheelComputationHelper.radToDegree(newLayoutStartAngleInRad) + "]");
-                setLayoutStartAngleInRad(newLayoutStartAngleInRad);
-
-//                clockwiseRotator.recycleSectors(recycler, state);
-            }
-        });*/
-
-//        bottomWheelStartupAnimator.start();
-
-//        firstStageAnimator.start();
-
-        return firstStageAnimator;
-
+        return wheelStartupAnimator;
     }
 
     @Deprecated
@@ -213,8 +196,7 @@ public final class BottomWheelLayoutManager extends AbstractWheelLayoutManager {
 
     @Override
     protected double computeLayoutStartAngleInRad() {
-        return wheelConfig.getAngularRestrictions().getWheelLayoutStartAngleInRad();
-//        return wheelConfig.getAngularRestrictions().getGapAreaBottomEdgeAngleRestrictionInRad();
+        return wheelConfig.getAngularRestrictions().getGapAreaBottomEdgeAngleRestrictionInRad();
 
 //                + wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 2;
     }
@@ -237,6 +219,8 @@ public final class BottomWheelLayoutManager extends AbstractWheelLayoutManager {
 //        }
 //    }
 
+
+    @Deprecated
     private void rotateWheelAnticlockwise(double rotationAngleInRad, RecyclerView.Recycler recycler, RecyclerView.State state) {
         for (int i = 0; i < getChildCount(); i++) {
             final View sectorView = getChildAt(i);
@@ -250,6 +234,7 @@ public final class BottomWheelLayoutManager extends AbstractWheelLayoutManager {
         addSectorsToBottomIfNeeded(recycler, state);
     }
 
+    @Deprecated
     /**
      * When sectorView's bottom edge goes outside
      */
@@ -266,6 +251,7 @@ public final class BottomWheelLayoutManager extends AbstractWheelLayoutManager {
         }
     }
 
+    @Deprecated
     private void addSectorsToBottomIfNeeded(RecyclerView.Recycler recycler, RecyclerView.State state) {
         final View closestToEndSectorView = getChildClosestToLayoutEndEdge();
         final AbstractWheelLayoutManager.LayoutParams sectorViewLp = AbstractWheelLayoutManager.getChildLayoutParams(closestToEndSectorView);
