@@ -124,7 +124,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         } else {
             lastlyLayoutedChildPos = onLayoutChildrenForStartupAnimation(recycler, state);
             // TODO: 16.02.2016
-            createWheelStartupAnimator().start();
+//            createWheelStartupAnimator().start();
         }
 
         informLayoutFinishingListener(lastlyLayoutedChildPos);

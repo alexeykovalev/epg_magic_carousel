@@ -57,7 +57,7 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         inflateAndBindContainerView(context);
 
 //        topWheelContainer.setVisibility(INVISIBLE);
-//        bottomWheelContainer.setVisibility(INVISIBLE);
+        bottomWheelContainer.setVisibility(INVISIBLE);
 
         wheelStartupAnimationHelper = new WheelStartupAnimationHelper(computationHelper, topWheelContainer, bottomWheelContainer);
 

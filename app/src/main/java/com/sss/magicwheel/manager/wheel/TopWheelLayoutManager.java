@@ -29,6 +29,11 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
     }
 
     @Override
+    protected int getStartLayoutFromAdapterPosition() {
+        return START_LAYOUT_FROM_ADAPTER_POSITION;
+    }
+
+    @Override
     protected double computeLayoutStartAngleInRad() {
         return wheelConfig.getAngularRestrictions().getWheelLayoutStartAngleInRad();
     }
@@ -40,7 +45,31 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
 
     @Override
     protected int onLayoutChildrenForStartupAnimation(RecyclerView.Recycler recycler, RecyclerView.State state) {
-        throw new UnsupportedOperationException();
+
+        // delta angle in order to hide top wheel outside screen's left edge
+        final double additionalDeltaAngleInRad = angularRestrictions.getWheelLayoutStartAngleInRad()
+                - angularRestrictions.getGapAreaTopEdgeAngleRestrictionInRad();
+        final double startLayoutAngleInRad = angularRestrictions.getWheelLayoutStartAngleInRad() + additionalDeltaAngleInRad;
+
+        setLayoutStartAngleInRad(startLayoutAngleInRad);
+
+        final double sectorAngleInRad = angularRestrictions.getSectorAngleInRad();
+        final double bottomLimitAngle = angularRestrictions.getWheelLayoutStartAngleInRad();
+
+        double layoutAngle = computationHelper.getSectorAlignmentAngleInRadBySectorTopEdge(startLayoutAngleInRad);
+
+        int childPos = getStartLayoutFromAdapterPosition();
+        int layoutedChildrenCount = 0;
+        boolean isInsideLayoutBounds = computationHelper.getSectorAngleBottomEdgeInRad(layoutAngle) > bottomLimitAngle;
+        while (isInsideLayoutBounds && layoutedChildrenCount < state.getItemCount()) {
+            setupSectorForPosition(recycler, childPos, layoutAngle, true);
+            layoutAngle -= sectorAngleInRad;
+            isInsideLayoutBounds = computationHelper.getSectorAngleTopEdgeInRad(layoutAngle) > bottomLimitAngle;
+            layoutedChildrenCount++;
+            childPos++;
+        }
+
+        return childPos;
     }
 
     @Override
@@ -134,8 +163,4 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
         return animator;
     }
 
-    @Override
-    protected int getStartLayoutFromAdapterPosition() {
-        return START_LAYOUT_FROM_ADAPTER_POSITION;
-    }
 }
