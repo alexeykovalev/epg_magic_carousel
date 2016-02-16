@@ -100,7 +100,7 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
     }
 
     @Override
-    protected void informLayoutFinishingListener(int lastlyLayoutedChildPos) {
+    protected void notifyLayoutFinishingListener(int lastlyLayoutedChildPos) {
         if (initialLayoutFinishingListener != null) {
             initialLayoutFinishingListener.onInitialLayoutFinished(lastlyLayoutedChildPos + 1);
         }

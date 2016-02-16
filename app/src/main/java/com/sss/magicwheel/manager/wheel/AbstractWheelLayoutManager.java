@@ -132,12 +132,12 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
             isStartupAnimationPlayed = true;
         }
 
-        informLayoutFinishingListener(lastlyLayoutedChildPos);
+        notifyLayoutFinishingListener(lastlyLayoutedChildPos);
     }
 
     protected abstract int onLayoutChildrenForStartupAnimation(RecyclerView.Recycler recycler, RecyclerView.State state);
     protected abstract int onLayoutChildrenRegular(RecyclerView.Recycler recycler, RecyclerView.State state);
-    protected abstract void informLayoutFinishingListener(int lastlyLayoutedChildPos);
+    protected abstract void notifyLayoutFinishingListener(int lastlyLayoutedChildPos);
 
     public abstract Animator createWheelStartupAnimator();
 
