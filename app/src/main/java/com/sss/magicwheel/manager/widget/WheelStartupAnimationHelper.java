@@ -47,7 +47,7 @@ public final class WheelStartupAnimationHelper {
     private final WheelContainerRecyclerView bottomWheelContainer;
 
     // TODO: 16.02.2016 has to be false initially
-    private boolean isStartupAnimationPlayed = false;
+    private boolean isStartupAnimationPlayed = true;
 
     public WheelStartupAnimationHelper(WheelComputationHelper computationHelper,
                                        WheelContainerRecyclerView topWheelContainer,

@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import com.sss.magicwheel.entity.WheelConfig;
 import com.sss.magicwheel.manager.WheelAdapter;
@@ -107,60 +108,40 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
     @Override
     public Animator createWheelStartupAnimator() {
 
-        final LayoutParams childClosestToLayoutStartEdgeLp = getChildLayoutParams(getChildClosestToLayoutEndEdge());
+        final LayoutParams childClosestToLayoutStartEdgeLp = getChildLayoutParams(getChildClosestToLayoutStartEdge());
 
-        final float anglePositionInRad = (float) childClosestToLayoutStartEdgeLp.anglePositionInRad;
-        final float endAngleInRad = 0; //(float) animationValuesHolder.getEndAngleInRad();
-        ValueAnimator animator = ValueAnimator.ofFloat(
-//                (float) animationValuesHolder.getStartAngleInRad(),
-                anglePositionInRad,
-                endAngleInRad
-        );
+        final float fromAngleInRad = (float) childClosestToLayoutStartEdgeLp.anglePositionInRad;
+        final float toAngleInRad = (float) angularRestrictions.getWheelLayoutStartAngleInRad();
 
-        final double rAngle = WheelComputationHelper.degreeToRadian(120);
+        final ValueAnimator startupWheelAnimator = ValueAnimator.ofFloat(fromAngleInRad, toAngleInRad);
 
-//        clockwiseRotator.rotateWheelBy(rAngle);
-
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        startupWheelAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 final float firstChildAnglePositionInRad = (float) childClosestToLayoutStartEdgeLp.anglePositionInRad;
-                final float newRotationAngleInRad = (Float) animation.getAnimatedValue();
+                final float currentlyAnimatedAngleInRad = (Float) animation.getAnimatedValue();
 
-                double rotationDeltaInRad = firstChildAnglePositionInRad - newRotationAngleInRad;
-
+                final double rotationDeltaInRad = firstChildAnglePositionInRad - currentlyAnimatedAngleInRad;
                 clockwiseRotator.rotateWheelBy(rotationDeltaInRad);
 
-
                /* Log.e("TAG",
-                        "newRotationAngleInRad [" + WheelComputationHelper.radToDegree(newRotationAngleInRad) + "], " +
+                        "currentlyAnimatedAngleInRad [" + WheelComputationHelper.radToDegree(currentlyAnimatedAngleInRad) + "], " +
                                 "firstChildAnglePositionInRad [" + WheelComputationHelper.radToDegree(firstChildAnglePositionInRad) + "], " +
                                 "rotationDeltaInRad [" + WheelComputationHelper.radToDegree(rotationDeltaInRad) + "]"
                 );*/
             }
         });
 
-        animator.addListener(new AnimatorListenerAdapter() {
+        startupWheelAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-//                final WheelConfig.AngularRestrictions angularRestrictions = wheelConfig.getAngularRestrictions();
-//                final double halfSectorAngleInRad = angularRestrictions.getSectorAngleInRad() / 2;
-//                final double newLayoutStartAngleInRad = angularRestrictions.getGapAreaBottomEdgeAngleRestrictionInRad() + halfSectorAngleInRad;
-//
-//                Log.e("TAG", "Animation finished newLayoutStartAngleInRad ["
-//                        + WheelComputationHelper.radToDegree(newLayoutStartAngleInRad) + "]");
-//                setLayoutStartAngleInRad(newLayoutStartAngleInRad);
-
-
-
-//                clockwiseRotator.recycleSectors(recycler, state);
+                setLayoutStartAngleInRad(wheelConfig.getAngularRestrictions().getWheelLayoutStartAngleInRad());
             }
         });
 
-        animator.setDuration(WheelStartupAnimationHelper.TOP_WHEEL_ANIMATION_DURATION);
-//        animator.start();
+        startupWheelAnimator.setDuration(WheelStartupAnimationHelper.TOP_WHEEL_ANIMATION_DURATION);
 
-        return animator;
+        return startupWheelAnimator;
     }
 
 }
