@@ -119,9 +119,8 @@ public final class BottomWheelLayoutManager extends AbstractWheelLayoutManager {
             @Override
             public void onAnimationEnd(Animator animation) {
                 setLayoutStartAngleInRad(angularRestrictions.getGapAreaBottomEdgeAngleRestrictionInRad());
-//                wheelRecyclerView.addItemDecoration(new WheelSectorRayItemDecoration(context));
+                wheelRecyclerView.addItemDecoration(new WheelSectorRayItemDecoration(context));
                 wheelRecyclerView.setIsCutGapAreaActivated(true);
-
             }
         });
 

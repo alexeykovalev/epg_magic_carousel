@@ -124,13 +124,12 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         }
 
         final int lastlyLayoutedChildPos;
-        if (false) {
+        if (isStartupAnimationPlayed) {
             lastlyLayoutedChildPos = onLayoutChildrenRegular(recycler, state);
         } else {
             lastlyLayoutedChildPos = onLayoutChildrenForStartupAnimation(recycler, state);
-            // TODO: 16.02.2016
             createWheelStartupAnimator().start();
-//            isStartupAnimationPlayed = true;
+            isStartupAnimationPlayed = true;
         }
 
         informLayoutFinishingListener(lastlyLayoutedChildPos);
@@ -153,7 +152,6 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
 
     public void setStartLayoutFromAdapterPosition(int startLayoutFromAdapterPosition) {
         this.startLayoutFromAdapterPosition = startLayoutFromAdapterPosition;
-        requestLayout();
     }
 
     public View getChildClosestToLayoutStartEdge() {

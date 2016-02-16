@@ -139,7 +139,7 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
             @Override
             public void onAnimationEnd(Animator animation) {
                 setLayoutStartAngleInRad(wheelConfig.getAngularRestrictions().getWheelLayoutStartAngleInRad());
-//                wheelRecyclerView.addItemDecoration(new WheelSectorRayItemDecoration(context));
+                wheelRecyclerView.addItemDecoration(new WheelSectorRayItemDecoration(context));
                 wheelRecyclerView.setIsCutGapAreaActivated(true);
             }
         });
