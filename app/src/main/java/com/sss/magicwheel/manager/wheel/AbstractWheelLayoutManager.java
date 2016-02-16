@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.support.v4.animation.AnimatorCompatHelper;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -17,6 +18,7 @@ import com.sss.magicwheel.manager.rotator.AbstractWheelRotator;
 import com.sss.magicwheel.manager.rotator.AnticlockwiseWheelRotator;
 import com.sss.magicwheel.manager.rotator.ClockwiseWheelRotator;
 import com.sss.magicwheel.manager.widget.WheelBigWrapperView;
+import com.sss.magicwheel.manager.widget.WheelStartupAnimationHelper;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -58,17 +60,15 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         return false;
     }
 
-    @Deprecated
-    protected final StartupAnimationValues animationValuesHolder;
-
     protected final WheelConfig wheelConfig;
     protected final WheelConfig.AngularRestrictions angularRestrictions;
     protected final WheelComputationHelper computationHelper;
 
+    private final WheelStartupAnimationHelper animationHelper;
+    protected final WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener;
+
     private double layoutStartAngleInRad;
     private double layoutEndAngleInRad;
-
-    protected final WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener;
 
     private int startLayoutFromAdapterPosition = NOT_DEFINED_ADAPTER_POSITION;
 
@@ -86,11 +86,14 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     }
 
     protected AbstractWheelLayoutManager(WheelComputationHelper computationHelper,
+                                         WheelStartupAnimationHelper animationHelper,
                                          WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener) {
 
         this.computationHelper = computationHelper;
         this.wheelConfig = computationHelper.getWheelConfig();
         this.angularRestrictions = wheelConfig.getAngularRestrictions();
+
+        this.animationHelper = animationHelper;
         this.initialLayoutFinishingListener = initialLayoutFinishingListener;
 
         this.layoutStartAngleInRad = computeLayoutStartAngleInRad();
@@ -98,17 +101,44 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
 
         this.clockwiseRotator = new ClockwiseWheelRotator(this, computationHelper);
         this.anticlockwiseRotator = new AnticlockwiseWheelRotator(this, computationHelper);
-
-        this.animationValuesHolder = createStartupAnimationValuesHolder();
     }
 
+    @Override
+    public final void onLayoutChildren(final RecyclerView.Recycler recycler, final RecyclerView.State state) {
+        // We have nothing to show for an empty data set but clear any existing views
+        int itemCount = getItemCount();
+        if (itemCount == 0) {
+            removeAndRecycleAllViews(recycler);
+            return;
+        }
+
+        removeAndRecycleAllViews(recycler);
+
+        if (getStartLayoutFromAdapterPosition() == NOT_DEFINED_ADAPTER_POSITION) {
+            return;
+        }
+
+        final int lastlyLayoutedChildPos;
+        if (animationHelper.isStartupAnimationPlayed()) {
+            lastlyLayoutedChildPos = onLayoutChildrenRegular(recycler, state);
+        } else {
+            lastlyLayoutedChildPos = onLayoutChildrenForStartupAnimation(recycler, state);
+            // TODO: 16.02.2016
+            createWheelStartupAnimator().start();
+        }
+
+        informLayoutFinishingListener(lastlyLayoutedChildPos);
+    }
+
+    protected abstract int onLayoutChildrenForStartupAnimation(RecyclerView.Recycler recycler, RecyclerView.State state);
+    protected abstract int onLayoutChildrenRegular(RecyclerView.Recycler recycler, RecyclerView.State state);
+    protected abstract void informLayoutFinishingListener(int lastlyLayoutedChildPos);
+
+    public abstract Animator createWheelStartupAnimator();
 
     protected abstract double computeLayoutStartAngleInRad();
-
     protected abstract double computeLayoutEndAngleInRad();
 
-    @Deprecated
-    protected abstract StartupAnimationValues createStartupAnimationValuesHolder();
 
     // TODO: 05.02.2016 consider removing overriding
     protected int getStartLayoutFromAdapterPosition() {
@@ -150,11 +180,6 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         removeAndRecycleAllViews(recycler);
         recycler.clear();
     }
-
-    @Override
-    public abstract void onLayoutChildren(final RecyclerView.Recycler recycler, final RecyclerView.State state);
-
-    public abstract Animator createWheelStartupAnimator();
 
     @Override
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
@@ -477,23 +502,4 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         }
     }
 
-    @Deprecated
-    public static final class StartupAnimationValues {
-
-        private final double startAngleInRad;
-        private final double endAngleInRad;
-
-        public StartupAnimationValues(double startAngleInRad, double endAngleInRad) {
-            this.startAngleInRad = startAngleInRad;
-            this.endAngleInRad = endAngleInRad;
-        }
-
-        public double getStartAngleInRad() {
-            return startAngleInRad;
-        }
-
-        public double getEndAngleInRad() {
-            return endAngleInRad;
-        }
-    }
 }

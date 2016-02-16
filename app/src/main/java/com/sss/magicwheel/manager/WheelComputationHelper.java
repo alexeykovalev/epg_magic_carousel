@@ -22,8 +22,6 @@ public final class WheelComputationHelper {
     private static final double RAD_TO_DEGREE_COEF = 1 / DEGREE_TO_RAD_COEF;
     private static final int NOT_DEFINED_VALUE = Integer.MIN_VALUE;
 
-    public static final long BOTTOM_WHEEL_ANIMATION_DURATION = 1000;
-
     private static MeasurementsHolder screenDimensions;
 
     private static WheelComputationHelper instance;

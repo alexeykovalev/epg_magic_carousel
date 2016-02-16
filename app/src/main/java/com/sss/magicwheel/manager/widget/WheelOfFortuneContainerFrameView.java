@@ -33,7 +33,7 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
 
     private WheelContainerRecyclerView topWheelContainer;
     private WheelContainerRecyclerView bottomWheelContainer;
-    private WheelSectorRaysDecorationFrame wheelSectorsRaysDecorationFrame;
+//    private WheelSectorRaysDecorationFrame wheelSectorsRaysDecorationFrame;
 
     private final WheelStartupAnimationHelper wheelStartupAnimationHelper;
 
@@ -56,11 +56,12 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         computationHelper = WheelComputationHelper.getInstance();
         inflateAndBindContainerView(context);
 
-        topWheelContainer.setVisibility(INVISIBLE);
+//        topWheelContainer.setVisibility(INVISIBLE);
 //        bottomWheelContainer.setVisibility(INVISIBLE);
 
         wheelStartupAnimationHelper = new WheelStartupAnimationHelper(computationHelper, topWheelContainer, bottomWheelContainer);
-        wheelSectorsRaysDecorationFrame.setConfig(wheelStartupAnimationHelper, topWheelContainer, bottomWheelContainer);
+
+//        wheelSectorsRaysDecorationFrame.setConfig(wheelStartupAnimationHelper, topWheelContainer, bottomWheelContainer);
         wheelFrameItemDecoration = new WheelFrameItemDecoration(getContext());
 
         initBottomWheelContainer(bottomWheelContainer);
@@ -71,7 +72,7 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         inflate(context, R.layout.wheel_container_layout, this);
         topWheelContainer = (WheelContainerRecyclerView) findViewById(R.id.top_wheel_container);
         bottomWheelContainer = (WheelContainerRecyclerView) findViewById(R.id.bottom_wheel_container);
-        wheelSectorsRaysDecorationFrame = (WheelSectorRaysDecorationFrame) findViewById(R.id.wheel_decoration_frame);
+//        wheelSectorsRaysDecorationFrame = (WheelSectorRaysDecorationFrame) findViewById(R.id.wheel_decoration_frame);
     }
 
     @Override
@@ -96,11 +97,11 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         final List<WheelDataItem> unmodifiableNewData = Collections.unmodifiableList(newData);
         topWheelContainer.getAdapter().swapData(unmodifiableNewData);
         bottomWheelContainer.getAdapter().swapData(unmodifiableNewData);
-        wheelSectorsRaysDecorationFrame.invalidate();
+//        wheelSectorsRaysDecorationFrame.invalidate();
     }
 
     private void initTopWheelContainer(RecyclerView topWheelContainerView) {
-        topWheelContainerView.setLayoutManager(new TopWheelLayoutManager(getContext(), computationHelper,
+        topWheelContainerView.setLayoutManager(new TopWheelLayoutManager(computationHelper, wheelStartupAnimationHelper,
                 new AbstractWheelLayoutManager.WheelOnInitialLayoutFinishingListener() {
                     @Override
                     public void onInitialLayoutFinished(int finishedAtAdapterPosition) {
@@ -112,7 +113,7 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
     }
 
     private void initBottomWheelContainer(RecyclerView topWheelContainerView) {
-        bottomWheelLayoutManager = new BottomWheelLayoutManager(getContext(), computationHelper,
+        bottomWheelLayoutManager = new BottomWheelLayoutManager(computationHelper, wheelStartupAnimationHelper,
                 new AbstractWheelLayoutManager.WheelOnInitialLayoutFinishingListener() {
             @Override
             public void onInitialLayoutFinished(int finishedAtAdapterPosition) {

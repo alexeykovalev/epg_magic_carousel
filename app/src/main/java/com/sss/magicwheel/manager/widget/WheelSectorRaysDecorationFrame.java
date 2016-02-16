@@ -18,6 +18,7 @@ import com.sss.magicwheel.manager.wheel.AbstractWheelLayoutManager;
  * @author Alexey Kovalev
  * @since 12.02.2016.
  */
+@Deprecated
 public final class WheelSectorRaysDecorationFrame extends FrameLayout {
 
     private static final int DEFAULT_RAY_WIDTH = 700;
