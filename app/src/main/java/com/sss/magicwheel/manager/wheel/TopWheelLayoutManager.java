@@ -23,11 +23,26 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
      */
     private static final int START_LAYOUT_FROM_ADAPTER_POSITION = WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT;
 
+    private final WheelOnScrollingCallback scrollingCallback;
+
+    public interface WheelOnScrollingCallback {
+        void onScrolledBy(int dy);
+    }
+
     public TopWheelLayoutManager(Context context,
                                  WheelContainerRecyclerView wheelRecyclerView,
                                  WheelComputationHelper computationHelper,
-                                 WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener) {
+                                 WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener,
+                                 WheelOnScrollingCallback scrollingCallback) {
         super(context, wheelRecyclerView, computationHelper, initialLayoutFinishingListener);
+        this.scrollingCallback = scrollingCallback;
+    }
+
+    @Override
+    public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
+        final int scrollingDy = super.scrollVerticallyBy(dy, recycler, state);
+        scrollingCallback.onScrolledBy(scrollingDy);
+        return scrollingDy;
     }
 
     @Override

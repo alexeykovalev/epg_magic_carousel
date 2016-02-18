@@ -193,35 +193,10 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
             return 0;
         }
 
-//        final int normalizedDy = dy % getOuterDiameter();
-//        final double absRotationAngleInRad = computeRotationAngleInRadBasedOnCurrentState(normalizedDy, state);
-
         final double absRotationAngleInRad = Math.abs(fromTraveledDistanceToWheelRotationAngle(dy));
-
-        Log.e(WheelSmoothScroller.TAG, "AbstractWheelLayoutManager " +
-                "absRotationAngleInRad [" + WheelComputationHelper.radToDegree(absRotationAngleInRad) + "]");
-
-        if (absRotationAngleInRad == NOT_DEFINED_ROTATION_ANGLE) {
-            Log.i(TAG, "HIT INTO NOT_DEFINED_ROTATION_ANGLE");
-            return 0;
-        }
 
         final WheelRotationDirection rotationDirection = WheelRotationDirection.of(dy);
         rotateWheel(absRotationAngleInRad, rotationDirection, recycler, state);
-
-        /*
-        final int resultSwipeDistanceAbs = (int) Math.round(fromWheelRotationAngleToTraveledDistance(absRotationAngleInRad));
-        logI(
-                "scrollVerticallyBy() " +
-                        "dy [" + dy + "], " +
-                        "normalizedDy [" + normalizedDy + "], " +
-                        "resultSwipeDistanceAbs [" + resultSwipeDistanceAbs + "], " +
-                        "rotationAngleInDegree [" + WheelComputationHelper.radToDegree(absRotationAngleInRad) + "]"
-        );
-
-        return rotationDirection == WheelRotationDirection.Anticlockwise ?
-                resultSwipeDistanceAbs : -resultSwipeDistanceAbs;
-        */
 
         return dy;
     }

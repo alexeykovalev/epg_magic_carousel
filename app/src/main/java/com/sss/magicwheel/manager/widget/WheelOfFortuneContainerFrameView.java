@@ -13,7 +13,6 @@ import com.sss.magicwheel.entity.WheelDataItem;
 import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
 import com.sss.magicwheel.manager.decor.WheelFrameItemDecoration;
-import com.sss.magicwheel.manager.decor.WheelSectorRayItemDecoration;
 import com.sss.magicwheel.manager.wheel.AbstractWheelLayoutManager;
 import com.sss.magicwheel.manager.wheel.BottomWheelLayoutManager;
 import com.sss.magicwheel.manager.wheel.TopWheelLayoutManager;
@@ -86,10 +85,17 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         return true;
     }
 
+    /**
+     * We dispatch touch event only to the top wheel. This wheel will
+     * play role of MASTER in MASTER-SLAVE couple where SLAVE would
+     * be bottom wheel.
+     * <p/>
+     * Bottom wheel will receive scroll notifications from MASTER via
+     * {@link com.sss.magicwheel.manager.wheel.TopWheelLayoutManager.WheelOnScrollingCallback}
+     */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         topWheelContainer.dispatchTouchEvent(event);
-        bottomWheelContainer.dispatchTouchEvent(event);
         return true;
     }
 
@@ -108,7 +114,14 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
                     public void onInitialLayoutFinished(int finishedAtAdapterPosition) {
                         bottomWheelLayoutManager.setStartLayoutFromAdapterPosition(finishedAtAdapterPosition);
                     }
-                }));
+                },
+                new TopWheelLayoutManager.WheelOnScrollingCallback() {
+                    @Override
+                    public void onScrolledBy(int dy) {
+                        bottomWheelContainer.scrollBy(0, dy);
+                    }
+                }
+        ));
         topWheelContainerView.setAdapter(createEmptyWheelAdapter());
         addTopWheelItemDecorations(topWheelContainerView);
     }
