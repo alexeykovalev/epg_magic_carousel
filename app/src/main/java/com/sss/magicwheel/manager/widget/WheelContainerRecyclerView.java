@@ -63,20 +63,12 @@ public final class WheelContainerRecyclerView extends RecyclerView {
                 final boolean isInSectorTopPart = layoutEndAngleInRad >= sectorAngularPositionInRad
                         && layoutEndAngleInRad <= sectorAngleTopEdgeInRad;
 
-                if (isInSectorTopPart) {
-                    final double rotateByAngleInRad = sectorAngleTopEdgeInRad - layoutEndAngleInRad;
-                    rotateByAngle(rotateByAngleInRad, WheelRotationDirection.Clockwise);
-                } else {
-                    final double rotateByAngleInRad = layoutEndAngleInRad - sectorAngleBottomEdgeInRad;
-                    rotateByAngle(rotateByAngleInRad, WheelRotationDirection.Anticlockwise);
-                }
-            }
-        }
+                final double rotateByAngleInRad = isInSectorTopPart ?
+                        (sectorAngleTopEdgeInRad - layoutEndAngleInRad) :
+                        (sectorAngleBottomEdgeInRad - layoutEndAngleInRad);
 
-        private void rotateByAngle(double rotateByAngleInRad, WheelRotationDirection rotationDirection) {
-            final double distanceToMove = rotationDirection.getDirectionSign()
-                            * computationHelper.fromWheelRotationAngleToTraveledDistance(rotateByAngleInRad);
-            smoothScrollBy(0, (int) distanceToMove);
+                smoothRotateWheelByAngleInRad(rotateByAngleInRad, WheelRotationDirection.Clockwise);
+            }
         }
 
         @Override
@@ -151,6 +143,13 @@ public final class WheelContainerRecyclerView extends RecyclerView {
 //        smoothScrollByAngleInRad(sectorAngleInRad, WheelRotationDirection.Clockwise);
     }
 
+    private void smoothRotateWheelByAngleInRad(double rotateByAngleInRad, WheelRotationDirection rotationDirection) {
+        final double distanceToMove = rotationDirection.getDirectionSign()
+                * computationHelper.fromWheelRotationAngleToTraveledDistance(rotateByAngleInRad);
+        smoothScrollBy(0, (int) distanceToMove);
+    }
+
+    @Deprecated
     public void smoothScrollByAngleInRad(double absAngleInRad, WheelRotationDirection rotationDirection) {
         // TODO: 09.02.2016 ensure absAngleInRad is positive
         View sectorViewClosestToLayoutEndEdge = getLayoutManager().getChildClosestToLayoutEndEdge();
@@ -170,6 +169,7 @@ public final class WheelContainerRecyclerView extends RecyclerView {
         super.smoothScrollToPosition(virtualPositionToScroll);
     }
 
+    @Deprecated
     private int getVirtualPositionForDataItem(WheelDataItem dataItemToSelect) {
         final int dataItemToSelectRealPosition = getRealPositionForDataItem(dataItemToSelect);
         final int firstChildVirtualAdapterPosition = getChildAdapterPosition(getChildAt(0));
