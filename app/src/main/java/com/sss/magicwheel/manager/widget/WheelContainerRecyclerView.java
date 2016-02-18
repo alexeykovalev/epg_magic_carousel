@@ -9,6 +9,7 @@ import android.graphics.PointF;
 import android.graphics.Region;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.sss.magicwheel.entity.CoordinatesHolder;
@@ -49,8 +50,12 @@ public final class WheelContainerRecyclerView extends RecyclerView {
 
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            Log.e("TAG", "class [" + WheelContainerRecyclerView.this.getClass() + "] scrolling newState [" + newState + "], " +
+                    "rotationDirection [" + rotationDirection + "]");
+
             if (newState == RecyclerView.SCROLL_STATE_IDLE && rotationDirection != null) {
 //                final View sectorViewClosestToLayoutEndEdge = getLayoutManager().getChildClosestToLayoutEndEdge();
+
             }
         }
 

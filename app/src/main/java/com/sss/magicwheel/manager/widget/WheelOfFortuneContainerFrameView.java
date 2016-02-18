@@ -2,8 +2,10 @@ package com.sss.magicwheel.manager.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -32,9 +34,9 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
 
     private WheelContainerRecyclerView topWheelContainer;
     private WheelContainerRecyclerView bottomWheelContainer;
-//    private WheelSectorRaysDecorationFrame wheelSectorsRaysDecorationFrame;
 
-    private final WheelStartupAnimationHelper wheelStartupAnimationHelper;
+//    private WheelSectorRaysDecorationFrame wheelSectorsRaysDecorationFrame;
+//    private final WheelStartupAnimationHelper wheelStartupAnimationHelper;
 
     /**
      * We use it as not recycler view item decoration because RecyclerView's
@@ -58,7 +60,7 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
 //        topWheelContainer.setVisibility(INVISIBLE);
 //        bottomWheelContainer.setVisibility(INVISIBLE);
 
-        wheelStartupAnimationHelper = new WheelStartupAnimationHelper(computationHelper, topWheelContainer, bottomWheelContainer);
+//        wheelStartupAnimationHelper = new WheelStartupAnimationHelper(computationHelper, topWheelContainer, bottomWheelContainer);
 
 //        wheelSectorsRaysDecorationFrame.setConfig(wheelStartupAnimationHelper, topWheelContainer, bottomWheelContainer);
         wheelFrameItemDecoration = new WheelFrameItemDecoration(getContext());
@@ -95,6 +97,16 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        // in order to dispatch click event to sectorView inside bottom wheel
+        switch (MotionEventCompat.getActionMasked(event)) {
+            case MotionEvent.ACTION_DOWN:
+                bottomWheelContainer.dispatchTouchEvent(event);
+                break;
+            case MotionEvent.ACTION_UP:
+                bottomWheelContainer.dispatchTouchEvent(event);
+                break;
+        }
+
         topWheelContainer.dispatchTouchEvent(event);
         return true;
     }
