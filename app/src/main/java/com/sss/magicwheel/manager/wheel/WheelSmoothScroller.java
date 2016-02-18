@@ -68,7 +68,7 @@ public abstract class WheelSmoothScroller extends RecyclerView.SmoothScroller {
         final double rotationAngleInRad = calculateAngleInRadToMakeSectorInvisible(targetView);
 
 //        final int dy = (int) Math.round(layoutManager.fromWheelRotationAngleToTraveledDistance(rotationAngleInRad));
-        int dy = (int) layoutManager.fromWheelRotationAngleToTraveledDistance(rotationAngleInRad);
+        int dy = (int) layoutManager.computationHelper.fromWheelRotationAngleToTraveledDistance(rotationAngleInRad);
 
 //        Log.e(TAG, "WheelSmoothScroller title [" + title + "], " +
 //                "dy [" + dy + "], " +
@@ -90,7 +90,7 @@ public abstract class WheelSmoothScroller extends RecyclerView.SmoothScroller {
 
         final WheelRotationDirection rotationDirection = computeRotationDirectionForPosition(getTargetPosition());
 
-        final int targetSeekScrollDistanceAsInt = (int) layoutManager.fromWheelRotationAngleToTraveledDistance(targetSeekScrollAngleInRad);
+        final int targetSeekScrollDistanceAsInt = (int) layoutManager.computationHelper.fromWheelRotationAngleToTraveledDistance(targetSeekScrollAngleInRad);
         final int time = calculateTimeForScrolling(targetSeekScrollDistanceAsInt);
 
 //        final int newDy = (int) (targetSeekScrollDistanceAsInt * TARGET_SEEK_EXTRA_SCROLL_RATIO);

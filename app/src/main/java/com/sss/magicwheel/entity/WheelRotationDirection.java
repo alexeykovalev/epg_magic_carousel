@@ -12,7 +12,7 @@ public enum WheelRotationDirection {
      * For swipe up gesture direction (delta value) will be positive and
      * negative for swipe down -> i.e. dy > 0 for swipe up (anticlockwise wheel rotation)
      */
-    final int direction;
+    final int directionSign;
 
     /**
      * When we move from circle's HEAD to TAIL (anticlockwise) - we increase
@@ -20,12 +20,16 @@ public enum WheelRotationDirection {
      */
     final int adapterPositionIncrementation;
 
+    public static WheelRotationDirection of(int directionAsInt) {
+        return directionAsInt < 0 ? Clockwise : Anticlockwise;
+    }
+
     WheelRotationDirection(int directionSignum) {
-        this.direction = directionSignum;
+        this.directionSign = directionSignum;
         this.adapterPositionIncrementation = directionSignum;
     }
 
-    public static WheelRotationDirection of(int directionAsInt) {
-        return directionAsInt < 0 ? Clockwise : Anticlockwise;
+    public int getDirectionSign() {
+        return directionSign;
     }
 }

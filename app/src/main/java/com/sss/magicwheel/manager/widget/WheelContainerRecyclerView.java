@@ -46,22 +46,41 @@ public final class WheelContainerRecyclerView extends RecyclerView {
 
     private class AutoAngleAdjustmentScrollListener extends OnScrollListener {
 
-        private WheelRotationDirection rotationDirection = null;
-
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            Log.e("TAG", "class [" + WheelContainerRecyclerView.this.getClass() + "] scrolling newState [" + newState + "], " +
-                    "rotationDirection [" + rotationDirection + "]");
+//            Log.e("TAG", "class [" + getLayoutManager().getClass() + "] scrolling newState [" + newState + "], " +
+//                    "rotationDirection [" + rotationDirection + "]");
 
-            if (newState == RecyclerView.SCROLL_STATE_IDLE && rotationDirection != null) {
-//                final View sectorViewClosestToLayoutEndEdge = getLayoutManager().getChildClosestToLayoutEndEdge();
+            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                final AbstractWheelLayoutManager.LayoutParams closestToEndEdgeChildLp =
+                        AbstractWheelLayoutManager.getChildLayoutParams(getLayoutManager().getChildClosestToLayoutEndEdge());
 
+                final double sectorAngularPositionInRad = closestToEndEdgeChildLp.anglePositionInRad;
+                final double sectorAngleTopEdgeInRad = computationHelper.getSectorAngleTopEdgeInRad(sectorAngularPositionInRad);
+                final double sectorAngleBottomEdgeInRad = computationHelper.getSectorAngleBottomEdgeInRad(sectorAngularPositionInRad);
+
+                final double layoutEndAngleInRad = getLayoutManager().getLayoutEndAngleInRad();
+                final boolean isInSectorTopPart = layoutEndAngleInRad >= sectorAngularPositionInRad
+                        && layoutEndAngleInRad <= sectorAngleTopEdgeInRad;
+
+                if (isInSectorTopPart) {
+                    final double rotateByAngleInRad = sectorAngleTopEdgeInRad - layoutEndAngleInRad;
+                    rotateByAngle(rotateByAngleInRad, WheelRotationDirection.Clockwise);
+                } else {
+                    final double rotateByAngleInRad = layoutEndAngleInRad - sectorAngleBottomEdgeInRad;
+                    rotateByAngle(rotateByAngleInRad, WheelRotationDirection.Anticlockwise);
+                }
             }
+        }
+
+        private void rotateByAngle(double rotateByAngleInRad, WheelRotationDirection rotationDirection) {
+            final double distanceToMove = rotationDirection.getDirectionSign()
+                            * computationHelper.fromWheelRotationAngleToTraveledDistance(rotateByAngleInRad);
+            smoothScrollBy(0, (int) distanceToMove);
         }
 
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            rotationDirection = WheelRotationDirection.of(dy);
         }
     }
 

@@ -193,7 +193,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
             return 0;
         }
 
-        final double absRotationAngleInRad = Math.abs(fromTraveledDistanceToWheelRotationAngle(dy));
+        final double absRotationAngleInRad = Math.abs(computationHelper.fromTraveledDistanceToWheelRotationAngle(dy));
 
         final WheelRotationDirection rotationDirection = WheelRotationDirection.of(dy);
         rotateWheel(absRotationAngleInRad, rotationDirection, recycler, state);
@@ -237,29 +237,6 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         return new PointF(0, direction);
     }
 
-    /**
-     * Transforms swipe gesture's travelled distance {@code scrollDelta} into relevant
-     * wheel rotation angle.
-     */
-    double fromTraveledDistanceToWheelRotationAngle(int scrollDelta) {
-//        final int outerDiameter = getOuterDiameter();
-//        final double asinArg = Math.abs(scrollDelta) / (double) outerDiameter;
-//        return Math.asin(asinArg);
-        return (double) scrollDelta / wheelConfig.getOuterRadius();
-    }
-
-    double fromWheelRotationAngleToTraveledDistance(double rotationAngleInRad) {
-//        final int outerDiameter = getOuterDiameter();
-//        return outerDiameter * Math.sin(rotationAngleInRad);
-
-        return rotationAngleInRad * wheelConfig.getOuterRadius();
-    }
-
-    @Deprecated
-    int getOuterDiameter() {
-        return 2 * wheelConfig.getOuterRadius();
-    }
-
     private void rotateWheel(double rotationAngleInRad, WheelRotationDirection rotationDirection,
                              RecyclerView.Recycler recycler, RecyclerView.State state) {
         final AbstractWheelRotator wheelRotator = resolveRotatorByDirection(rotationDirection);
@@ -276,7 +253,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
      */
     private double computeRotationAngleInRadBasedOnCurrentState(int dy, RecyclerView.State state) {
         final WheelRotationDirection rotationDirection = WheelRotationDirection.of(dy);
-        final double angleToRotate = fromTraveledDistanceToWheelRotationAngle(dy);
+        final double angleToRotate = computationHelper.fromTraveledDistanceToWheelRotationAngle(dy);
 
         return angleToRotate;
 

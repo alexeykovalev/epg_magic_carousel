@@ -255,4 +255,15 @@ public final class WheelComputationHelper {
         return innerCircleEmbracingSquareInSectorWrapperCoordsSystem;
     }
 
+    /**
+     * Transforms swipe gesture's travelled distance {@code scrollDelta} into relevant
+     * wheel rotation angle.
+     */
+    public double fromTraveledDistanceToWheelRotationAngle(int scrollDelta) {
+        return (double) scrollDelta / wheelConfig.getOuterRadius();
+    }
+
+    public double fromWheelRotationAngleToTraveledDistance(double rotationAngleInRad) {
+        return rotationAngleInRad * wheelConfig.getOuterRadius();
+    }
 }
