@@ -8,7 +8,7 @@ import android.support.v7.widget.RecyclerView;
 
 import com.sss.magicwheel.manager.WheelComputationHelper;
 import com.sss.magicwheel.manager.decor.WheelSectorRayItemDecoration;
-import com.sss.magicwheel.manager.widget.WheelContainerRecyclerView;
+import com.sss.magicwheel.manager.widget.AbstractWheelContainerRecyclerView;
 import com.sss.magicwheel.manager.widget.WheelStartupAnimationHelper;
 
 /**
@@ -18,7 +18,7 @@ import com.sss.magicwheel.manager.widget.WheelStartupAnimationHelper;
 public final class BottomWheelLayoutManager extends AbstractWheelLayoutManager {
 
     public BottomWheelLayoutManager(Context context,
-                                    WheelContainerRecyclerView wheelRecyclerView,
+                                    AbstractWheelContainerRecyclerView wheelRecyclerView,
                                     WheelComputationHelper computationHelper,
                                     WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener) {
         super(context, wheelRecyclerView, computationHelper, initialLayoutFinishingListener);

@@ -44,15 +44,15 @@ public final class WheelStartupAnimationHelper {
     private final WheelComputationHelper computationHelper;
     private final WheelConfig.AngularRestrictions angularRestrictions;
 
-    private final WheelContainerRecyclerView topWheelContainer;
-    private final WheelContainerRecyclerView bottomWheelContainer;
+    private final AbstractWheelContainerRecyclerView topWheelContainer;
+    private final AbstractWheelContainerRecyclerView bottomWheelContainer;
 
     // TODO: 16.02.2016 has to be false initially
     private boolean isStartupAnimationPlayed = false;
 
     public WheelStartupAnimationHelper(WheelComputationHelper computationHelper,
-                                       WheelContainerRecyclerView topWheelContainer,
-                                       WheelContainerRecyclerView bottomWheelContainer) {
+                                       AbstractWheelContainerRecyclerView topWheelContainer,
+                                       AbstractWheelContainerRecyclerView bottomWheelContainer) {
         this.computationHelper = computationHelper;
         this.angularRestrictions = computationHelper.getWheelConfig().getAngularRestrictions();
         this.topWheelContainer = topWheelContainer;
@@ -87,7 +87,7 @@ public final class WheelStartupAnimationHelper {
         animationListeners.remove(animationListener);
     }
 
-    private void setRotationPivotForContainer(WheelContainerRecyclerView wheelContainer) {
+    private void setRotationPivotForContainer(AbstractWheelContainerRecyclerView wheelContainer) {
         final PointF circleCenterRelToRecyclerView = computationHelper.getWheelConfig().getCircleCenterRelToRecyclerView();
         wheelContainer.setPivotX(circleCenterRelToRecyclerView.x);
         wheelContainer.setPivotY(circleCenterRelToRecyclerView.y);
@@ -107,7 +107,7 @@ public final class WheelStartupAnimationHelper {
     /**
      * @param wheelContainer - either top or bottom wheel part
      */
-    private void setInitialRotationForWheelContainer(WheelContainerRecyclerView wheelContainer,
+    private void setInitialRotationForWheelContainer(AbstractWheelContainerRecyclerView wheelContainer,
                                                      float absRotationAngleInDegree,
                                                      WheelRotationDirection rotationDirection) {
         final int rotationSign = rotationDirection == WheelRotationDirection.Clockwise ? +1 : -1;

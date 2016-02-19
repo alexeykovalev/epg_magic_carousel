@@ -28,12 +28,12 @@ import java.util.List;
  * @author Alexey Kovalev
  * @since 02.02.2016.
  */
-public final class WheelContainerRecyclerView extends RecyclerView {
+public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
 
-    private static final String TAG = WheelContainerRecyclerView.class.getCanonicalName();
+    private static final String TAG = AbstractWheelContainerRecyclerView.class.getCanonicalName();
 
-    private final WheelComputationHelper computationHelper;
-    private final WheelConfig wheelConfig;
+    protected final WheelComputationHelper computationHelper;
+    protected final WheelConfig wheelConfig;
 
     private final Paint gapDrawingPaint;
     private final PointF gapTopRay;
@@ -76,15 +76,15 @@ public final class WheelContainerRecyclerView extends RecyclerView {
         }
     }
 
-    public WheelContainerRecyclerView(Context context) {
+    public AbstractWheelContainerRecyclerView(Context context) {
         this(context, null);
     }
 
-    public WheelContainerRecyclerView(Context context, AttributeSet attrs) {
+    public AbstractWheelContainerRecyclerView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public WheelContainerRecyclerView(Context context, AttributeSet attrs, int defStyle) {
+    public AbstractWheelContainerRecyclerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         this.computationHelper = WheelComputationHelper.getInstance();
         this.wheelConfig = computationHelper.getWheelConfig();
@@ -104,24 +104,28 @@ public final class WheelContainerRecyclerView extends RecyclerView {
         throw new UnsupportedOperationException("Not implemented feature yet.");
     }
 
+    @Deprecated
     @Override
     public void addItemDecoration(ItemDecoration decor, int index) {
         super.addItemDecoration(decor, index);
         itemDecorators.add(decor);
     }
 
+    @Deprecated
     @Override
     public void addItemDecoration(ItemDecoration decor) {
         super.addItemDecoration(decor);
         itemDecorators.add(decor);
     }
 
+    @Deprecated
     @Override
     public void removeItemDecoration(ItemDecoration decor) {
         super.removeItemDecoration(decor);
         itemDecorators.remove(decor);
     }
 
+    @Deprecated
     public void removeSectorRayItemDecorations() {
         // two for looping in order to eliminate ConcurrentModificationException
         final List<ItemDecoration> itemsToRemove = new ArrayList<>();
@@ -136,17 +140,9 @@ public final class WheelContainerRecyclerView extends RecyclerView {
         }
     }
 
-    public void handleTapOnSectorView(View sectorViewToSelect) {
-        final String title = ((WheelBigWrapperView) sectorViewToSelect).getTitle();
-        Log.e("TAG", "handleTapOnSectorView title [" + title + "]");
+    public abstract void handleTapOnSectorView(View sectorViewToSelect);
 
-//        super.smoothScrollToPosition(getChildAdapterPosition(sectorViewToSelect));
-
-//        final double sectorAngleInRad = computationHelper.getWheelConfig().getAngularRestrictions().getSectorAngleInRad();
-//        smoothScrollByAngleInRad(sectorAngleInRad, WheelRotationDirection.Clockwise);
-    }
-
-    private void smoothRotateWheelByAngleInRad(double rotateByAngleInRad, WheelRotationDirection rotationDirection) {
+    public void smoothRotateWheelByAngleInRad(double rotateByAngleInRad, WheelRotationDirection rotationDirection) {
         final double distanceToMove = rotationDirection.getDirectionSign()
                 * computationHelper.fromWheelRotationAngleToTraveledDistance(rotateByAngleInRad);
         smoothScrollBy(0, (int) distanceToMove);
@@ -191,6 +187,7 @@ public final class WheelContainerRecyclerView extends RecyclerView {
     }
 
     // TODO: 08.02.2016 Guava's find method has to be here
+    @Deprecated
     private int getRealPositionForDataItem(WheelDataItem dataItemToFind) {
         final List<WheelDataItem> dataItems = getAdapter().getData();
         int res = 0;

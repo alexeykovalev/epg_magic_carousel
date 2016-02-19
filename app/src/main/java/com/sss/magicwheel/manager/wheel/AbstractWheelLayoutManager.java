@@ -17,7 +17,7 @@ import com.sss.magicwheel.manager.rotator.AbstractWheelRotator;
 import com.sss.magicwheel.manager.rotator.AnticlockwiseWheelRotator;
 import com.sss.magicwheel.manager.rotator.ClockwiseWheelRotator;
 import com.sss.magicwheel.manager.widget.WheelBigWrapperView;
-import com.sss.magicwheel.manager.widget.WheelContainerRecyclerView;
+import com.sss.magicwheel.manager.widget.AbstractWheelContainerRecyclerView;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -60,7 +60,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     }
 
     protected final Context context;
-    protected final WheelContainerRecyclerView wheelRecyclerView;
+    protected final AbstractWheelContainerRecyclerView wheelRecyclerView;
 
     protected final WheelConfig wheelConfig;
     protected final WheelConfig.AngularRestrictions angularRestrictions;
@@ -89,7 +89,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     }
 
     protected AbstractWheelLayoutManager(Context context,
-                                         WheelContainerRecyclerView wheelRecyclerView,
+                                         AbstractWheelContainerRecyclerView wheelRecyclerView,
                                          WheelComputationHelper computationHelper,
                                          WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener) {
 
@@ -432,8 +432,6 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         /**
          * Defines middle (sector's wrapper view half height) edge sector's position on circle.
          * Effectively it equals to view's rotation angle.
-         *
-         * Defines sector's view top edge angular position.
          */
         public double anglePositionInRad;
 

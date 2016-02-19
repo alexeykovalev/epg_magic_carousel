@@ -6,7 +6,6 @@ import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -30,8 +29,8 @@ public final class WheelSectorRaysDecorationFrame extends FrameLayout {
 
     private final Drawable rayDrawable;
     private final WheelComputationHelper computationHelper;
-    private WheelContainerRecyclerView topWheelContainerView;
-    private WheelContainerRecyclerView bottomWheelContainerView;
+    private AbstractWheelContainerRecyclerView topWheelContainerView;
+    private AbstractWheelContainerRecyclerView bottomWheelContainerView;
 
     /**
      * Baseline - is wheel middle line starting from wheel center which goes
@@ -59,8 +58,8 @@ public final class WheelSectorRaysDecorationFrame extends FrameLayout {
     }
 
     public void setConfig(final WheelStartupAnimationHelper wheelStartupAnimationHelper,
-                          final WheelContainerRecyclerView topWheelContainerView,
-                          final WheelContainerRecyclerView bottomWheelContainer) {
+                          final AbstractWheelContainerRecyclerView topWheelContainerView,
+                          final AbstractWheelContainerRecyclerView bottomWheelContainer) {
 
         this.topWheelContainerView = topWheelContainerView;
         this.bottomWheelContainerView = bottomWheelContainer;
