@@ -77,22 +77,44 @@ public final class FragmentWheelPage extends Fragment {
 
     private WheelConfig createWheelConfig(int fragmentContainerTopEdge) {
         final int screenHeight = WheelComputationHelper.getScreenDimensions(getActivity()).getHeight();
+        final int availableWheelRenderingHeight = (screenHeight - fragmentContainerTopEdge) / 2;
 
-        final int yWheelCenterPosition = (screenHeight - fragmentContainerTopEdge) / 2;
+        final int yWheelCenterPosition = availableWheelRenderingHeight;
         final PointF circleCenter = new PointF(0, yWheelCenterPosition);
 
         // TODO: 03.12.2015 Not good hardcoded values
-        final int outerRadius = (screenHeight - fragmentContainerTopEdge) / 2;
-        final int innerRadius = outerRadius - 300;
+        final int outerRadius = availableWheelRenderingHeight;
+        final int innerRadius = outerRadius - outerRadius / 3;
 
-        final double sectorAngleInRad = WheelComputationHelper.degreeToRadian(DEFAULT_SECTOR_ANGLE_IN_DEGREE);
+        final double topEdgeAngleRestrictionInRad = Math.PI / 2;
+        final double bottomEdgeAngleRestrictionInRad = -Math.PI / 2;
+
+        final double sectorAngleInRad = computeSectorAngleInRad(topEdgeAngleRestrictionInRad, bottomEdgeAngleRestrictionInRad);
+        final double halfGapAreaAngleInRad = computeHalfGapAreaAngleInRad(sectorAngleInRad);
+
         final WheelConfig.AngularRestrictions angularRestrictions = WheelConfig.AngularRestrictions
                 .builder(sectorAngleInRad)
-                .wheelEdgesAngularRestrictions(Math.PI / 2, -Math.PI / 2)
-                .gapEdgesAngularRestrictions(Math.PI / 6, -Math.PI / 6)
+                .wheelEdgesAngularRestrictions(topEdgeAngleRestrictionInRad, bottomEdgeAngleRestrictionInRad)
+                .gapEdgesAngularRestrictions(halfGapAreaAngleInRad, -halfGapAreaAngleInRad)
                 .build();
 
         return new WheelConfig(circleCenter, outerRadius, innerRadius, angularRestrictions);
+    }
+
+    private double computeSectorAngleInRad(double topEdgeAngleRestrictionInRad, double bottomEdgeAngleRestrictionInRad) {
+        final double availableAngleInRad = topEdgeAngleRestrictionInRad - bottomEdgeAngleRestrictionInRad;
+
+        final int visibleSectorsAmountAtTop = 3;
+        final int visibleSectorsAmountAtBottom = 3;
+        final int hiddenSectorsAmountInGapArea = 3;
+
+        final int totalSectorsAmount = visibleSectorsAmountAtTop + visibleSectorsAmountAtBottom + hiddenSectorsAmountInGapArea;
+
+        return availableAngleInRad / totalSectorsAmount;
+    }
+
+    private double computeHalfGapAreaAngleInRad(double sectorAngleInRad) {
+        return sectorAngleInRad + sectorAngleInRad / 2;
     }
 
 }
