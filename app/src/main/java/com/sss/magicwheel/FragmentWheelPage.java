@@ -104,8 +104,8 @@ public final class FragmentWheelPage extends Fragment {
     private double computeSectorAngleInRad(double topEdgeAngleRestrictionInRad, double bottomEdgeAngleRestrictionInRad) {
         final double availableAngleInRad = topEdgeAngleRestrictionInRad - bottomEdgeAngleRestrictionInRad;
 
-        final int visibleSectorsAmountAtTop = 3;
-        final int visibleSectorsAmountAtBottom = 3;
+        final int visibleSectorsAmountAtTop = 4;
+        final int visibleSectorsAmountAtBottom = 4;
         final int hiddenSectorsAmountInGapArea = 3;
 
         final int totalSectorsAmount = visibleSectorsAmountAtTop + visibleSectorsAmountAtBottom + hiddenSectorsAmountInGapArea;

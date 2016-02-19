@@ -135,10 +135,15 @@ public final class WheelSectorRaysDecorationFrame extends FrameLayout {
         rayDrawable.setBounds(
                 (int) startRayPosX,
                 (int) startRayPosY,
-                (int) (startRayPosX + DEFAULT_RAY_WIDTH),
+                (int) (startRayPosX + getRayWidth()),
                 (int) (startRayPosY + rayHeight)
         );
         return rayDrawable;
+    }
+
+    private float getRayWidth() {
+        final double sectorWidth = computationHelper.getWheelConfig().getOuterRadius() - computationHelper.getWheelConfig().getInnerRadius();
+        return (float) (1.5 * sectorWidth);
     }
 
     private PointF getSectorTopLeftCornerPos(View sectorView) {
