@@ -137,6 +137,9 @@ public final class WheelContainerRecyclerView extends RecyclerView {
     }
 
     public void handleTapOnSectorView(View sectorViewToSelect) {
+        final String title = ((WheelBigWrapperView) sectorViewToSelect).getTitle();
+        Log.e("TAG", "handleTapOnSectorView title [" + title + "]");
+
 //        super.smoothScrollToPosition(getChildAdapterPosition(sectorViewToSelect));
 
 //        final double sectorAngleInRad = computationHelper.getWheelConfig().getAngularRestrictions().getSectorAngleInRad();

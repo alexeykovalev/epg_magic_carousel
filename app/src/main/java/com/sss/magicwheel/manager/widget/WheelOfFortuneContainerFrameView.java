@@ -35,6 +35,8 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
     private WheelContainerRecyclerView topWheelContainer;
     private WheelContainerRecyclerView bottomWheelContainer;
 
+    private int lastTouchAction;
+
 //    private WheelSectorRaysDecorationFrame wheelSectorsRaysDecorationFrame;
 //    private final WheelStartupAnimationHelper wheelStartupAnimationHelper;
 
@@ -98,15 +100,19 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         // in order to dispatch click event to sectorView inside bottom wheel
-        switch (MotionEventCompat.getActionMasked(event)) {
+        final int actionMasked = MotionEventCompat.getActionMasked(event);
+        switch (actionMasked) {
             case MotionEvent.ACTION_DOWN:
                 bottomWheelContainer.dispatchTouchEvent(event);
                 break;
             case MotionEvent.ACTION_UP:
-                bottomWheelContainer.dispatchTouchEvent(event);
+                if (lastTouchAction != MotionEvent.ACTION_MOVE) {
+                    bottomWheelContainer.dispatchTouchEvent(event);
+                }
                 break;
         }
 
+        lastTouchAction = actionMasked;
         topWheelContainer.dispatchTouchEvent(event);
         return true;
     }
