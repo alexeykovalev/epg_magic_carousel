@@ -7,9 +7,7 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 
 import com.sss.magicwheel.manager.WheelComputationHelper;
-import com.sss.magicwheel.manager.decor.WheelSectorRayItemDecoration;
 import com.sss.magicwheel.manager.widget.AbstractWheelContainerRecyclerView;
-import com.sss.magicwheel.manager.widget.WheelStartupAnimationHelper;
 
 /**
  * @author Alexey Kovalev
@@ -17,11 +15,14 @@ import com.sss.magicwheel.manager.widget.WheelStartupAnimationHelper;
  */
 public final class BottomWheelLayoutManager extends AbstractWheelLayoutManager {
 
+    private static final long BOTTOM_WHEEL_STARTUP_ANIMATION_DURATION = 1000;
+
     public BottomWheelLayoutManager(Context context,
-                                    AbstractWheelContainerRecyclerView wheelRecyclerView,
-                                    WheelComputationHelper computationHelper,
-                                    WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener) {
-        super(context, wheelRecyclerView, computationHelper, initialLayoutFinishingListener);
+                                       AbstractWheelContainerRecyclerView wheelRecyclerView,
+                                       WheelComputationHelper computationHelper,
+                                       WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener,
+                                       WheelOnStartupAnimationListener startupAnimationListener) {
+        super(context, wheelRecyclerView, computationHelper, initialLayoutFinishingListener, startupAnimationListener);
     }
 
     @Override
@@ -88,9 +89,7 @@ public final class BottomWheelLayoutManager extends AbstractWheelLayoutManager {
 
     @Override
     protected void notifyLayoutFinishingListener(int lastlyLayoutedChildPos) {
-        if (initialLayoutFinishingListener != null) {
-            initialLayoutFinishingListener.onInitialLayoutFinished(lastlyLayoutedChildPos - 1);
-        }
+        initialLayoutFinishingListener.onInitialLayoutFinished(lastlyLayoutedChildPos - 1);
     }
 
     @Override
@@ -112,19 +111,25 @@ public final class BottomWheelLayoutManager extends AbstractWheelLayoutManager {
 
                 final double rotationDeltaInRad = firstChildAnglePositionInRad - currentlyAnimatedAngleInRad;
                 clockwiseRotator.rotateWheelBy(rotationDeltaInRad);
+                startupAnimationListener.onAnimationUpdate(WheelStartupAnimationStatus.InProgress);
             }
         });
 
         wheelStartupAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
+            public void onAnimationStart(Animator animation) {
+                startupAnimationListener.onAnimationUpdate(WheelStartupAnimationStatus.Start);
+            }
+
+            @Override
             public void onAnimationEnd(Animator animation) {
                 setLayoutStartAngleInRad(angularRestrictions.getGapAreaBottomEdgeAngleRestrictionInRad());
-                wheelRecyclerView.addItemDecoration(new WheelSectorRayItemDecoration(context));
                 wheelRecyclerView.setIsCutGapAreaActivated(true);
+                startupAnimationListener.onAnimationUpdate(WheelStartupAnimationStatus.Finished);
             }
         });
 
-        wheelStartupAnimator.setDuration(WheelStartupAnimationHelper.BOTTOM_WHEEL_ANIMATION_DURATION);
+        wheelStartupAnimator.setDuration(BOTTOM_WHEEL_STARTUP_ANIMATION_DURATION);
 
         return wheelStartupAnimator;
     }

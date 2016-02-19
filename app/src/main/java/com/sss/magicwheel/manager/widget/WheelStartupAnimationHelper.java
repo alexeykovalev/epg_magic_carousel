@@ -23,13 +23,10 @@ import java.util.List;
  * @since 11.02.2016.
  */
 @Deprecated
-public final class WheelStartupAnimationHelper {
+final class WheelStartupAnimationHelper {
 
     private static final int TOP_WHEEL_APPEARING_ANIMATION_DURATION = 1000;
     private static final int FROM_TOP_GAP_EDGE_TO_BOTTOM_GAP_EDGE_BOTTOM_WHEEL_ANIMATION_DURATION = 1000;
-
-    public static final long BOTTOM_WHEEL_ANIMATION_DURATION = 1000;
-    public static final long TOP_WHEEL_ANIMATION_DURATION = 1000;
 
     public enum WheelStartupAnimationStatus {
         Start, InProgress, Finished

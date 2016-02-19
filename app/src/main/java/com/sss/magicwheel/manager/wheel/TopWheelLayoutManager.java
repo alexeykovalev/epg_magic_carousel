@@ -8,15 +8,15 @@ import android.support.v7.widget.RecyclerView;
 
 import com.sss.magicwheel.manager.WheelAdapter;
 import com.sss.magicwheel.manager.WheelComputationHelper;
-import com.sss.magicwheel.manager.decor.WheelSectorRayItemDecoration;
 import com.sss.magicwheel.manager.widget.AbstractWheelContainerRecyclerView;
-import com.sss.magicwheel.manager.widget.WheelStartupAnimationHelper;
 
 /**
  * @author Alexey Kovalev
  * @since 05.02.2016.
  */
 public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
+
+    private static final long TOP_WHEEL_STARTUP_ANIMATION_DURATION = 1000;
 
     /**
      * In order to make wheel infinite we have to set virtual position as start layout position.
@@ -34,7 +34,7 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
                                  WheelComputationHelper computationHelper,
                                  WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener,
                                  WheelOnScrollingCallback scrollingCallback) {
-        super(context, wheelRecyclerView, computationHelper, initialLayoutFinishingListener);
+        super(context, wheelRecyclerView, computationHelper, initialLayoutFinishingListener, null);
         this.scrollingCallback = scrollingCallback;
     }
 
@@ -116,9 +116,7 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
 
     @Override
     protected void notifyLayoutFinishingListener(int lastlyLayoutedChildPos) {
-        if (initialLayoutFinishingListener != null) {
-            initialLayoutFinishingListener.onInitialLayoutFinished(lastlyLayoutedChildPos + 1);
-        }
+        initialLayoutFinishingListener.onInitialLayoutFinished(lastlyLayoutedChildPos + 1);
     }
 
     @Override
@@ -141,25 +139,25 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
 
                 final double rotationDeltaInRad = firstChildAnglePositionInRad - currentlyAnimatedAngleInRad;
                 clockwiseRotator.rotateWheelBy(rotationDeltaInRad);
-
-               /* Log.e("TAG",
-                        "currentlyAnimatedAngleInRad [" + WheelComputationHelper.radToDegree(currentlyAnimatedAngleInRad) + "], " +
-                                "firstChildAnglePositionInRad [" + WheelComputationHelper.radToDegree(firstChildAnglePositionInRad) + "], " +
-                                "rotationDeltaInRad [" + WheelComputationHelper.radToDegree(rotationDeltaInRad) + "]"
-                );*/
+                startupAnimationListener.onAnimationUpdate(WheelStartupAnimationStatus.InProgress);
             }
         });
 
         startupWheelAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
+            public void onAnimationStart(Animator animation) {
+                startupAnimationListener.onAnimationUpdate(WheelStartupAnimationStatus.Start);
+            }
+
+            @Override
             public void onAnimationEnd(Animator animation) {
                 setLayoutStartAngleInRad(wheelConfig.getAngularRestrictions().getWheelLayoutStartAngleInRad());
-                wheelRecyclerView.addItemDecoration(new WheelSectorRayItemDecoration(context));
                 wheelRecyclerView.setIsCutGapAreaActivated(true);
+                startupAnimationListener.onAnimationUpdate(WheelStartupAnimationStatus.Finished);
             }
         });
 
-        startupWheelAnimator.setDuration(WheelStartupAnimationHelper.TOP_WHEEL_ANIMATION_DURATION);
+        startupWheelAnimator.setDuration(TOP_WHEEL_STARTUP_ANIMATION_DURATION);
 
         return startupWheelAnimator;
     }

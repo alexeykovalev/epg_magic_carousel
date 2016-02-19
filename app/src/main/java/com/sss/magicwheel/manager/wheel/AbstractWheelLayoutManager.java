@@ -34,30 +34,8 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     public static final int NOT_DEFINED_ADAPTER_POSITION = Integer.MAX_VALUE;
 //    public static final int START_LAYOUT_FROM_ADAPTER_POSITION = WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT;
 
-    private static final boolean IS_LOG_ACTIVATED = true;
-    private static final boolean IS_FILTER_LOG_BY_METHOD_NAME = true;
-
-    private static final Set<String> ALLOWED_METHOD_NAMES = new HashSet<>();
-
-    static {
-        ALLOWED_METHOD_NAMES.add("scrollVerticallyBy");
-//        ALLOWED_METHOD_NAMES.add("onLayoutChildren");
-    }
-
     protected final AbstractWheelRotator clockwiseRotator;
     protected final AbstractWheelRotator anticlockwiseRotator;
-
-    private static boolean isMessageContainsAllowedMethod(String logMessage) {
-        if (logMessage == null || logMessage.isEmpty()) {
-            return false;
-        }
-        for (String methodName : ALLOWED_METHOD_NAMES) {
-            if (logMessage.contains(methodName)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     protected final Context context;
     protected final AbstractWheelContainerRecyclerView wheelRecyclerView;
@@ -67,6 +45,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     protected final WheelComputationHelper computationHelper;
 
     protected final WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener;
+    protected final WheelOnStartupAnimationListener startupAnimationListener;
 
     private boolean isStartupAnimationPlayed;
 
@@ -79,19 +58,23 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         return (LayoutParams) child.getLayoutParams();
     }
 
-    // TODO: 04.02.2016 for testing purposes
-    public static String getBigWrapperTitle(View bigWrapperView) {
-        return ((WheelBigWrapperView) bigWrapperView).getTitle();
-    }
-
     public interface WheelOnInitialLayoutFinishingListener {
         void onInitialLayoutFinished(int finishedAtAdapterPosition);
+    }
+
+    public enum WheelStartupAnimationStatus {
+        Start, InProgress, Finished
+    }
+
+    public interface WheelOnStartupAnimationListener {
+        void onAnimationUpdate(WheelStartupAnimationStatus animationStatus);
     }
 
     protected AbstractWheelLayoutManager(Context context,
                                          AbstractWheelContainerRecyclerView wheelRecyclerView,
                                          WheelComputationHelper computationHelper,
-                                         WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener) {
+                                         WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener,
+                                         WheelOnStartupAnimationListener startupAnimationListener) {
 
         this.context = context;
         this.computationHelper = computationHelper;
@@ -99,13 +82,32 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         this.wheelConfig = computationHelper.getWheelConfig();
         this.angularRestrictions = wheelConfig.getAngularRestrictions();
 
-        this.initialLayoutFinishingListener = initialLayoutFinishingListener;
+        this.initialLayoutFinishingListener = stubIfNull(initialLayoutFinishingListener);
+        this.startupAnimationListener = stubIfNull(startupAnimationListener);
 
         this.layoutStartAngleInRad = computeLayoutStartAngleInRad();
         this.layoutEndAngleInRad = computeLayoutEndAngleInRad();
 
         this.clockwiseRotator = new ClockwiseWheelRotator(this, computationHelper);
         this.anticlockwiseRotator = new AnticlockwiseWheelRotator(this, computationHelper);
+    }
+
+    private WheelOnStartupAnimationListener stubIfNull(WheelOnStartupAnimationListener startupAnimationListener) {
+        return startupAnimationListener != null ? startupAnimationListener :
+                new WheelOnStartupAnimationListener() {
+                    @Override
+                    public void onAnimationUpdate(WheelStartupAnimationStatus animationStatus) {
+                    }
+                };
+    }
+
+    private WheelOnInitialLayoutFinishingListener stubIfNull(WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener) {
+        return initialLayoutFinishingListener != null ? initialLayoutFinishingListener :
+                new WheelOnInitialLayoutFinishingListener() {
+                    @Override
+                    public void onInitialLayoutFinished(int finishedAtAdapterPosition) {
+                    }
+                };
     }
 
     @Override
@@ -137,6 +139,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
 
     protected abstract int onLayoutChildrenForStartupAnimation(RecyclerView.Recycler recycler, RecyclerView.State state);
     protected abstract int onLayoutChildrenRegular(RecyclerView.Recycler recycler, RecyclerView.State state);
+
     protected abstract void notifyLayoutFinishingListener(int lastlyLayoutedChildPos);
 
     public abstract Animator createWheelStartupAnimator();
@@ -376,14 +379,6 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         final double lastSectorBottomEdge = computationHelper.getSectorAngleBottomEdgeInRad(lastChildLp.anglePositionInRad);
 
         return wheelConfig.getAngularRestrictions().getWheelBottomEdgeAngleRestrictionInRad() - lastSectorBottomEdge <= 0;
-    }
-
-    private void logI(String message) {
-        if (IS_LOG_ACTIVATED) {
-            if (IS_FILTER_LOG_BY_METHOD_NAME && isMessageContainsAllowedMethod(message)) {
-                Log.i(TAG, message);
-            }
-        }
     }
 
     @Deprecated

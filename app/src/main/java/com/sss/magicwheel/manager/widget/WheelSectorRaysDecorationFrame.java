@@ -17,15 +17,13 @@ import com.sss.magicwheel.manager.wheel.AbstractWheelLayoutManager;
  * @author Alexey Kovalev
  * @since 12.02.2016.
  */
-@Deprecated
 public final class WheelSectorRaysDecorationFrame extends FrameLayout {
 
-    private static final int DEFAULT_RAY_WIDTH = 700;
+    private static final int DEFAULT_RAY_WIDTH = 500;
     private static final int DEFAULT_RAY_HEIGHT = 10;
 
     // TODO: 28.01.2016 ray with default draw does not fit exactly at sector's edge. This magic constant compensates this divergence.
     private static final int MAGIC_CONSTANT_FOR_RAY_ALIGNMENT = 12;
-
 
     private final Drawable rayDrawable;
     private final WheelComputationHelper computationHelper;
@@ -37,8 +35,6 @@ public final class WheelSectorRaysDecorationFrame extends FrameLayout {
      * directly to the screen's right side without any rotation angle.
      */
     private final double bottomWheelContainerRotationRelativeToBaseLineInDegree;
-
-    private boolean isActivateRayDrawing;
 
     public WheelSectorRaysDecorationFrame(Context context) {
         this(context, null);
@@ -57,25 +53,11 @@ public final class WheelSectorRaysDecorationFrame extends FrameLayout {
         this.rayDrawable = context.getResources().getDrawable(R.drawable.wheel_sector_ray_drawable);
     }
 
-    public void setConfig(final WheelStartupAnimationHelper wheelStartupAnimationHelper,
-                          final AbstractWheelContainerRecyclerView topWheelContainerView,
-                          final AbstractWheelContainerRecyclerView bottomWheelContainer) {
+    public void setWheelContainers(final AbstractWheelContainerRecyclerView topWheelContainerView,
+                                   final AbstractWheelContainerRecyclerView bottomWheelContainer) {
 
         this.topWheelContainerView = topWheelContainerView;
         this.bottomWheelContainerView = bottomWheelContainer;
-
-        wheelStartupAnimationHelper.addAnimationListener(new WheelStartupAnimationHelper.OnWheelStartupAnimationListener() {
-            @Override
-            public void onAnimationUpdate(WheelStartupAnimationHelper.WheelStartupAnimationStatus animationStatus) {
-                if (animationStatus == WheelStartupAnimationHelper.WheelStartupAnimationStatus.Finished) {
-                    isActivateRayDrawing = true;
-                    invalidate();
-                    topWheelContainerView.removeSectorRayItemDecorations();
-                    bottomWheelContainer.removeSectorRayItemDecorations();
-                    wheelStartupAnimationHelper.removeAnimationListener(this);
-                }
-            }
-        });
 
         topWheelContainerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -87,7 +69,7 @@ public final class WheelSectorRaysDecorationFrame extends FrameLayout {
 
     @Override
     protected void dispatchDraw(Canvas canvas) {
-        if (isActivateRayDrawing) {
+        if (topWheelContainerView != null && bottomWheelContainerView != null) {
             drawRaysForTopWheelContainer(canvas);
             drawRaysForBottomWheelContainer(canvas);
         }
