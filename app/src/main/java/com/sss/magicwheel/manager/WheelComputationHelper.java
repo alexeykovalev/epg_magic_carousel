@@ -22,8 +22,6 @@ public final class WheelComputationHelper {
     private static final double RAD_TO_DEGREE_COEF = 1 / DEGREE_TO_RAD_COEF;
     private static final int NOT_DEFINED_VALUE = Integer.MIN_VALUE;
 
-    private static MeasurementsHolder screenDimensions;
-
     private static WheelComputationHelper instance;
 
     private final WheelConfig wheelConfig;
@@ -31,15 +29,6 @@ public final class WheelComputationHelper {
     private final MeasurementsHolder bigWrapperViewMeasurements;
     private final SectorClipAreaDescriptor sectorClipArea;
 
-    // ------------
-    // Be careful LAZY initialized fields. Don't access directly, use getters instead.
-    // ------------
-
-    // TODO: 03.02.2016 make them final and initialize in constructor
-    private RectF outerCircleEmbracingSquareInSectorWrapperCoordsSystem;
-    private RectF innerCircleEmbracingSquareInSectorWrapperCoordsSystem;
-
-    // ------------
 
     public static WheelComputationHelper getInstance() {
         if (instance == null) {
@@ -53,13 +42,10 @@ public final class WheelComputationHelper {
     }
 
     public static MeasurementsHolder getScreenDimensions(Context context) {
-        if (screenDimensions == null) {
-            WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-            Point screenSize = new Point();
-            wm.getDefaultDisplay().getSize(screenSize);
-            screenDimensions = new MeasurementsHolder(screenSize.x, screenSize.y);
-        }
-        return screenDimensions;
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Point screenSize = new Point();
+        wm.getDefaultDisplay().getSize(screenSize);
+        return new MeasurementsHolder(screenSize.x, screenSize.y);
     }
 
     public static double degreeToRadian(double angleInDegree) {
@@ -176,7 +162,7 @@ public final class WheelComputationHelper {
      * Layout will be performed from top to bottom direction. And we should have sector
      * positioned parallel to central diameter. So taking into account imposed angular restrictions
      * we should compute actual layout start angle.
-     * <p>
+     * <p/>
      * So the firstly layouted sector's top edge will be aligned by this angle.
      */
     public double getWheelLayoutStartAngleInRad() {
@@ -222,31 +208,25 @@ public final class WheelComputationHelper {
 
 
     private RectF getOuterCircleEmbracingSquareInSectorWrapperCoordsSystem() {
-        if (outerCircleEmbracingSquareInSectorWrapperCoordsSystem == null) {
-            RectF embracingSquare = getOuterCircleEmbracingSquareInCircleCoordsSystem();
-            PointF leftCorner = getSectorWrapperViewLeftCornerInCircleCoordsSystem();
-            outerCircleEmbracingSquareInSectorWrapperCoordsSystem = new RectF(
-                    embracingSquare.left - leftCorner.x,
-                    leftCorner.y - embracingSquare.top,
-                    embracingSquare.right - leftCorner.x,
-                    leftCorner.y - embracingSquare.bottom
-            );
-        }
-        return outerCircleEmbracingSquareInSectorWrapperCoordsSystem;
+        RectF embracingSquare = getOuterCircleEmbracingSquareInCircleCoordsSystem();
+        PointF leftCorner = getSectorWrapperViewLeftCornerInCircleCoordsSystem();
+        return new RectF(
+                embracingSquare.left - leftCorner.x,
+                leftCorner.y - embracingSquare.top,
+                embracingSquare.right - leftCorner.x,
+                leftCorner.y - embracingSquare.bottom
+        );
     }
 
     private RectF getInnerCircleEmbracingSquareInSectorWrapperCoordsSystem() {
-        if (innerCircleEmbracingSquareInSectorWrapperCoordsSystem == null) {
-            RectF embracingSquare = getInnerCircleEmbracingSquareInCircleCoordsSystem();
-            PointF leftCorner = getSectorWrapperViewLeftCornerInCircleCoordsSystem();
-            innerCircleEmbracingSquareInSectorWrapperCoordsSystem = new RectF(
-                    embracingSquare.left - leftCorner.x,
-                    leftCorner.y - embracingSquare.top,
-                    embracingSquare.right - leftCorner.x,
-                    leftCorner.y - embracingSquare.bottom
-            );
-        }
-        return innerCircleEmbracingSquareInSectorWrapperCoordsSystem;
+        RectF embracingSquare = getInnerCircleEmbracingSquareInCircleCoordsSystem();
+        PointF leftCorner = getSectorWrapperViewLeftCornerInCircleCoordsSystem();
+        return new RectF(
+                embracingSquare.left - leftCorner.x,
+                leftCorner.y - embracingSquare.top,
+                embracingSquare.right - leftCorner.x,
+                leftCorner.y - embracingSquare.bottom
+        );
     }
 
     /**
