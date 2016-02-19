@@ -49,13 +49,7 @@ public final class WheelComputationHelper {
     }
 
     public static void initialize(WheelConfig wheelConfig) {
-        if (!isInitialized()) {
-            instance = new WheelComputationHelper(wheelConfig);
-        }
-    }
-
-    public static boolean isInitialized() {
-        return instance != null;
+        instance = new WheelComputationHelper(wheelConfig);
     }
 
     public static MeasurementsHolder getScreenDimensions(Context context) {
