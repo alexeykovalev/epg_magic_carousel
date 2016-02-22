@@ -93,7 +93,7 @@ public final class BottomWheelLayoutManager extends AbstractWheelLayoutManager {
     }
 
     @Override
-    public Animator createWheelStartupAnimator() {
+    protected Animator createWheelStartupAnimator(final RecyclerView.Recycler recycler, final RecyclerView.State state) {
         final LayoutParams childClosestToLayoutStartEdgeLp = getChildLayoutParams(getChildClosestToLayoutStartEdge());
 
         final float fromAngleInRad = (float) childClosestToLayoutStartEdgeLp.anglePositionInRad;

@@ -11,16 +11,25 @@ import com.sss.magicwheel.entity.WheelConfig;
 import com.sss.magicwheel.entity.CoordinatesHolder;
 import com.sss.magicwheel.entity.SectorClipAreaDescriptor;
 
+import static java.lang.Math.*;
+
 /**
  * @author Alexey Kovalev
  * @since 14.12.2015.
  */
-// TODO: 14.12.2015 use lazy initializer here
 public final class WheelComputationHelper {
 
-    private static final double DEGREE_TO_RAD_COEF = Math.PI / 180;
+    public static final int VISIBLE_SECTORS_AMOUNT_AT_TOP = 4;
+    public static final int VISIBLE_SECTORS_AMOUNT_AT_BOTTOM = 4;
+    public static final int HIDDEN_SECTORS_AMOUNT_IN_GAP_AREA = 3;
+    public static final int TOTAL_SECTORS_AMOUNT =
+            VISIBLE_SECTORS_AMOUNT_AT_TOP + VISIBLE_SECTORS_AMOUNT_AT_BOTTOM + HIDDEN_SECTORS_AMOUNT_IN_GAP_AREA;
+
+    public static final double TOP_EDGE_ANGLE_RESTRICTION_IN_RAD = PI / 2;
+    public static final double BOTTOM_EDGE_ANGLE_RESTRICTION_IN_RAD = -PI / 2;
+
+    private static final double DEGREE_TO_RAD_COEF = PI / 180;
     private static final double RAD_TO_DEGREE_COEF = 1 / DEGREE_TO_RAD_COEF;
-    private static final int NOT_DEFINED_VALUE = Integer.MIN_VALUE;
 
     private static WheelComputationHelper instance;
 
@@ -54,6 +63,10 @@ public final class WheelComputationHelper {
 
     public static double radToDegree(double angleInRad) {
         return angleInRad * RAD_TO_DEGREE_COEF;
+    }
+
+    public static boolean isEqualWithEpsilon(double first, double second, double epsilon) {
+        return Math.abs(first / second - 1) < epsilon;
     }
 
     // TODO: 16.12.2015 to many objects allocation - reduce this amount in future
@@ -95,7 +108,7 @@ public final class WheelComputationHelper {
      * Width of the view which wraps the sector.
      */
     private int computeSectorWrapperViewWidth() {
-        final double delta = wheelConfig.getInnerRadius() * Math.cos(wheelConfig.getAngularRestrictions().getSectorHalfAngleInRad());
+        final double delta = wheelConfig.getInnerRadius() * cos(wheelConfig.getAngularRestrictions().getSectorHalfAngleInRad());
         return (int) (wheelConfig.getOuterRadius() - delta);
     }
 
@@ -103,7 +116,7 @@ public final class WheelComputationHelper {
      * Height of the view which wraps the sector.
      */
     private int computeSectorWrapperViewHeight() {
-        final double halfHeight = wheelConfig.getOuterRadius() * Math.sin(wheelConfig.getAngularRestrictions().getSectorHalfAngleInRad());
+        final double halfHeight = wheelConfig.getOuterRadius() * sin(wheelConfig.getAngularRestrictions().getSectorHalfAngleInRad());
         return (int) (2 * halfHeight);
     }
 
@@ -119,8 +132,8 @@ public final class WheelComputationHelper {
         final int sectorWrapperViewHalfHeight = sectorWrapperViewMeasurements.getHeight() / 2;
 
         final double sectorHalfAngleInRad = wheelConfig.getAngularRestrictions().getSectorHalfAngleInRad();
-        final double leftBaseDelta = wheelConfig.getInnerRadius() * Math.sin(sectorHalfAngleInRad);
-        final double rightBaseDelta = wheelConfig.getOuterRadius() * Math.sin(sectorHalfAngleInRad);
+        final double leftBaseDelta = wheelConfig.getInnerRadius() * sin(sectorHalfAngleInRad);
+        final double rightBaseDelta = wheelConfig.getOuterRadius() * sin(sectorHalfAngleInRad);
 
         final CoordinatesHolder bottomLeftCorner = CoordinatesHolder.ofRect(0, sectorWrapperViewHalfHeight + leftBaseDelta);
         final CoordinatesHolder topLeftCorner = CoordinatesHolder.ofRect(0, sectorWrapperViewHalfHeight - leftBaseDelta);

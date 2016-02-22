@@ -61,15 +61,15 @@ final class WheelStartupAnimationHelper {
     }
 
     public void playWheelStartupAnimation() {
-        if (!isStartupAnimationPlayed) {
-            isStartupAnimationPlayed = true;
-            AnimatorSet wheelStartupAnimator = new AnimatorSet();
-            wheelStartupAnimator.playTogether(
-                    topWheelContainer.getLayoutManager().createWheelStartupAnimator(),
-                    bottomWheelContainer.getLayoutManager().createWheelStartupAnimator()
-            );
-            wheelStartupAnimator.start();
-        }
+//        if (!isStartupAnimationPlayed) {
+//            isStartupAnimationPlayed = true;
+//            AnimatorSet wheelStartupAnimator = new AnimatorSet();
+//            wheelStartupAnimator.playTogether(
+//                    topWheelContainer.getLayoutManager().createWheelStartupAnimator(),
+//                    bottomWheelContainer.getLayoutManager().createWheelStartupAnimator()
+//            );
+//            wheelStartupAnimator.start();
+//        }
     }
 
     public boolean isStartupAnimationPlayed() {

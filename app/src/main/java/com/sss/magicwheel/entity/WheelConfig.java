@@ -43,11 +43,13 @@ public final class WheelConfig {
         }
 
         private double computeWheelLayoutStartAngle() {
-            double res = gapAreaTopEdgeAngleRestrictionInRad;
+            return getWheelTopEdgeAngleRestrictionInRad();
+
+            /*double res = gapAreaTopEdgeAngleRestrictionInRad;
             while (res <= wheelTopEdgeAngleRestrictionInRad) {
                 res += sectorAngleInRad;
             }
-            return res;
+            return res;*/
         }
 
         public double getSectorAngleInRad() {

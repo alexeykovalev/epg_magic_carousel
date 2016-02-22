@@ -16,6 +16,8 @@ import com.sss.magicwheel.manager.widget.WheelOfFortuneContainerFrameView;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.sss.magicwheel.manager.WheelComputationHelper.*;
+
 /**
  * @author Alexey Kovalev
  * @since 01.02.2016.
@@ -86,15 +88,12 @@ public final class FragmentWheelPage extends Fragment {
         final int outerRadius = availableWheelRenderingHeight;
         final int innerRadius = outerRadius - outerRadius / 3;
 
-        final double topEdgeAngleRestrictionInRad = Math.PI / 2;
-        final double bottomEdgeAngleRestrictionInRad = -Math.PI / 2;
-
-        final double sectorAngleInRad = computeSectorAngleInRad(topEdgeAngleRestrictionInRad, bottomEdgeAngleRestrictionInRad);
+        final double sectorAngleInRad = computeSectorAngleInRad(TOP_EDGE_ANGLE_RESTRICTION_IN_RAD, BOTTOM_EDGE_ANGLE_RESTRICTION_IN_RAD);
         final double halfGapAreaAngleInRad = computeHalfGapAreaAngleInRad(sectorAngleInRad);
 
         final WheelConfig.AngularRestrictions angularRestrictions = WheelConfig.AngularRestrictions
                 .builder(sectorAngleInRad)
-                .wheelEdgesAngularRestrictions(topEdgeAngleRestrictionInRad, bottomEdgeAngleRestrictionInRad)
+                .wheelEdgesAngularRestrictions(TOP_EDGE_ANGLE_RESTRICTION_IN_RAD, BOTTOM_EDGE_ANGLE_RESTRICTION_IN_RAD)
                 .gapEdgesAngularRestrictions(halfGapAreaAngleInRad, -halfGapAreaAngleInRad)
                 .build();
 
@@ -103,14 +102,7 @@ public final class FragmentWheelPage extends Fragment {
 
     private double computeSectorAngleInRad(double topEdgeAngleRestrictionInRad, double bottomEdgeAngleRestrictionInRad) {
         final double availableAngleInRad = topEdgeAngleRestrictionInRad - bottomEdgeAngleRestrictionInRad;
-
-        final int visibleSectorsAmountAtTop = 4;
-        final int visibleSectorsAmountAtBottom = 4;
-        final int hiddenSectorsAmountInGapArea = 3;
-
-        final int totalSectorsAmount = visibleSectorsAmountAtTop + visibleSectorsAmountAtBottom + hiddenSectorsAmountInGapArea;
-
-        return availableAngleInRad / totalSectorsAmount;
+        return availableAngleInRad / TOTAL_SECTORS_AMOUNT;
     }
 
     private double computeHalfGapAreaAngleInRad(double sectorAngleInRad) {

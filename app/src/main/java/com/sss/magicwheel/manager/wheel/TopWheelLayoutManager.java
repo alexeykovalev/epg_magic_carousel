@@ -116,11 +116,11 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
 
     @Override
     protected void notifyLayoutFinishingListener(int lastlyLayoutedChildPos) {
-        initialLayoutFinishingListener.onInitialLayoutFinished(lastlyLayoutedChildPos + 1);
+        initialLayoutFinishingListener.onInitialLayoutFinished(lastlyLayoutedChildPos);
     }
 
     @Override
-    public Animator createWheelStartupAnimator() {
+    protected Animator createWheelStartupAnimator(final RecyclerView.Recycler recycler, final RecyclerView.State state) {
 
         final LayoutParams childClosestToLayoutStartEdgeLp = getChildLayoutParams(getChildClosestToLayoutStartEdge());
 

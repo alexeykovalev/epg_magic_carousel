@@ -6,7 +6,6 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -18,9 +17,6 @@ import com.sss.magicwheel.manager.rotator.AnticlockwiseWheelRotator;
 import com.sss.magicwheel.manager.rotator.ClockwiseWheelRotator;
 import com.sss.magicwheel.manager.widget.WheelBigWrapperView;
 import com.sss.magicwheel.manager.widget.AbstractWheelContainerRecyclerView;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author Alexey Kovalev
@@ -130,7 +126,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
             lastlyLayoutedChildPos = onLayoutChildrenRegular(recycler, state);
         } else {
             lastlyLayoutedChildPos = onLayoutChildrenForStartupAnimation(recycler, state);
-            createWheelStartupAnimator().start();
+            createWheelStartupAnimator(recycler, state).start();
             isStartupAnimationPlayed = true;
         }
 
@@ -142,7 +138,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
 
     protected abstract void notifyLayoutFinishingListener(int lastlyLayoutedChildPos);
 
-    public abstract Animator createWheelStartupAnimator();
+    protected abstract Animator createWheelStartupAnimator(RecyclerView.Recycler recycler, RecyclerView.State state);
 
     protected abstract double computeLayoutStartAngleInRad();
     protected abstract double computeLayoutEndAngleInRad();
