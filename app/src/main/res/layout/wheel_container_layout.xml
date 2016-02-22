@@ -3,17 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.sss.magicwheel.manager.widget.BottomWheelContainerRecyclerView
+    <com.sss.magicwheel.wheel.widget.BottomWheelContainerRecyclerView
         android:id="@+id/bottom_wheel_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.sss.magicwheel.manager.widget.TopWheelContainerRecyclerView
+    <com.sss.magicwheel.wheel.widget.TopWheelContainerRecyclerView
         android:id="@+id/top_wheel_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.sss.magicwheel.manager.widget.WheelSectorRaysDecorationFrame
+    <com.sss.magicwheel.wheel.widget.WheelSectorRaysDecorationFrame
         android:id="@+id/wheel_decoration_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

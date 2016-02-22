@@ -10,8 +10,13 @@
         android:layout_height="match_parent" />
 -->
 
-    <com.sss.magicwheel.manager.widget.WheelOfFortuneContainerFrameView
+    <com.sss.magicwheel.wheel.widget.WheelOfFortuneContainerFrameView
         android:id="@+id/wheel_of_fortune_container_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.sss.magicwheel.coversflow.HorizontalCoversFlowView
+        android:id="@+id/horizontal_covers_flow"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

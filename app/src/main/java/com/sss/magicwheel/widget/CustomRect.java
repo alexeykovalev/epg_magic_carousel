@@ -1,6 +1,6 @@
 package com.sss.magicwheel.widget;
 
-import com.sss.magicwheel.entity.CoordinatesHolder;
+import com.sss.magicwheel.wheel.entity.CoordinatesHolder;
 
 /**
  * @author Alexey Kovalev

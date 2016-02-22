@@ -8,15 +8,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.sss.magicwheel.entity.WheelConfig;
-import com.sss.magicwheel.entity.WheelDataItem;
-import com.sss.magicwheel.manager.WheelComputationHelper;
-import com.sss.magicwheel.manager.widget.WheelOfFortuneContainerFrameView;
+import com.sss.magicwheel.coversflow.entity.CoverEntity;
+import com.sss.magicwheel.wheel.entity.WheelConfig;
+import com.sss.magicwheel.wheel.entity.WheelDataItem;
+import com.sss.magicwheel.coversflow.HorizontalCoversFlowView;
+import com.sss.magicwheel.wheel.WheelComputationHelper;
+import com.sss.magicwheel.wheel.widget.WheelOfFortuneContainerFrameView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.sss.magicwheel.manager.WheelComputationHelper.*;
+import static com.sss.magicwheel.wheel.WheelComputationHelper.*;
 
 /**
  * @author Alexey Kovalev
@@ -32,6 +34,8 @@ public final class FragmentWheelPage extends Fragment {
 
     private WheelOfFortuneContainerFrameView wheelOfFortuneContainerFrameView;
 
+    private HorizontalCoversFlowView horizontalCoversFlowView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
 
@@ -43,6 +47,9 @@ public final class FragmentWheelPage extends Fragment {
 
         wheelOfFortuneContainerFrameView = (WheelOfFortuneContainerFrameView) rootView.findViewById(R.id.wheel_of_fortune_container_frame);
         wheelOfFortuneContainerFrameView.swapData(createSampleDataSet());
+
+        horizontalCoversFlowView = (HorizontalCoversFlowView) rootView.findViewById(R.id.horizontal_covers_flow);
+        horizontalCoversFlowView.swapData(createSampleCoversData());
 
         /*rootView.findViewById(R.id.fragment_request_layout_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,6 +73,14 @@ public final class FragmentWheelPage extends Fragment {
         });
 */
         return rootView;
+    }
+
+    private List<CoverEntity> createSampleCoversData() {
+        List<CoverEntity> covers = new ArrayList<>();
+        for (int i = 0; i < 15; i++) {
+            covers.add(new CoverEntity("Cover [" + i + "]"));
+        }
+        return covers;
     }
 
     private List<WheelDataItem> createSampleDataSet() {
