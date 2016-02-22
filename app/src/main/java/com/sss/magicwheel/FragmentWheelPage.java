@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import com.sss.magicwheel.coversflow.entity.CoverEntity;
 import com.sss.magicwheel.wheel.entity.WheelConfig;
 import com.sss.magicwheel.wheel.entity.WheelDataItem;
-import com.sss.magicwheel.coversflow.HorizontalCoversFlowView;
+import com.sss.magicwheel.coversflow.HorizontalCoversFlowFrameView;
 import com.sss.magicwheel.wheel.WheelComputationHelper;
 import com.sss.magicwheel.wheel.widget.WheelOfFortuneContainerFrameView;
 
@@ -34,7 +34,7 @@ public final class FragmentWheelPage extends Fragment {
 
     private WheelOfFortuneContainerFrameView wheelOfFortuneContainerFrameView;
 
-    private HorizontalCoversFlowView horizontalCoversFlowView;
+    private HorizontalCoversFlowFrameView horizontalCoversFlowFrameView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
@@ -48,15 +48,15 @@ public final class FragmentWheelPage extends Fragment {
         wheelOfFortuneContainerFrameView = (WheelOfFortuneContainerFrameView) rootView.findViewById(R.id.wheel_of_fortune_container_frame);
         wheelOfFortuneContainerFrameView.swapData(createSampleDataSet());
 
-        horizontalCoversFlowView = (HorizontalCoversFlowView) rootView.findViewById(R.id.horizontal_covers_flow);
-        horizontalCoversFlowView.swapData(createSampleCoversData());
+        horizontalCoversFlowFrameView = (HorizontalCoversFlowFrameView) rootView.findViewById(R.id.horizontal_covers_flow);
+        horizontalCoversFlowFrameView.swapData(createSampleCoversData());
 
-        /*rootView.findViewById(R.id.fragment_request_layout_button).setOnClickListener(new View.OnClickListener() {
+        rootView.findViewById(R.id.fragment_request_layout_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                wheelOfFortuneContainerFrameView.requestLayout();
+                horizontalCoversFlowFrameView.resizeCover();
             }
-        });*/
+        });
 
 /*
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -77,7 +77,7 @@ public final class FragmentWheelPage extends Fragment {
 
     private List<CoverEntity> createSampleCoversData() {
         List<CoverEntity> covers = new ArrayList<>();
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 50; i++) {
             covers.add(new CoverEntity("Cover [" + i + "]"));
         }
         return covers;

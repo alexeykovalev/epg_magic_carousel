@@ -3,19 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-<!--
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/wheel_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
--->
-
     <com.sss.magicwheel.wheel.widget.WheelOfFortuneContainerFrameView
         android:id="@+id/wheel_of_fortune_container_frame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
 
-    <com.sss.magicwheel.coversflow.HorizontalCoversFlowView
+    <com.sss.magicwheel.coversflow.HorizontalCoversFlowFrameView
         android:id="@+id/horizontal_covers_flow"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
@@ -24,10 +18,9 @@
         android:id="@+id/fragment_request_layout_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="35sp"
+        android:textSize="20sp"
         android:text="Request_Layout"
         android:clickable="true"
-        android:visibility="gone"
         />
 
 

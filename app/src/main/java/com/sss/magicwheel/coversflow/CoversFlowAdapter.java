@@ -49,6 +49,11 @@ public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdap
     }
 
     @Override
+    public void onViewRecycled(CoverViewHolder holder) {
+        holder.itemView.setLayoutParams(holder.contentViewLp);
+    }
+
+    @Override
     public int getItemCount() {
         return coversData.size();
     }
@@ -59,15 +64,21 @@ public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdap
 
     static class CoverViewHolder extends RecyclerView.ViewHolder {
 
-        private final Context context;
         private final ImageView coverImage;
         private final TextView coverTitle;
+
+        private final Context context;
+        private final ViewGroup.MarginLayoutParams contentViewLp;
 
         public CoverViewHolder(Context context, View itemView) {
             super(itemView);
             this.context = context;
-            coverImage = (ImageView) itemView.findViewById(R.id.cover_image);
-            coverTitle = (TextView) itemView.findViewById(R.id.cover_title);
+
+            final ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams)itemView.getLayoutParams();
+            this.contentViewLp = new ViewGroup.MarginLayoutParams(layoutParams);
+
+            this.coverImage = (ImageView) itemView.findViewById(R.id.cover_image);
+            this.coverTitle = (TextView) itemView.findViewById(R.id.cover_title);
         }
 
         void bind(CoverEntity entityToBind) {
