@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import com.sss.magicwheel.coversflow.entity.CoverEntity;
 import com.sss.magicwheel.wheel.entity.WheelConfig;
 import com.sss.magicwheel.wheel.entity.WheelDataItem;
-import com.sss.magicwheel.coversflow.HorizontalCoversFlowFrameView;
+import com.sss.magicwheel.coversflow.HorizontalCoversFlowView;
 import com.sss.magicwheel.wheel.WheelComputationHelper;
 import com.sss.magicwheel.wheel.widget.WheelOfFortuneContainerFrameView;
 
@@ -34,7 +34,7 @@ public final class FragmentWheelPage extends Fragment {
 
     private WheelOfFortuneContainerFrameView wheelOfFortuneContainerFrameView;
 
-    private HorizontalCoversFlowFrameView horizontalCoversFlowFrameView;
+    private HorizontalCoversFlowView horizontalCoversFlowView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
@@ -48,13 +48,13 @@ public final class FragmentWheelPage extends Fragment {
         wheelOfFortuneContainerFrameView = (WheelOfFortuneContainerFrameView) rootView.findViewById(R.id.wheel_of_fortune_container_frame);
         wheelOfFortuneContainerFrameView.swapData(createSampleDataSet());
 
-        horizontalCoversFlowFrameView = (HorizontalCoversFlowFrameView) rootView.findViewById(R.id.horizontal_covers_flow);
-        horizontalCoversFlowFrameView.swapData(createSampleCoversData());
+        horizontalCoversFlowView = (HorizontalCoversFlowView) rootView.findViewById(R.id.horizontal_covers_flow);
+        horizontalCoversFlowView.swapData(createSampleCoversData());
 
         rootView.findViewById(R.id.fragment_request_layout_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                horizontalCoversFlowFrameView.resizeCover();
+                horizontalCoversFlowView.resizeCover();
             }
         });
 

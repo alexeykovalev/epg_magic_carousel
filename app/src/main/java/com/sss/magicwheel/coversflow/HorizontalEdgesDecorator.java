@@ -12,7 +12,7 @@ import android.support.v7.widget.RecyclerView;
  */
 public class HorizontalEdgesDecorator extends RecyclerView.ItemDecoration {
 
-    private static final int START_LEFT_EDGE_DRAW_FROM_IN_DP = 335;
+    public static final int START_LEFT_EDGE_DRAW_FROM_IN_DP = 335;
     private static final int EDGES_WIDTH_IN_DP = 150;
 
     private final Context context;
@@ -21,6 +21,10 @@ public class HorizontalEdgesDecorator extends RecyclerView.ItemDecoration {
     public HorizontalEdgesDecorator(Context context) {
         this.context = context;
         this.edgesPaint = createEdgesPaint();
+    }
+
+    public static float dpToPixels(Context context, float valueInDp) {
+        return (valueInDp * context.getResources().getDisplayMetrics().density);
     }
 
     private static Paint createEdgesPaint() {
@@ -34,7 +38,7 @@ public class HorizontalEdgesDecorator extends RecyclerView.ItemDecoration {
     @Override
     public void onDrawOver(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
         drawLeftEdge(canvas);
-        drawRightEdge(canvas);
+//        drawRightEdge(canvas);
     }
 
     private void drawLeftEdge(Canvas canvas) {
@@ -49,7 +53,4 @@ public class HorizontalEdgesDecorator extends RecyclerView.ItemDecoration {
         canvas.drawLine(startX, 0, startX, height, edgesPaint);
     }
 
-    public static float dpToPixels(Context context, float valueInDp) {
-        return (valueInDp * context.getResources().getDisplayMetrics().density);
-    }
 }

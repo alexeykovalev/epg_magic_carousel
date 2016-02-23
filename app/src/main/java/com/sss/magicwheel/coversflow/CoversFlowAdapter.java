@@ -3,12 +3,8 @@ package com.sss.magicwheel.coversflow;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
 import com.sss.magicwheel.R;
 import com.sss.magicwheel.coversflow.entity.CoverEntity;
 
@@ -39,18 +35,18 @@ public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdap
 
     @Override
     public CoverViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View coverView = inflater.inflate(R.layout.horizontal_cover_layout, parent, false);
-        return new CoverViewHolder(context, coverView);
+        final HorizontalCoverView coverView = (HorizontalCoverView) inflater.inflate(R.layout.cover_item_layout, parent, false);
+        return new CoverViewHolder(coverView);
     }
 
     @Override
     public void onBindViewHolder(CoverViewHolder holder, int position) {
-        holder.bind(getItemByPosition(position));
+        holder.bind(getItemForPosition(position));
     }
 
     @Override
     public void onViewRecycled(CoverViewHolder holder) {
-        holder.itemView.setLayoutParams(holder.contentViewLp);
+        holder.coverView.restoreInitialSize();
     }
 
     @Override
@@ -58,35 +54,22 @@ public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdap
         return coversData.size();
     }
 
-    private CoverEntity getItemByPosition(int position) {
+    private CoverEntity getItemForPosition(int position) {
         return coversData.get(position);
     }
 
     static class CoverViewHolder extends RecyclerView.ViewHolder {
 
-        private final ImageView coverImage;
-        private final TextView coverTitle;
+        private final HorizontalCoverView coverView;
 
-        private final Context context;
-        private final ViewGroup.MarginLayoutParams contentViewLp;
-
-        public CoverViewHolder(Context context, View itemView) {
-            super(itemView);
-            this.context = context;
-
-            final ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams)itemView.getLayoutParams();
-            this.contentViewLp = new ViewGroup.MarginLayoutParams(layoutParams);
-
-            this.coverImage = (ImageView) itemView.findViewById(R.id.cover_image);
-            this.coverTitle = (TextView) itemView.findViewById(R.id.cover_title);
+        public CoverViewHolder(HorizontalCoverView coverView) {
+            super(coverView);
+            this.coverView = coverView;
         }
 
         void bind(CoverEntity entityToBind) {
-            coverTitle.setText(entityToBind.getTitle());
-            Picasso.with(context)
-                    .load(entityToBind.getImageResource())
-                    .resize(300, 300)
-                    .into(coverImage);
+            coverView.saveInitialSize();
+            coverView.bind(entityToBind);
         }
     }
 }

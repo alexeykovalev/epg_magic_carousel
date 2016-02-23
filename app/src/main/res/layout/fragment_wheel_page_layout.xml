@@ -9,10 +9,11 @@
         android:layout_height="match_parent"
         android:visibility="gone"/>
 
-    <com.sss.magicwheel.coversflow.HorizontalCoversFlowFrameView
+    <com.sss.magicwheel.coversflow.HorizontalCoversFlowView
         android:id="@+id/horizontal_covers_flow"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="200dp"
+        android:layout_gravity="center_vertical" />
 
     <Button
         android:id="@+id/fragment_request_layout_button"
