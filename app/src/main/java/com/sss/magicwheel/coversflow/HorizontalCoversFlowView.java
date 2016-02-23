@@ -19,17 +19,36 @@ import java.util.List;
  */
 public final class HorizontalCoversFlowView extends RecyclerView {
 
+    private static class ScrollingData {
 
-    private static class CoverZoomScrollListener extends OnScrollListener {
+        private static ScrollingData instance = new ScrollingData();
+
+        private int absScrollingDistance;
+        private boolean isSwipeToLeft;
+
+        private ScrollingData() {}
+
+        public static ScrollingData update(int deltaX) {
+            instance.isSwipeToLeft = deltaX >= 0;
+            instance.absScrollingDistance = Math.abs(deltaX);
+            return instance;
+        }
+
+        public boolean isSwipeToLeft() {
+            return instance.isSwipeToLeft;
+        }
+    }
+
+    private class CoverZoomScrollListener extends OnScrollListener {
 
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            Log.e("TAG", "newState [" + newState + "]");
         }
 
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-
+            ScrollingData.update(dx);
+            resizeCovers();
         }
     }
 
@@ -62,8 +81,14 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         return (CoversFlowAdapter) super.getAdapter();
     }
 
-    public void resizeCover() {
-        final View firstCover = getChildAt(1);
+    public void resizeCoverOnClick() {
+        final View firstCover = findChildIntersectingWithEdge();
+
+//        firstCover.setPivotX(firstCover.getWidth() / 2);
+//        firstCover.setPivotY(firstCover.getHeight() / 2);
+
+//        firstCover.setScaleX(2);
+//        firstCover.setScaleY(2);
 
         final ViewGroup.LayoutParams lp = firstCover.getLayoutParams();
         lp.width *= 2;
@@ -76,5 +101,77 @@ public final class HorizontalCoversFlowView extends RecyclerView {
 //
 //        firstCover.setScaleX(2);
 //        firstCover.setScaleY(2);
+    }
+
+    private void resizeCovers() {
+        HorizontalCoverView intersectingChild = findChildIntersectingWithEdge();
+        if (intersectingChild != null) {
+            final double zoomFactor = getChildZoomFactor(intersectingChild);
+            Log.e("TAG", "zoomFactor [" + zoomFactor + "]");
+
+            final int maxHeight = getChildMaxHeight();
+            final int initialHeight = intersectingChild.getInitialHeight();
+
+            double newChildHeight = initialHeight + (maxHeight - initialHeight) * zoomFactor;
+            final int newChildHeightAsInt = (int) Math.round(newChildHeight);
+
+            final ViewGroup.LayoutParams lp = intersectingChild.getLayoutParams();
+            lp.height = newChildHeightAsInt;
+            lp.width = (int) (newChildHeightAsInt * intersectingChild.getAspectRatio());
+
+            intersectingChild.setLayoutParams(lp);
+
+        }
+    }
+
+    private int getChildMaxHeight() {
+        return getHeight();
+    }
+
+    private HorizontalCoverView findChildIntersectingWithEdge() {
+        final float edgeLeftPosition = HorizontalEdgesDecorator.dpToPixels(
+                getContext(),
+                HorizontalEdgesDecorator.START_LEFT_EDGE_DRAW_FROM_IN_DP
+        );
+
+        for (int i = 0; i < getChildCount(); i++) {
+            final View child = getChildAt(i);
+            final float childLeftX = child.getX();
+            final float childRightX = childLeftX + child.getWidth();
+
+            if (childLeftX <= edgeLeftPosition && childRightX >= edgeLeftPosition) {
+                return (HorizontalCoverView) child;
+            }
+        }
+
+        return null;
+    }
+
+    private double getChildZoomFactor(HorizontalCoverView childToZoom) {
+        final float edgeLeftPosition = HorizontalEdgesDecorator.dpToPixels(
+                getContext(),
+                HorizontalEdgesDecorator.START_LEFT_EDGE_DRAW_FROM_IN_DP
+        );
+        final float childStartX = childToZoom.getX();
+        final float offset = edgeLeftPosition - childStartX;
+
+        double zoomFactor = 1;
+        if (isZoomUp(childToZoom, offset)) {
+            final int halfWidth = childToZoom.getInitialWidth() / 2;
+            zoomFactor = offset / halfWidth;
+        } else {
+            final int halfWidth = childToZoom.getInitialWidth() / 2;
+            zoomFactor = 1 - (offset - halfWidth) / halfWidth;
+        }
+
+        return zoomFactor;
+    }
+
+    private boolean isZoomUp(HorizontalCoverView childToZoom, float childOffset) {
+        if (ScrollingData.instance.isSwipeToLeft()) {
+            return childOffset < (childToZoom.getInitialWidth() / 2);
+        }
+
+        return false;
     }
 }

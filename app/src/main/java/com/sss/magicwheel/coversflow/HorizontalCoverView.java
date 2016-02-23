@@ -61,4 +61,16 @@ public class HorizontalCoverView extends FrameLayout {
             this.initialCoverViewLp = new MarginLayoutParams(layoutParams);
         }
     }
+
+    public int getInitialWidth() {
+        return initialCoverViewLp.width;
+    }
+
+    public int getInitialHeight() {
+        return initialCoverViewLp.height;
+    }
+
+    public double getAspectRatio() {
+        return getInitialWidth() / getInitialHeight();
+    }
 }
