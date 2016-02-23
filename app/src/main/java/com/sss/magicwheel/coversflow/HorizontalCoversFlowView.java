@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.sss.magicwheel.App;
 import com.sss.magicwheel.coversflow.entity.CoverEntity;
 
 import java.util.Collections;
@@ -117,7 +118,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
 
             final ViewGroup.LayoutParams lp = intersectingChild.getLayoutParams();
             lp.height = newChildHeightAsInt;
-            lp.width = (int) (newChildHeightAsInt * intersectingChild.getAspectRatio());
+            lp.width = (int) (newChildHeightAsInt * HorizontalCoverView.ASPECT_RATIO);
 
             intersectingChild.setLayoutParams(lp);
 
@@ -129,8 +130,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     }
 
     private HorizontalCoverView findChildIntersectingWithEdge() {
-        final float edgeLeftPosition = HorizontalEdgesDecorator.dpToPixels(
-                getContext(),
+        final float edgeLeftPosition = App.dpToPixels(
                 HorizontalEdgesDecorator.START_LEFT_EDGE_DRAW_FROM_IN_DP
         );
 
@@ -148,8 +148,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     }
 
     private double getChildZoomFactor(HorizontalCoverView childToZoom) {
-        final float edgeLeftPosition = HorizontalEdgesDecorator.dpToPixels(
-                getContext(),
+        final float edgeLeftPosition = App.dpToPixels(
                 HorizontalEdgesDecorator.START_LEFT_EDGE_DRAW_FROM_IN_DP
         );
         final float childStartX = childToZoom.getX();

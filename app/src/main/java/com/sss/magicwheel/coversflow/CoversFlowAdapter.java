@@ -36,6 +36,7 @@ public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdap
     @Override
     public CoverViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final HorizontalCoverView coverView = (HorizontalCoverView) inflater.inflate(R.layout.cover_item_layout, parent, false);
+        coverView.restoreInitialSize();
         return new CoverViewHolder(coverView);
     }
 
@@ -68,7 +69,6 @@ public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdap
         }
 
         void bind(CoverEntity entityToBind) {
-            coverView.saveInitialSize();
             coverView.bind(entityToBind);
         }
     }

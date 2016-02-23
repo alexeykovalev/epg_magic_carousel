@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
 
+import com.sss.magicwheel.App;
+
 /**
  * @author Alexey Kovalev
  * @since 22.02.2016.
@@ -21,10 +23,6 @@ public class HorizontalEdgesDecorator extends RecyclerView.ItemDecoration {
     public HorizontalEdgesDecorator(Context context) {
         this.context = context;
         this.edgesPaint = createEdgesPaint();
-    }
-
-    public static float dpToPixels(Context context, float valueInDp) {
-        return (valueInDp * context.getResources().getDisplayMetrics().density);
     }
 
     private static Paint createEdgesPaint() {
@@ -43,13 +41,13 @@ public class HorizontalEdgesDecorator extends RecyclerView.ItemDecoration {
 
     private void drawLeftEdge(Canvas canvas) {
         final int height = canvas.getHeight();
-        final float startX = dpToPixels(context, START_LEFT_EDGE_DRAW_FROM_IN_DP);
+        final float startX = App.dpToPixels(START_LEFT_EDGE_DRAW_FROM_IN_DP);
         canvas.drawLine(startX, 0, startX, height, edgesPaint);
     }
 
     private void drawRightEdge(Canvas canvas) {
         final int height = canvas.getHeight();
-        final float startX = dpToPixels(context, START_LEFT_EDGE_DRAW_FROM_IN_DP + EDGES_WIDTH_IN_DP);
+        final float startX = App.dpToPixels(START_LEFT_EDGE_DRAW_FROM_IN_DP + EDGES_WIDTH_IN_DP);
         canvas.drawLine(startX, 0, startX, height, edgesPaint);
     }
 

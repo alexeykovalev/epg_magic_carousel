@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.sss.magicwheel.App;
 import com.sss.magicwheel.R;
 import com.sss.magicwheel.coversflow.entity.CoverEntity;
 
@@ -16,10 +17,21 @@ import com.sss.magicwheel.coversflow.entity.CoverEntity;
  */
 public class HorizontalCoverView extends FrameLayout {
 
+    public static final int INITIAL_HEIGHT_IN_DP = 150;
+    public static final double ASPECT_RATIO = 1.5;
+    public static final int INITIAL_WIDTH_IN_DP = (int) (INITIAL_HEIGHT_IN_DP * ASPECT_RATIO);
+
+    public final static MarginLayoutParams INITIAL_COVER_LAYOUT_PARAMS = new MarginLayoutParams(
+            (int) App.dpToPixels(INITIAL_WIDTH_IN_DP),
+            (int) App.dpToPixels(INITIAL_HEIGHT_IN_DP)
+    );
+
+    static {
+        INITIAL_COVER_LAYOUT_PARAMS.leftMargin = (int) App.dpToPixels(15);
+    }
+
     private ImageView coverImage;
     private TextView coverTitle;
-
-    private MarginLayoutParams initialCoverViewLp;
 
     public HorizontalCoverView(Context context) {
         this(context, null);
@@ -32,8 +44,6 @@ public class HorizontalCoverView extends FrameLayout {
     public HorizontalCoverView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         inflateAndBind(context);
-
-
     }
 
     private void inflateAndBind(Context context) {
@@ -52,25 +62,15 @@ public class HorizontalCoverView extends FrameLayout {
     }
 
     public void restoreInitialSize() {
-        setLayoutParams(initialCoverViewLp);
-    }
-
-    public void saveInitialSize() {
-        if (initialCoverViewLp == null) {
-            final MarginLayoutParams layoutParams = (MarginLayoutParams) getLayoutParams();
-            this.initialCoverViewLp = new MarginLayoutParams(layoutParams);
-        }
+        setLayoutParams(INITIAL_COVER_LAYOUT_PARAMS);
     }
 
     public int getInitialWidth() {
-        return initialCoverViewLp.width;
+        return INITIAL_COVER_LAYOUT_PARAMS.width;
     }
 
     public int getInitialHeight() {
-        return initialCoverViewLp.height;
+        return INITIAL_COVER_LAYOUT_PARAMS.height;
     }
 
-    public double getAspectRatio() {
-        return getInitialWidth() / getInitialHeight();
-    }
 }
