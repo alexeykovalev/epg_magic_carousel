@@ -77,12 +77,20 @@ public final class FragmentWheelPage extends Fragment {
 
     private List<CoverEntity> createSampleCoversData() {
         List<CoverEntity> covers = new ArrayList<>();
-        covers.add(new CoverEntity("Fake cover", CoverEntity.CoverType.LeftOffset));
+        covers.add(CoverEntity.offsetItem(computeLeftOffset()));
         for (int i = 0; i < 50; i++) {
-            covers.add(new CoverEntity("Cover [" + i + "]", CoverEntity.CoverType.DataItem));
+            covers.add(CoverEntity.dataItem("Cover [" + i + "]"));
         }
-        covers.add(new CoverEntity("Fake cover", CoverEntity.CoverType.RightOffset));
+        covers.add(CoverEntity.offsetItem(computeRightOffset()));
         return covers;
+    }
+
+    private int computeRightOffset() {
+        return (int) App.dpToPixels(600);
+    }
+
+    private int computeLeftOffset() {
+        return (int) App.dpToPixels(300);
     }
 
     private List<WheelDataItem> createSampleDataSet() {

@@ -19,15 +19,12 @@ import java.util.List;
 public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdapter.CoverViewHolder> {
 
     private static final int REGULAR_COVER = 0;
-    private static final int FAKE_COVER = 1;
+    private static final int OFFSET_COVER = 1;
 
-
-    private final Context context;
     private final LayoutInflater inflater;
     private final List<CoverEntity> coversData;
 
     public CoversFlowAdapter(Context context, List<CoverEntity> coversData) {
-        this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.coversData = new ArrayList<>(coversData);
     }
@@ -40,18 +37,18 @@ public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdap
 
     @Override
     public int getItemViewType(int position) {
-        return getItemForPosition(position).isOffsetItem() ? FAKE_COVER : REGULAR_COVER;
+        return getItemForPosition(position).isOffsetItem() ? OFFSET_COVER : REGULAR_COVER;
     }
 
     @Override
     public CoverViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View resView;
+        final IHorizontalCoverView resView;
         if (viewType == REGULAR_COVER) {
             final HorizontalCoverView coverView = (HorizontalCoverView) inflater.inflate(R.layout.cover_item_layout, parent, false);
             coverView.restoreInitialSize();
             resView = coverView;
-        } else if (viewType == FAKE_COVER) {
-            resView = inflater.inflate(R.layout.fake_cover_layout, parent, false);
+        } else if (viewType == OFFSET_COVER) {
+            resView = (IHorizontalCoverView) inflater.inflate(R.layout.fake_cover_layout, parent, false);
         } else {
             throw new IllegalStateException("Unknown viewType [" + viewType + "]");
         }
@@ -75,14 +72,15 @@ public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdap
 
     static class CoverViewHolder extends RecyclerView.ViewHolder {
 
-        public CoverViewHolder(View coverView) {
-            super(coverView);
+        private final IHorizontalCoverView coverView;
+
+        public CoverViewHolder(IHorizontalCoverView coverView) {
+            super((View) coverView);
+            this.coverView = coverView;
         }
 
         void bind(CoverEntity entityToBind) {
-            if (!entityToBind.isOffsetItem()) {
-                ((HorizontalCoverView) itemView).bind(entityToBind);
-            }
+            coverView.bind(entityToBind);
         }
     }
 }

@@ -8,16 +8,22 @@ import com.sss.magicwheel.R;
  */
 public final class CoverEntity {
 
-    public enum CoverType {
-        DataItem, LeftOffset, RightOffset
-    }
+    public static final int NOT_DEFINED_OFFSET_VALUE = Integer.MIN_VALUE;
 
     private final String title;
-    private final CoverType coverType;
+    private final int offsetValue;
 
-    public CoverEntity(String title, CoverType coverType) {
+    public static CoverEntity dataItem(String title) {
+        return new CoverEntity(title, NOT_DEFINED_OFFSET_VALUE);
+    }
+
+    public static CoverEntity offsetItem(int offsetValue) {
+        return new CoverEntity("", offsetValue);
+    }
+
+    private CoverEntity(String title, int offsetValue) {
         this.title = title;
-        this.coverType = coverType;
+        this.offsetValue = offsetValue;
     }
 
     public int getImageResource() {
@@ -28,7 +34,11 @@ public final class CoverEntity {
         return title;
     }
 
+    public int getOffsetValue() {
+        return offsetValue;
+    }
+
     public boolean isOffsetItem() {
-        return coverType != CoverType.DataItem;
+        return offsetValue != NOT_DEFINED_OFFSET_VALUE;
     }
 }

@@ -15,7 +15,7 @@ import com.sss.magicwheel.coversflow.entity.CoverEntity;
  * @author Alexey Kovalev
  * @since 23.02.2016.
  */
-public class HorizontalCoverView extends FrameLayout {
+public class HorizontalCoverView extends FrameLayout implements IHorizontalCoverView {
 
     public static final int INITIAL_HEIGHT_IN_DP = 150;
     public static final double COVER_ASPECT_RATIO = 1.5;
@@ -52,7 +52,7 @@ public class HorizontalCoverView extends FrameLayout {
         coverTitle = (TextView) findViewById(R.id.cover_title);
     }
 
-
+    @Override
     public void bind(CoverEntity entityToBind) {
         coverTitle.setText(entityToBind.getTitle());
         Picasso.with(getContext())
