@@ -17,11 +17,13 @@ import com.sss.magicwheel.coversflow.entity.CoverEntity;
  * @since 23.02.2016.
  */
 public class HorizontalCoverView extends FrameLayout implements IHorizontalCoverView {
-
+    @Deprecated
     private static final int INITIAL_HEIGHT_IN_DP = 100;
 
+    @Deprecated
     private static final int INITIAL_WIDTH_IN_DP = (int) (INITIAL_HEIGHT_IN_DP * CoversFlowListMeasurements.COVER_ASPECT_RATIO);
 
+    @Deprecated
     private final static MarginLayoutParams INITIAL_COVER_LAYOUT_PARAMS = new MarginLayoutParams(
             (int) App.dpToPixels(INITIAL_WIDTH_IN_DP),
             (int) App.dpToPixels(INITIAL_HEIGHT_IN_DP)
@@ -40,19 +42,22 @@ public class HorizontalCoverView extends FrameLayout implements IHorizontalCover
     }
 
     public static MarginLayoutParams safeCopyInitialLayoutParams() {
-        return new MarginLayoutParams(INITIAL_COVER_LAYOUT_PARAMS);
+        return CoversFlowListMeasurements.getInstance().safeCopyInitialLayoutParams();
     }
 
+    @Deprecated
     public static int getInitialWidth() {
-        return INITIAL_COVER_LAYOUT_PARAMS.width;
+        return CoversFlowListMeasurements.getInstance().getCoverDefaultWidth();
     }
 
+    @Deprecated
     public static int getInitialHeight() {
-        return INITIAL_COVER_LAYOUT_PARAMS.height;
+        return CoversFlowListMeasurements.getInstance().getCoverDefaultHeight();
     }
 
+    @Deprecated
     public static Rect getInitialMargins() {
-        return MARGINS_RECT;
+        return CoversFlowListMeasurements.getInstance().getCoverDefaultMargins();
     }
 
 

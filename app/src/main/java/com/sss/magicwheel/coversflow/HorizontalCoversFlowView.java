@@ -53,6 +53,8 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         }
     }
 
+    private final CoversFlowListMeasurements coversFlowMeasurements;
+
     public HorizontalCoversFlowView(Context context) {
         this(context, null);
     }
@@ -63,6 +65,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
 
     public HorizontalCoversFlowView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        coversFlowMeasurements = CoversFlowListMeasurements.getInstance();
         init(context);
         addOnScrollListener(new CoverZoomScrollListener());
     }

@@ -2,6 +2,7 @@ package com.sss.magicwheel.coversflow;
 
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.view.ViewGroup;
 
 import com.sss.magicwheel.wheel.WheelComputationHelper;
 import com.sss.magicwheel.wheel.entity.CoordinatesHolder;
@@ -17,8 +18,8 @@ public final class CoversFlowListMeasurements {
     private static CoversFlowListMeasurements instance;
 
     private final int maxCoverHeight;
-    private final int coverDefaultHeight;
     private final Rect coverDefaultMargins;
+    private final ViewGroup.MarginLayoutParams initialCoverLayoutParams;
 
     public static void initialize(WheelComputationHelper computationHelper) {
         instance = new CoversFlowListMeasurements(computationHelper);
@@ -35,21 +36,34 @@ public final class CoversFlowListMeasurements {
         instance = this;
 
         this.maxCoverHeight = (int) (getGapBottomRayPosition().y - getGapTopRayPosition().y);
-        this.coverDefaultHeight = maxCoverHeight - 2 * 50;
-        this.coverDefaultMargins = new Rect(15, 0, 0, 0);
+        final int coverDefaultHeight = maxCoverHeight - 2 * 50;
+        final int coverDefaultWidth = (int) (COVER_ASPECT_RATIO * coverDefaultHeight);
+
+        this.initialCoverLayoutParams = new ViewGroup.MarginLayoutParams(coverDefaultWidth, coverDefaultHeight);
+        this.initialCoverLayoutParams.leftMargin = 15;
+
+        this.coverDefaultMargins = new Rect(
+                initialCoverLayoutParams.leftMargin,
+                initialCoverLayoutParams.topMargin,
+                initialCoverLayoutParams.rightMargin,
+                initialCoverLayoutParams.bottomMargin
+        );
     }
 
+    public ViewGroup.MarginLayoutParams safeCopyInitialLayoutParams() {
+        return new ViewGroup.MarginLayoutParams(initialCoverLayoutParams);
+    }
 
     public int getCoverMaxHeight() {
         return maxCoverHeight;
     }
 
     public int getCoverDefaultHeight() {
-        return coverDefaultHeight;
+        return initialCoverLayoutParams.height;
     }
 
     public int getCoverDefaultWidth() {
-        return (int) (COVER_ASPECT_RATIO * coverDefaultHeight);
+        return initialCoverLayoutParams.width;
     }
 
     public Rect getCoverDefaultMargins() {
