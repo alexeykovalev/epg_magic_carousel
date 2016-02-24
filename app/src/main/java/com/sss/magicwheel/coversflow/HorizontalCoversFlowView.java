@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -110,7 +109,6 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         HorizontalCoverView intersectingChild = findChildIntersectingWithEdge();
         if (intersectingChild != null) {
             final double zoomFactor = getChildZoomFactor(intersectingChild);
-            Log.e("TAG", "zoomFactor [" + zoomFactor + "]");
 
             final int maxHeight = getChildMaxHeight();
             final int initialHeight = intersectingChild.getInitialHeight();
@@ -166,8 +164,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         final float childStartX = childToZoom.getX();
         final float offset = edgeLeftPosition - childStartX;
 
-        double zoomFactor = 1;
-
+        final double zoomFactor;
         final int halfChildWidth = childToZoom.getInitialWidth() / 2;
         if (ScrollingData.instance.isSwipeToLeft()) {
             if (isZoomUp(childToZoom, offset)) {

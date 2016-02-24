@@ -8,10 +8,16 @@ import com.sss.magicwheel.R;
  */
 public final class CoverEntity {
 
-    private final String title;
+    public enum CoverType {
+        DataItem, LeftOffset, RightOffset
+    }
 
-    public CoverEntity(String title) {
+    private final String title;
+    private final CoverType coverType;
+
+    public CoverEntity(String title, CoverType coverType) {
         this.title = title;
+        this.coverType = coverType;
     }
 
     public int getImageResource() {
@@ -20,5 +26,9 @@ public final class CoverEntity {
 
     public String getTitle() {
         return title;
+    }
+
+    public boolean isOffsetItem() {
+        return coverType != CoverType.DataItem;
     }
 }

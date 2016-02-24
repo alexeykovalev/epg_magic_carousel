@@ -3,6 +3,7 @@ package com.sss.magicwheel.coversflow;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.sss.magicwheel.R;
@@ -16,6 +17,10 @@ import java.util.List;
  * @since 22.02.2016.
  */
 public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdapter.CoverViewHolder> {
+
+    private static final int REGULAR_COVER = 0;
+    private static final int FAKE_COVER = 1;
+
 
     private final Context context;
     private final LayoutInflater inflater;
@@ -34,20 +39,29 @@ public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdap
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return getItemForPosition(position).isOffsetItem() ? FAKE_COVER : REGULAR_COVER;
+    }
+
+    @Override
     public CoverViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final HorizontalCoverView coverView = (HorizontalCoverView) inflater.inflate(R.layout.cover_item_layout, parent, false);
-        coverView.restoreInitialSize();
-        return new CoverViewHolder(coverView);
+        final View resView;
+        if (viewType == REGULAR_COVER) {
+            final HorizontalCoverView coverView = (HorizontalCoverView) inflater.inflate(R.layout.cover_item_layout, parent, false);
+            coverView.restoreInitialSize();
+            resView = coverView;
+        } else if (viewType == FAKE_COVER) {
+            resView = inflater.inflate(R.layout.fake_cover_layout, parent, false);
+        } else {
+            throw new IllegalStateException("Unknown viewType [" + viewType + "]");
+        }
+
+        return new CoverViewHolder(resView);
     }
 
     @Override
     public void onBindViewHolder(CoverViewHolder holder, int position) {
         holder.bind(getItemForPosition(position));
-    }
-
-    @Override
-    public void onViewRecycled(CoverViewHolder holder) {
-        holder.coverView.restoreInitialSize();
     }
 
     @Override
@@ -61,15 +75,14 @@ public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdap
 
     static class CoverViewHolder extends RecyclerView.ViewHolder {
 
-        private final HorizontalCoverView coverView;
-
-        public CoverViewHolder(HorizontalCoverView coverView) {
+        public CoverViewHolder(View coverView) {
             super(coverView);
-            this.coverView = coverView;
         }
 
         void bind(CoverEntity entityToBind) {
-            coverView.bind(entityToBind);
+            if (!entityToBind.isOffsetItem()) {
+                ((HorizontalCoverView) itemView).bind(entityToBind);
+            }
         }
     }
 }
