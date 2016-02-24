@@ -7,7 +7,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.sss.magicwheel.App;
 import com.sss.magicwheel.coversflow.entity.CoverEntity;
 
 import java.util.Collections;
@@ -44,6 +43,9 @@ public final class HorizontalCoversFlowView extends RecyclerView {
 
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                resizeCovers();
+            }
         }
 
         @Override
@@ -73,7 +75,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     private void init(Context context) {
         setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         setAdapter(new CoversFlowAdapter(context, Collections.<CoverEntity>emptyList()));
-        addItemDecoration(new HorizontalEdgesDecorator(context));
+        addItemDecoration(new HorizontalCoversFlowEdgeDecorator(context));
     }
 
     public void swapData(List<CoverEntity> coversData) {
@@ -129,9 +131,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     }
 
     private HorizontalCoverView findChildIntersectingWithEdge() {
-        final float edgeLeftPosition = App.dpToPixels(
-                HorizontalEdgesDecorator.START_LEFT_EDGE_DRAW_FROM_IN_DP
-        );
+        final float edgeLeftPosition = CoversFlowListMeasurements.getInstance().getResizingEdgePosition();
 
         for (int i = 0; i < getChildCount(); i++) {
             final View child = getChildAt(i);
@@ -148,9 +148,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     }
 
     private double getChildZoomFactor(HorizontalCoverView childToZoom) {
-        final float edgeLeftPosition = App.dpToPixels(
-                HorizontalEdgesDecorator.START_LEFT_EDGE_DRAW_FROM_IN_DP
-        );
+        final float edgeLeftPosition = CoversFlowListMeasurements.getInstance().getResizingEdgePosition();
         final float childStartX = childToZoom.getX();
         final float offset = edgeLeftPosition - childStartX;
 

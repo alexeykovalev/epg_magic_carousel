@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 
 import com.sss.magicwheel.coversflow.CoversFlowListMeasurements;
 import com.sss.magicwheel.coversflow.entity.CoverEntity;
-import com.sss.magicwheel.wheel.entity.CoordinatesHolder;
 import com.sss.magicwheel.wheel.entity.WheelConfig;
 import com.sss.magicwheel.wheel.entity.WheelDataItem;
 import com.sss.magicwheel.coversflow.HorizontalCoversFlowView;
@@ -46,7 +45,7 @@ public final class FragmentWheelPage extends Fragment {
 
         WheelComputationHelper.initialize(createWheelConfig(0));
         computationHelper = WheelComputationHelper.getInstance();
-        CoversFlowListMeasurements.initialize(computationHelper);
+        CoversFlowListMeasurements.initialize(computationHelper, getActivity());
 
         final ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_wheel_page_layout, container, false);
 
@@ -97,7 +96,6 @@ public final class FragmentWheelPage extends Fragment {
     }
 
 
-
     private List<CoverEntity> createSampleCoversData() {
         List<CoverEntity> covers = new ArrayList<>();
         covers.add(CoverEntity.offsetItem(computeLeftOffset()));
@@ -109,11 +107,11 @@ public final class FragmentWheelPage extends Fragment {
     }
 
     private int computeLeftOffset() {
-        return (int) App.dpToPixels(200);
+        return CoversFlowListMeasurements.getInstance().getLeftOffset();
     }
 
     private int computeRightOffset() {
-        return (int) App.dpToPixels(600);
+        return CoversFlowListMeasurements.getInstance().getRightOffset();
     }
 
 
