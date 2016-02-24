@@ -30,6 +30,10 @@ public class HorizontalCoverView extends FrameLayout implements IHorizontalCover
         INITIAL_COVER_LAYOUT_PARAMS.leftMargin = (int) App.dpToPixels(15);
     }
 
+    public static MarginLayoutParams safeCopyInitialLayoutParams() {
+        return new MarginLayoutParams(INITIAL_COVER_LAYOUT_PARAMS);
+    }
+
     public static int getInitialWidth() {
         return INITIAL_COVER_LAYOUT_PARAMS.width;
     }
@@ -70,8 +74,11 @@ public class HorizontalCoverView extends FrameLayout implements IHorizontalCover
                 .into(coverImage);
     }
 
-    public void restoreInitialSize() {
-        setLayoutParams(INITIAL_COVER_LAYOUT_PARAMS);
+    public void restoreInitialSize(int parentHeight) {
+        final int topMarginValue = (parentHeight - getHeight()) / 2;
+        final MarginLayoutParams lp = safeCopyInitialLayoutParams();
+        lp.topMargin = topMarginValue;
+        setLayoutParams(lp);
     }
 
 }

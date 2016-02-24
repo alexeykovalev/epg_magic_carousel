@@ -81,11 +81,15 @@ public final class FragmentWheelPage extends Fragment {
         );
 
         final ViewGroup.LayoutParams coversFlowViewLp = horizontalCoversFlowView.getLayoutParams();
-        coversFlowViewLp.height = (int) App.dpToPixels(300);
+        coversFlowViewLp.height = computeCoversFlowListHeight();
         horizontalCoversFlowView.setLayoutParams(coversFlowViewLp);
 
         coversFlowContainer.addView(horizontalCoversFlowView);
         horizontalCoversFlowView.swapData(createSampleCoversData());
+    }
+
+    private int computeCoversFlowListHeight() {
+        return (int) App.dpToPixels(220);
     }
 
     private List<CoverEntity> createSampleCoversData() {
@@ -103,7 +107,7 @@ public final class FragmentWheelPage extends Fragment {
     }
 
     private int computeLeftOffset() {
-        return (int) App.dpToPixels(300);
+        return (int) App.dpToPixels(350);
     }
 
     private List<WheelDataItem> createSampleDataSet() {

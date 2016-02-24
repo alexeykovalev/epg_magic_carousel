@@ -45,7 +45,7 @@ public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdap
         final IHorizontalCoverView resView;
         if (viewType == REGULAR_COVER_VIEW_TYPE) {
             final HorizontalCoverView coverView = (HorizontalCoverView) inflater.inflate(R.layout.cover_item_layout, parent, false);
-            coverView.restoreInitialSize();
+            coverView.restoreInitialSize(parent.getHeight());
             resView = coverView;
         } else if (viewType == OFFSET_COVER_VIEW_TYPE) {
             resView = (IHorizontalCoverView) inflater.inflate(R.layout.fake_cover_layout, parent, false);

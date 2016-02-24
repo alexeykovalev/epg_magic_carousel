@@ -107,6 +107,12 @@ public final class HorizontalCoversFlowView extends RecyclerView {
 
     private void resizeCovers() {
         HorizontalCoverView intersectingChild = findChildIntersectingWithEdge();
+        resizeIntersectingChild(intersectingChild);
+        restoreOtherChildrenToInitialSize(intersectingChild);
+        requestLayout();
+    }
+
+    private void resizeIntersectingChild(HorizontalCoverView intersectingChild) {
         if (intersectingChild != null) {
             final double zoomFactor = getChildZoomFactor(intersectingChild);
 
@@ -116,22 +122,26 @@ public final class HorizontalCoversFlowView extends RecyclerView {
             double newChildHeight = initialHeight + (maxHeight - initialHeight) * zoomFactor;
             final int newChildHeightAsInt = (int) newChildHeight;
 
-            final ViewGroup.LayoutParams lp = intersectingChild.getLayoutParams();
+            final int topMarginValue = (getHeight() - intersectingChild.getHeight()) / 2;
+            final ViewGroup.MarginLayoutParams lp = (MarginLayoutParams) intersectingChild.getLayoutParams();
             lp.height = newChildHeightAsInt;
             lp.width = (int) (newChildHeightAsInt * HorizontalCoverView.COVER_ASPECT_RATIO);
+            lp.topMargin = topMarginValue;
         }
+    }
 
+    private void restoreOtherChildrenToInitialSize(HorizontalCoverView intersectingChild) {
         for (int i = 0; i < getChildCount(); i++) {
             final View coverView = getChildAt(i);
-            final ViewGroup.MarginLayoutParams coverViewLp = (MarginLayoutParams) coverView.getLayoutParams();
+            final int topMarginValue = (getHeight() - coverView.getHeight()) / 2;
+            final MarginLayoutParams coverViewLp = (MarginLayoutParams) coverView.getLayoutParams();
             if (intersectingChild != coverView) {
                 coverViewLp.height = HorizontalCoverView.INITIAL_COVER_LAYOUT_PARAMS.height;
                 coverViewLp.width = HorizontalCoverView.INITIAL_COVER_LAYOUT_PARAMS.width;
                 coverViewLp.leftMargin = HorizontalCoverView.INITIAL_COVER_LAYOUT_PARAMS.leftMargin;
+                coverViewLp.topMargin = topMarginValue;
             }
         }
-
-        requestLayout();
     }
 
     private int getChildMaxHeight() {
