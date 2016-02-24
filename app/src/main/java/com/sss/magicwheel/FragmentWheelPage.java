@@ -48,8 +48,8 @@ public final class FragmentWheelPage extends Fragment {
         wheelOfFortuneContainerFrameView = (WheelOfFortuneContainerFrameView) rootView.findViewById(R.id.wheel_of_fortune_container_frame);
         wheelOfFortuneContainerFrameView.swapData(createSampleDataSet());
 
-        horizontalCoversFlowView = (HorizontalCoversFlowView) rootView.findViewById(R.id.horizontal_covers_flow);
-        horizontalCoversFlowView.swapData(createSampleCoversData());
+        final ViewGroup coversFlowContainer = (ViewGroup) rootView.findViewById(R.id.covers_flow_list_container);
+        inflateCoversFlowContainer(inflater, coversFlowContainer);
 
         rootView.findViewById(R.id.fragment_request_layout_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,6 +73,19 @@ public final class FragmentWheelPage extends Fragment {
         });
 */
         return rootView;
+    }
+
+    private void inflateCoversFlowContainer(LayoutInflater inflater, ViewGroup coversFlowContainer) {
+        horizontalCoversFlowView = (HorizontalCoversFlowView) inflater.inflate(
+                R.layout.horizontal_covers_flow_list_layout, coversFlowContainer, false
+        );
+
+        final ViewGroup.LayoutParams coversFlowViewLp = horizontalCoversFlowView.getLayoutParams();
+        coversFlowViewLp.height = (int) App.dpToPixels(300);
+        horizontalCoversFlowView.setLayoutParams(coversFlowViewLp);
+
+        coversFlowContainer.addView(horizontalCoversFlowView);
+        horizontalCoversFlowView.swapData(createSampleCoversData());
     }
 
     private List<CoverEntity> createSampleCoversData() {

@@ -111,7 +111,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
             final double zoomFactor = getChildZoomFactor(intersectingChild);
 
             final int maxHeight = getChildMaxHeight();
-            final int initialHeight = intersectingChild.getInitialHeight();
+            final int initialHeight = HorizontalCoverView.getInitialHeight();
 
             double newChildHeight = initialHeight + (maxHeight - initialHeight) * zoomFactor;
             final int newChildHeightAsInt = (int) newChildHeight;
@@ -165,7 +165,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         final float offset = edgeLeftPosition - childStartX;
 
         final double zoomFactor;
-        final int halfChildWidth = childToZoom.getInitialWidth() / 2;
+        final int halfChildWidth = HorizontalCoverView.getInitialWidth() / 2;
         if (ScrollingData.instance.isSwipeToLeft()) {
             if (isZoomUp(childToZoom, offset)) {
                 zoomFactor = offset / halfChildWidth;
@@ -184,7 +184,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     }
 
     private boolean isZoomUp(HorizontalCoverView childToZoom, float childOffset) {
-        final int childHalfWidth = childToZoom.getInitialWidth() / 2;
+        final int childHalfWidth = HorizontalCoverView.getInitialWidth() / 2;
         return ScrollingData.instance.isSwipeToLeft() ?
                 (childOffset < childHalfWidth) : (childOffset > childHalfWidth);
     }

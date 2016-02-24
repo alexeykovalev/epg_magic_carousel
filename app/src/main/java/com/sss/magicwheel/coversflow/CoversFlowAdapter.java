@@ -18,8 +18,8 @@ import java.util.List;
  */
 public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdapter.CoverViewHolder> {
 
-    private static final int REGULAR_COVER = 0;
-    private static final int OFFSET_COVER = 1;
+    private static final int REGULAR_COVER_VIEW_TYPE = 0;
+    private static final int OFFSET_COVER_VIEW_TYPE = 1;
 
     private final LayoutInflater inflater;
     private final List<CoverEntity> coversData;
@@ -37,17 +37,17 @@ public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdap
 
     @Override
     public int getItemViewType(int position) {
-        return getItemForPosition(position).isOffsetItem() ? OFFSET_COVER : REGULAR_COVER;
+        return getItemForPosition(position).isOffsetItem() ? OFFSET_COVER_VIEW_TYPE : REGULAR_COVER_VIEW_TYPE;
     }
 
     @Override
     public CoverViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final IHorizontalCoverView resView;
-        if (viewType == REGULAR_COVER) {
+        if (viewType == REGULAR_COVER_VIEW_TYPE) {
             final HorizontalCoverView coverView = (HorizontalCoverView) inflater.inflate(R.layout.cover_item_layout, parent, false);
             coverView.restoreInitialSize();
             resView = coverView;
-        } else if (viewType == OFFSET_COVER) {
+        } else if (viewType == OFFSET_COVER_VIEW_TYPE) {
             resView = (IHorizontalCoverView) inflater.inflate(R.layout.fake_cover_layout, parent, false);
         } else {
             throw new IllegalStateException("Unknown viewType [" + viewType + "]");

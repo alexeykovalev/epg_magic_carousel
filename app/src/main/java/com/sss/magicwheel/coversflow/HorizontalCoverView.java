@@ -30,6 +30,15 @@ public class HorizontalCoverView extends FrameLayout implements IHorizontalCover
         INITIAL_COVER_LAYOUT_PARAMS.leftMargin = (int) App.dpToPixels(15);
     }
 
+    public static int getInitialWidth() {
+        return INITIAL_COVER_LAYOUT_PARAMS.width;
+    }
+
+    public static int getInitialHeight() {
+        return INITIAL_COVER_LAYOUT_PARAMS.height;
+    }
+
+
     private ImageView coverImage;
     private TextView coverTitle;
 
@@ -63,14 +72,6 @@ public class HorizontalCoverView extends FrameLayout implements IHorizontalCover
 
     public void restoreInitialSize() {
         setLayoutParams(INITIAL_COVER_LAYOUT_PARAMS);
-    }
-
-    public int getInitialWidth() {
-        return INITIAL_COVER_LAYOUT_PARAMS.width;
-    }
-
-    public int getInitialHeight() {
-        return INITIAL_COVER_LAYOUT_PARAMS.height;
     }
 
 }
