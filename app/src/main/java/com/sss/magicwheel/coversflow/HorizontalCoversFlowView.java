@@ -83,6 +83,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         return (CoversFlowAdapter) super.getAdapter();
     }
 
+    @Deprecated
     public void resizeCoverOnClick() {
         final View firstCover = findChildIntersectingWithEdge();
 
@@ -120,10 +121,19 @@ public final class HorizontalCoversFlowView extends RecyclerView {
             final ViewGroup.LayoutParams lp = intersectingChild.getLayoutParams();
             lp.height = newChildHeightAsInt;
             lp.width = (int) (newChildHeightAsInt * HorizontalCoverView.ASPECT_RATIO);
-
-            intersectingChild.setLayoutParams(lp);
-
         }
+
+        for (int i = 0; i < getChildCount(); i++) {
+            final View coverView = getChildAt(i);
+            final ViewGroup.MarginLayoutParams coverViewLp = (MarginLayoutParams) coverView.getLayoutParams();
+            if (intersectingChild != coverView) {
+                coverViewLp.height = HorizontalCoverView.INITIAL_COVER_LAYOUT_PARAMS.height;
+                coverViewLp.width = HorizontalCoverView.INITIAL_COVER_LAYOUT_PARAMS.width;
+                coverViewLp.leftMargin = HorizontalCoverView.INITIAL_COVER_LAYOUT_PARAMS.leftMargin;
+            }
+        }
+
+        requestLayout();
     }
 
     private int getChildMaxHeight() {
