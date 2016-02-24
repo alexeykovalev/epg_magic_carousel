@@ -116,11 +116,11 @@ public final class HorizontalCoversFlowView extends RecyclerView {
             final int initialHeight = intersectingChild.getInitialHeight();
 
             double newChildHeight = initialHeight + (maxHeight - initialHeight) * zoomFactor;
-            final int newChildHeightAsInt = (int) Math.round(newChildHeight);
+            final int newChildHeightAsInt = (int) newChildHeight;
 
             final ViewGroup.LayoutParams lp = intersectingChild.getLayoutParams();
             lp.height = newChildHeightAsInt;
-            lp.width = (int) (newChildHeightAsInt * HorizontalCoverView.ASPECT_RATIO);
+            lp.width = (int) (newChildHeightAsInt * HorizontalCoverView.COVER_ASPECT_RATIO);
         }
 
         for (int i = 0; i < getChildCount(); i++) {
@@ -150,7 +150,8 @@ public final class HorizontalCoversFlowView extends RecyclerView {
             final float childLeftX = child.getX();
             final float childRightX = childLeftX + child.getWidth();
 
-            if (childLeftX <= edgeLeftPosition && childRightX >= edgeLeftPosition) {
+            final boolean isFakeChild = !(child instanceof HorizontalCoverView);
+            if (!isFakeChild && childLeftX <= edgeLeftPosition && childRightX >= edgeLeftPosition) {
                 return (HorizontalCoverView) child;
             }
         }

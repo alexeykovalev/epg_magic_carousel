@@ -18,8 +18,8 @@ import com.sss.magicwheel.coversflow.entity.CoverEntity;
 public class HorizontalCoverView extends FrameLayout {
 
     public static final int INITIAL_HEIGHT_IN_DP = 150;
-    public static final double ASPECT_RATIO = 1.5;
-    public static final int INITIAL_WIDTH_IN_DP = (int) (INITIAL_HEIGHT_IN_DP * ASPECT_RATIO);
+    public static final double COVER_ASPECT_RATIO = 1.5;
+    public static final int INITIAL_WIDTH_IN_DP = (int) (INITIAL_HEIGHT_IN_DP * COVER_ASPECT_RATIO);
 
     public final static MarginLayoutParams INITIAL_COVER_LAYOUT_PARAMS = new MarginLayoutParams(
             (int) App.dpToPixels(INITIAL_WIDTH_IN_DP),
