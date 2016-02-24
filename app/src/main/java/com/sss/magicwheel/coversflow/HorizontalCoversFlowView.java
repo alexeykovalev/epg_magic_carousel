@@ -85,29 +85,6 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         return (CoversFlowAdapter) super.getAdapter();
     }
 
-    @Deprecated
-    public void resizeCoverOnClick() {
-        final View firstCover = findChildIntersectingWithEdge();
-
-//        firstCover.setPivotX(firstCover.getWidth() / 2);
-//        firstCover.setPivotY(firstCover.getHeight() / 2);
-
-//        firstCover.setScaleX(2);
-//        firstCover.setScaleY(2);
-
-        final ViewGroup.LayoutParams lp = firstCover.getLayoutParams();
-        lp.width *= 2;
-        lp.height *= 2;
-
-        firstCover.setLayoutParams(lp);
-
-//        firstCover.setPivotX(firstCover.getWidth() / 2);
-//        firstCover.setPivotY(firstCover.getHeight() / 2);
-//
-//        firstCover.setScaleX(2);
-//        firstCover.setScaleY(2);
-    }
-
     private void resizeCovers() {
         HorizontalCoverView intersectingChild = findChildIntersectingWithEdge();
         resizeIntersectingChild(intersectingChild);
@@ -120,7 +97,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
             final double zoomFactor = getChildZoomFactor(intersectingChild);
 
             final int maxHeight = getChildMaxHeight();
-            final int initialHeight = HorizontalCoverView.getInitialHeight();
+            final int initialHeight = coversFlowMeasurements.getCoverDefaultHeight();
 
             double newChildHeight = initialHeight + (maxHeight - initialHeight) * zoomFactor;
             final int newChildHeightAsInt = (int) newChildHeight;
@@ -136,12 +113,12 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     private void restoreOtherChildrenToInitialSize(HorizontalCoverView intersectingChild) {
         for (int i = 0; i < getChildCount(); i++) {
             final View coverView = getChildAt(i);
-            final int topMarginValue = (getHeight() - HorizontalCoverView.getInitialHeight()) / 2;
+            final int topMarginValue = (getHeight() - coversFlowMeasurements.getCoverDefaultHeight()) / 2;
             final MarginLayoutParams coverViewLp = (MarginLayoutParams) coverView.getLayoutParams();
             if (intersectingChild != coverView) {
-                coverViewLp.height = HorizontalCoverView.getInitialHeight();
-                coverViewLp.width = HorizontalCoverView.getInitialWidth();
-                coverViewLp.leftMargin = HorizontalCoverView.getInitialMargins().left;
+                coverViewLp.height = coversFlowMeasurements.getCoverDefaultHeight();
+                coverViewLp.width = coversFlowMeasurements.getCoverDefaultWidth();
+                coverViewLp.leftMargin = coversFlowMeasurements.getCoverDefaultMargins().left;
                 coverViewLp.topMargin = topMarginValue;
             }
         }
@@ -178,15 +155,15 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         final float offset = edgeLeftPosition - childStartX;
 
         final double zoomFactor;
-        final int halfChildWidth = HorizontalCoverView.getInitialWidth() / 2;
+        final int halfChildWidth = coversFlowMeasurements.getCoverDefaultWidth() / 2;
         if (ScrollingData.instance.isSwipeToLeft()) {
-            if (isZoomUp(childToZoom, offset)) {
+            if (isZoomUp(offset)) {
                 zoomFactor = offset / halfChildWidth;
             } else {
                 zoomFactor = 1 - (offset - halfChildWidth) / halfChildWidth;
             }
         } else {
-            if (isZoomUp(childToZoom, offset)) {
+            if (isZoomUp(offset)) {
                 zoomFactor = 1 - (offset - halfChildWidth) / halfChildWidth;
             } else {
                 zoomFactor = offset / halfChildWidth;
@@ -196,8 +173,8 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         return zoomFactor;
     }
 
-    private boolean isZoomUp(HorizontalCoverView childToZoom, float childOffset) {
-        final int childHalfWidth = HorizontalCoverView.getInitialWidth() / 2;
+    private boolean isZoomUp(float childOffset) {
+        final int childHalfWidth = coversFlowMeasurements.getCoverDefaultWidth() / 2;
         return ScrollingData.instance.isSwipeToLeft() ?
                 (childOffset < childHalfWidth) : (childOffset > childHalfWidth);
     }
