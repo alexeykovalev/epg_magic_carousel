@@ -8,7 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.sss.magicwheel.coversflow.CoversFlowListMeasurements;
 import com.sss.magicwheel.coversflow.entity.CoverEntity;
+import com.sss.magicwheel.wheel.entity.CoordinatesHolder;
 import com.sss.magicwheel.wheel.entity.WheelConfig;
 import com.sss.magicwheel.wheel.entity.WheelDataItem;
 import com.sss.magicwheel.coversflow.HorizontalCoversFlowView;
@@ -35,6 +37,7 @@ public final class FragmentWheelPage extends Fragment {
     private WheelOfFortuneContainerFrameView wheelOfFortuneContainerFrameView;
 
     private HorizontalCoversFlowView horizontalCoversFlowView;
+    private WheelComputationHelper computationHelper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
@@ -42,21 +45,22 @@ public final class FragmentWheelPage extends Fragment {
         // TODO: 03.02.2016 simplify for now considering container has 0 height
 
         WheelComputationHelper.initialize(createWheelConfig(0));
+        computationHelper = WheelComputationHelper.getInstance();
+        CoversFlowListMeasurements.initialize(computationHelper);
 
-        final View rootView = inflater.inflate(R.layout.fragment_wheel_page_layout, container, false);
+        final ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_wheel_page_layout, container, false);
 
         wheelOfFortuneContainerFrameView = (WheelOfFortuneContainerFrameView) rootView.findViewById(R.id.wheel_of_fortune_container_frame);
         wheelOfFortuneContainerFrameView.swapData(createWheelSampleDataSet());
 
-        final ViewGroup coversFlowContainer = (ViewGroup) rootView.findViewById(R.id.covers_flow_list_container);
-        inflateCoversFlowContainer(inflater, coversFlowContainer);
+        inflateCoversFlowContainer(inflater, rootView);
 
-        rootView.findViewById(R.id.fragment_request_layout_button).setOnClickListener(new View.OnClickListener() {
+       /* rootView.findViewById(R.id.fragment_request_layout_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 horizontalCoversFlowView.resizeCoverOnClick();
             }
-        });
+        });*/
 
 /*
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -89,8 +93,10 @@ public final class FragmentWheelPage extends Fragment {
     }
 
     private int computeCoversFlowListHeight() {
-        return (int) App.dpToPixels(220);
+        return CoversFlowListMeasurements.getInstance().getCoverMaxHeight();
     }
+
+
 
     private List<CoverEntity> createSampleCoversData() {
         List<CoverEntity> covers = new ArrayList<>();
@@ -102,14 +108,13 @@ public final class FragmentWheelPage extends Fragment {
         return covers;
     }
 
+    private int computeLeftOffset() {
+        return (int) App.dpToPixels(200);
+    }
+
     private int computeRightOffset() {
         return (int) App.dpToPixels(600);
     }
-
-    private int computeLeftOffset() {
-        return (int) App.dpToPixels(350);
-    }
-
 
 
     private List<WheelDataItem> createWheelSampleDataSet() {

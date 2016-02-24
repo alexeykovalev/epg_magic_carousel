@@ -6,12 +6,6 @@
     <com.sss.magicwheel.wheel.widget.WheelOfFortuneContainerFrameView
         android:id="@+id/wheel_of_fortune_container_frame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"/>
-
-    <FrameLayout
-        android:id="@+id/covers_flow_list_container"
-        android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
     <Button
@@ -21,6 +15,7 @@
         android:textSize="20sp"
         android:text="Request_Layout"
         android:clickable="true"
+        android:visibility="gone"
         />
 
 
