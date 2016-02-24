@@ -27,7 +27,8 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         private int absScrollingDistance;
         private boolean isSwipeToLeft;
 
-        private ScrollingData() {}
+        private ScrollingData() {
+        }
 
         public static ScrollingData update(int deltaX) {
             instance.isSwipeToLeft = deltaX >= 0;
@@ -155,22 +156,28 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         final float offset = edgeLeftPosition - childStartX;
 
         double zoomFactor = 1;
-        if (isZoomUp(childToZoom, offset)) {
-            final int halfWidth = childToZoom.getInitialWidth() / 2;
-            zoomFactor = offset / halfWidth;
+
+        final int halfChildWidth = childToZoom.getInitialWidth() / 2;
+        if (ScrollingData.instance.isSwipeToLeft()) {
+            if (isZoomUp(childToZoom, offset)) {
+                zoomFactor = offset / halfChildWidth;
+            } else {
+                zoomFactor = 1 - (offset - halfChildWidth) / halfChildWidth;
+            }
         } else {
-            final int halfWidth = childToZoom.getInitialWidth() / 2;
-            zoomFactor = 1 - (offset - halfWidth) / halfWidth;
+            if (isZoomUp(childToZoom, offset)) {
+                zoomFactor = 1 - (offset - halfChildWidth) / halfChildWidth;
+            } else {
+                zoomFactor = offset / halfChildWidth;
+            }
         }
 
         return zoomFactor;
     }
 
     private boolean isZoomUp(HorizontalCoverView childToZoom, float childOffset) {
-        if (ScrollingData.instance.isSwipeToLeft()) {
-            return childOffset < (childToZoom.getInitialWidth() / 2);
-        }
-
-        return false;
+        final int childHalfWidth = childToZoom.getInitialWidth() / 2;
+        return ScrollingData.instance.isSwipeToLeft() ?
+                (childOffset < childHalfWidth) : (childOffset > childHalfWidth);
     }
 }
