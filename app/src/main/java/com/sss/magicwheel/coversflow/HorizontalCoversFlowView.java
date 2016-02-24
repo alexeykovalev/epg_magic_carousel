@@ -136,9 +136,9 @@ public final class HorizontalCoversFlowView extends RecyclerView {
             final int topMarginValue = (getHeight() - HorizontalCoverView.getInitialHeight()) / 2;
             final MarginLayoutParams coverViewLp = (MarginLayoutParams) coverView.getLayoutParams();
             if (intersectingChild != coverView) {
-                coverViewLp.height = HorizontalCoverView.INITIAL_COVER_LAYOUT_PARAMS.height;
-                coverViewLp.width = HorizontalCoverView.INITIAL_COVER_LAYOUT_PARAMS.width;
-                coverViewLp.leftMargin = HorizontalCoverView.INITIAL_COVER_LAYOUT_PARAMS.leftMargin;
+                coverViewLp.height = HorizontalCoverView.getInitialHeight();
+                coverViewLp.width = HorizontalCoverView.getInitialWidth();
+                coverViewLp.leftMargin = HorizontalCoverView.getInitialMargins().left;
                 coverViewLp.topMargin = topMarginValue;
             }
         }

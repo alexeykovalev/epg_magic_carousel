@@ -1,6 +1,7 @@
 package com.sss.magicwheel.coversflow;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -17,17 +18,26 @@ import com.sss.magicwheel.coversflow.entity.CoverEntity;
  */
 public class HorizontalCoverView extends FrameLayout implements IHorizontalCoverView {
 
-    public static final int INITIAL_HEIGHT_IN_DP = 150;
+    private static final int INITIAL_HEIGHT_IN_DP = 150;
     public static final double COVER_ASPECT_RATIO = 1.5;
-    public static final int INITIAL_WIDTH_IN_DP = (int) (INITIAL_HEIGHT_IN_DP * COVER_ASPECT_RATIO);
 
-    public final static MarginLayoutParams INITIAL_COVER_LAYOUT_PARAMS = new MarginLayoutParams(
+    private static final int INITIAL_WIDTH_IN_DP = (int) (INITIAL_HEIGHT_IN_DP * COVER_ASPECT_RATIO);
+
+    private final static MarginLayoutParams INITIAL_COVER_LAYOUT_PARAMS = new MarginLayoutParams(
             (int) App.dpToPixels(INITIAL_WIDTH_IN_DP),
             (int) App.dpToPixels(INITIAL_HEIGHT_IN_DP)
     );
 
+    private static final Rect MARGINS_RECT;
+
     static {
         INITIAL_COVER_LAYOUT_PARAMS.leftMargin = (int) App.dpToPixels(15);
+        MARGINS_RECT = new Rect(
+                INITIAL_COVER_LAYOUT_PARAMS.leftMargin,
+                INITIAL_COVER_LAYOUT_PARAMS.topMargin,
+                INITIAL_COVER_LAYOUT_PARAMS.rightMargin,
+                INITIAL_COVER_LAYOUT_PARAMS.bottomMargin
+        );
     }
 
     public static MarginLayoutParams safeCopyInitialLayoutParams() {
@@ -40,6 +50,10 @@ public class HorizontalCoverView extends FrameLayout implements IHorizontalCover
 
     public static int getInitialHeight() {
         return INITIAL_COVER_LAYOUT_PARAMS.height;
+    }
+
+    public static Rect getInitialMargins() {
+        return MARGINS_RECT;
     }
 
 
