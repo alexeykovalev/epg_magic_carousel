@@ -26,7 +26,7 @@ public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdap
     private final ICoverClickListener coverClickListener;
 
     public interface ICoverClickListener {
-        void onCoverClick(View coverView, CoverEntity coverEntity);
+        void onCoverClick(HorizontalCoverView coverView, CoverEntity coverEntity);
     }
 
     // TODO: 25.02.2016 validate passed params via Guava Preconditions
@@ -97,7 +97,7 @@ public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdap
                 asView(coverView).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View coverView) {
-                        coverClickListener.onCoverClick(coverView, entityToBind);
+                        coverClickListener.onCoverClick((HorizontalCoverView) coverView, entityToBind);
                     }
                 });
             }

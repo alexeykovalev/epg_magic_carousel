@@ -97,8 +97,7 @@ public final class FragmentWheelPage extends Fragment {
 
     private List<CoverEntity> createSampleCoversData() {
         final List<CoverEntity> covers = new ArrayList<>();
-//        final int leftOffset = CoversFlowListMeasurements.getInstance().getLeftOffset();
-        final int leftOffset = 0;
+        final int leftOffset = CoversFlowListMeasurements.getInstance().getLeftOffset();
         final int rightOffset = CoversFlowListMeasurements.getInstance().getRightOffset();
 
         covers.add(CoverEntity.offsetItem(leftOffset));
