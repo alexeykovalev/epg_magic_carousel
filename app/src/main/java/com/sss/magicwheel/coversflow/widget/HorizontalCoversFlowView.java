@@ -1,6 +1,7 @@
 package com.sss.magicwheel.coversflow.widget;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -11,7 +12,6 @@ import com.sss.magicwheel.App;
 import com.sss.magicwheel.coversflow.CoversFlowAdapter;
 import com.sss.magicwheel.coversflow.CoversFlowListMeasurements;
 import com.sss.magicwheel.coversflow.HorizontalCoversFlowEdgeDecorator;
-import com.sss.magicwheel.coversflow.HorizontalSpacingItemDecoration;
 import com.sss.magicwheel.coversflow.entity.CoverEntity;
 
 import java.util.Collections;
@@ -23,9 +23,11 @@ import java.util.List;
  */
 public final class HorizontalCoversFlowView extends RecyclerView {
 
+    private static final int HORIZONTAL_SPACING_IN_DP = 15;
+
     private static class ScrollingData {
 
-        private static ScrollingData instance = new ScrollingData();
+        private static ScrollingData Instance = new ScrollingData();
 
         private int absScrollingDistance;
         private boolean isSwipeToLeft;
@@ -34,13 +36,13 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         }
 
         public static ScrollingData update(int deltaX) {
-            instance.isSwipeToLeft = deltaX >= 0;
-            instance.absScrollingDistance = Math.abs(deltaX);
-            return instance;
+            Instance.isSwipeToLeft = deltaX >= 0;
+            Instance.absScrollingDistance = Math.abs(deltaX);
+            return Instance;
         }
 
         public boolean isSwipeToLeft() {
-            return instance.isSwipeToLeft;
+            return Instance.isSwipeToLeft;
         }
     }
 
@@ -83,22 +85,41 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         setAdapter(new CoversFlowAdapter(context, Collections.<CoverEntity>emptyList(), new CoversFlowAdapter.ICoverClickListener() {
             @Override
             public void onCoverClick(HorizontalCoverView coverView, CoverEntity coverEntity) {
-                selectCover(coverView, coverEntity);
+                selectCoverOnClick(coverView, coverEntity);
             }
         }));
+
         addItemDecoration(new HorizontalCoversFlowEdgeDecorator(context));
-        addItemDecoration(new HorizontalSpacingItemDecoration((int) App.dpToPixels(15)));
+
+        addItemDecoration(new ItemDecoration() {
+            @Override
+            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, State state) {
+                final int coverAdapterPosition = parent.getChildAdapterPosition(view);
+                // take into account right offset fake view
+                final boolean isLastItem = coverAdapterPosition == (parent.getAdapter().getItemCount() - 2);
+
+                if ((view instanceof HorizontalCoverView) && !isLastItem) {
+                    outRect.set(0, 0, (int) App.dpToPixels(HORIZONTAL_SPACING_IN_DP), 0);
+                } else {
+                    super.getItemOffsets(outRect, view, parent, state);
+                }
+            }
+        });
     }
 
     public void swapData(List<CoverEntity> coversData) {
         getAdapter().swapData(coversData);
     }
 
+    /**
+     * After scrolling of fling gesture has been done we have to fully select
+     * nearest to the edge cover.
+     */
     private void scrollToFullySelectCover() {
-        final HorizontalCoverView intersectingChild = findChildIntersectingWithEdge();
-        if (intersectingChild != null) {
+        final HorizontalCoverView coverClosestToResizingEdge = findCoverClosestToResizingEdge();
+        if (coverClosestToResizingEdge != null) {
             final float edgeLeftPosition = coversFlowMeasurements.getResizingEdgePosition();
-            final float childStartX = intersectingChild.getLeft();
+            final float childStartX = coverClosestToResizingEdge.getLeft();
             final float offset = edgeLeftPosition - childStartX;
 
             final float scrollBy = coversFlowMeasurements.getCoverDefaultWidth() / 2 - offset;
@@ -107,9 +128,45 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         }
     }
 
-    private void selectCover(HorizontalCoverView coverView, CoverEntity coverEntity) {
+    // TODO: 25.02.2016 refactor this method.
+    private HorizontalCoverView findCoverClosestToResizingEdge() {
+        final HorizontalCoverView intersectingCover = findCoverIntersectingWithEdge();
+        if (intersectingCover != null) {
+            return intersectingCover;
+        }
 
-        final HorizontalCoverView intersectingChild = findChildIntersectingWithEdge();
+        final float edgeLeftPosition = coversFlowMeasurements.getResizingEdgePosition();
+
+        View closestToEdgeFromLeft = null;
+        int i = 0;
+        while (i < getChildCount() && (closestToEdgeFromLeft = getChildAt(i)).getRight() <= edgeLeftPosition) {
+            i++;
+        }
+
+        final boolean isOffsetCover = !(closestToEdgeFromLeft instanceof HorizontalCoverView);
+
+        if (isOffsetCover) {
+            final boolean isLeftOffset = getChildAdapterPosition(closestToEdgeFromLeft) == 0;
+            final boolean isRightOffset = getChildAdapterPosition(closestToEdgeFromLeft) == (getAdapter().getItemCount() - 1);
+
+            if (isLeftOffset) {
+                return (HorizontalCoverView) getChildAt(1);
+            }
+
+            if (isRightOffset) {
+                return (HorizontalCoverView) getChildAt(getChildCount() - 2);
+            }
+        }
+
+        if (closestToEdgeFromLeft != null && !isOffsetCover) {
+            return (HorizontalCoverView) closestToEdgeFromLeft;
+        }
+
+        return null;
+    }
+
+    private void selectCoverOnClick(HorizontalCoverView coverView, CoverEntity coverEntity) {
+        final HorizontalCoverView intersectingChild = findCoverIntersectingWithEdge();
         float extraWidthToCompensate = intersectingChild != null ?
                 (intersectingChild.getWidth() - coversFlowMeasurements.getCoverDefaultWidth()) : 0;
 
@@ -132,7 +189,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     }
 
     private void resizeCovers() {
-        HorizontalCoverView intersectingChild = findChildIntersectingWithEdge();
+        HorizontalCoverView intersectingChild = findCoverIntersectingWithEdge();
         resizeIntersectingChild(intersectingChild);
         restoreOtherChildrenToInitialSize(intersectingChild);
         requestLayout();
@@ -174,7 +231,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         return getHeight();
     }
 
-    private HorizontalCoverView findChildIntersectingWithEdge() {
+    private HorizontalCoverView findCoverIntersectingWithEdge() {
         final float edgeLeftPosition = coversFlowMeasurements.getResizingEdgePosition();
 
         for (int i = 0; i < getChildCount(); i++) {
@@ -198,7 +255,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
 
         final double zoomFactor;
         final int halfChildWidth = coversFlowMeasurements.getCoverDefaultWidth() / 2;
-        if (ScrollingData.instance.isSwipeToLeft()) {
+        if (ScrollingData.Instance.isSwipeToLeft()) {
             if (isZoomUp(offset)) {
                 zoomFactor = offset / halfChildWidth;
             } else {
@@ -217,7 +274,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
 
     private boolean isZoomUp(float childOffset) {
         final int childHalfWidth = coversFlowMeasurements.getCoverDefaultWidth() / 2;
-        return ScrollingData.instance.isSwipeToLeft() ?
+        return ScrollingData.Instance.isSwipeToLeft() ?
                 (childOffset < childHalfWidth) : (childOffset > childHalfWidth);
     }
 
