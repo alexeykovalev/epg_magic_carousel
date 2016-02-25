@@ -1,4 +1,4 @@
-package com.sss.magicwheel.coversflow;
+package com.sss.magicwheel.coversflow.widget;
 
 import com.sss.magicwheel.coversflow.entity.CoverEntity;
 

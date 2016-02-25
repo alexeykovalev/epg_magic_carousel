@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 
 import com.sss.magicwheel.R;
 import com.sss.magicwheel.coversflow.entity.CoverEntity;
+import com.sss.magicwheel.coversflow.widget.HorizontalCoverView;
+import com.sss.magicwheel.coversflow.widget.IHorizontalCoverView;
 
 import java.util.ArrayList;
 import java.util.List;

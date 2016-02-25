@@ -1,4 +1,4 @@
-package com.sss.magicwheel.coversflow;
+package com.sss.magicwheel.coversflow.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;

@@ -1,4 +1,4 @@
-package com.sss.magicwheel.coversflow;
+package com.sss.magicwheel.coversflow.widget;
 
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
@@ -7,6 +7,11 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.sss.magicwheel.App;
+import com.sss.magicwheel.coversflow.CoversFlowAdapter;
+import com.sss.magicwheel.coversflow.CoversFlowListMeasurements;
+import com.sss.magicwheel.coversflow.HorizontalCoversFlowEdgeDecorator;
+import com.sss.magicwheel.coversflow.HorizontalSpacingItemDecoration;
 import com.sss.magicwheel.coversflow.entity.CoverEntity;
 
 import java.util.Collections;
@@ -82,6 +87,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
             }
         }));
         addItemDecoration(new HorizontalCoversFlowEdgeDecorator(context));
+        addItemDecoration(new HorizontalSpacingItemDecoration((int) App.dpToPixels(15)));
     }
 
     public void swapData(List<CoverEntity> coversData) {

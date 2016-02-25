@@ -47,7 +47,6 @@ public final class CoversFlowListMeasurements {
         final int coverDefaultWidth = (int) (COVER_ASPECT_RATIO * coverDefaultHeight);
 
         this.initialCoverLayoutParams = new ViewGroup.MarginLayoutParams(coverDefaultWidth, coverDefaultHeight);
-        this.initialCoverLayoutParams.leftMargin = 15;
 
         this.coverDefaultMargins = new Rect(
                 initialCoverLayoutParams.leftMargin,

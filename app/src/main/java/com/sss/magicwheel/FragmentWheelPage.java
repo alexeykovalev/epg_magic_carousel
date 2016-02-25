@@ -12,7 +12,7 @@ import com.sss.magicwheel.coversflow.CoversFlowListMeasurements;
 import com.sss.magicwheel.coversflow.entity.CoverEntity;
 import com.sss.magicwheel.wheel.entity.WheelConfig;
 import com.sss.magicwheel.wheel.entity.WheelDataItem;
-import com.sss.magicwheel.coversflow.HorizontalCoversFlowView;
+import com.sss.magicwheel.coversflow.widget.HorizontalCoversFlowView;
 import com.sss.magicwheel.wheel.WheelComputationHelper;
 import com.sss.magicwheel.wheel.widget.WheelOfFortuneContainerFrameView;
 
