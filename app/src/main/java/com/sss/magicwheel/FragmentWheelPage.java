@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.sss.magicwheel.coversflow.CoversFlowListMeasurements;
 import com.sss.magicwheel.coversflow.entity.CoverEntity;
@@ -82,8 +83,11 @@ public final class FragmentWheelPage extends Fragment {
                 R.layout.horizontal_covers_flow_list_layout, fragmentRootView, false
         );
 
-        final ViewGroup.LayoutParams coversFlowViewLp = horizontalCoversFlowView.getLayoutParams();
+        final FrameLayout.LayoutParams coversFlowViewLp = (FrameLayout.LayoutParams) horizontalCoversFlowView.getLayoutParams();
         coversFlowViewLp.height = computeCoversFlowListHeight();
+
+        // TODO: 25.02.2016 hack for testing
+        coversFlowViewLp.topMargin = (int) App.dpToPixels(10);
         horizontalCoversFlowView.setLayoutParams(coversFlowViewLp);
 
         fragmentRootView.addView(horizontalCoversFlowView);

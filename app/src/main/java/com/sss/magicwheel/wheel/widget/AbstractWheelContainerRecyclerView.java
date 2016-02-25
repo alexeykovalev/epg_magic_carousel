@@ -164,7 +164,7 @@ public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
 
     @Override
     public void onDraw(Canvas canvas) {
-        drawGapLineRay(canvas);
+//        drawGapLineRay(canvas);
         if (isCutGapAreaActivated) {
             doCutGapArea(canvas);
         }

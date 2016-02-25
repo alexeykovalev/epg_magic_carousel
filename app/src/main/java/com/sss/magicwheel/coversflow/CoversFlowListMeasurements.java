@@ -42,7 +42,8 @@ public final class CoversFlowListMeasurements {
         this.computationHelper = computationHelper;
         instance = this;
 
-        this.maxCoverHeight = (int) (getGapBottomRayPosition().y - getGapTopRayPosition().y);
+        // TODO: 25.02.2016 hack for testing
+        this.maxCoverHeight = (int) (getGapBottomRayPosition().y - getGapTopRayPosition().y - 15);
         final int coverDefaultHeight = maxCoverHeight - 2 * DEFAULT_HEIGHT_MAX_HEIGHT_DELTA;
         final int coverDefaultWidth = (int) (COVER_ASPECT_RATIO * coverDefaultHeight);
 

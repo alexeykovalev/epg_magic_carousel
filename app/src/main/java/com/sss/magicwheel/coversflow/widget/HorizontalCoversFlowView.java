@@ -96,7 +96,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
             }
         }));
 
-        addItemDecoration(new HorizontalCoversFlowEdgeDecorator(context));
+//        addItemDecoration(new HorizontalCoversFlowEdgeDecorator(context));
 
         addItemDecoration(new ItemDecoration() {
             @Override
