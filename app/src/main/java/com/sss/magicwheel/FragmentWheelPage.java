@@ -78,16 +78,16 @@ public final class FragmentWheelPage extends Fragment {
         return rootView;
     }
 
-    private void inflateCoversFlowContainer(LayoutInflater inflater, ViewGroup coversFlowContainer) {
+    private void inflateCoversFlowContainer(LayoutInflater inflater, ViewGroup fragmentRootView) {
         horizontalCoversFlowView = (HorizontalCoversFlowView) inflater.inflate(
-                R.layout.horizontal_covers_flow_list_layout, coversFlowContainer, false
+                R.layout.horizontal_covers_flow_list_layout, fragmentRootView, false
         );
 
         final ViewGroup.LayoutParams coversFlowViewLp = horizontalCoversFlowView.getLayoutParams();
         coversFlowViewLp.height = computeCoversFlowListHeight();
         horizontalCoversFlowView.setLayoutParams(coversFlowViewLp);
 
-        coversFlowContainer.addView(horizontalCoversFlowView);
+        fragmentRootView.addView(horizontalCoversFlowView);
         horizontalCoversFlowView.swapData(createSampleCoversData());
     }
 

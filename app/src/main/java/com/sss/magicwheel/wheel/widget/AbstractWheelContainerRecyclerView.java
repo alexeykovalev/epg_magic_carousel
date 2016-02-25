@@ -4,23 +4,17 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PointF;
-import android.graphics.Region;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.sss.magicwheel.wheel.entity.CoordinatesHolder;
+import com.sss.magicwheel.wheel.WheelAdapter;
+import com.sss.magicwheel.wheel.WheelComputationHelper;
 import com.sss.magicwheel.wheel.entity.WheelConfig;
 import com.sss.magicwheel.wheel.entity.WheelDataItem;
 import com.sss.magicwheel.wheel.entity.WheelRotationDirection;
-import com.sss.magicwheel.wheel.WheelAdapter;
-import com.sss.magicwheel.wheel.WheelComputationHelper;
-import com.sss.magicwheel.wheel.decor.WheelSectorRayItemDecoration;
 import com.sss.magicwheel.wheel.manager.AbstractWheelLayoutManager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,14 +28,9 @@ public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
     protected final WheelComputationHelper computationHelper;
     protected final WheelConfig wheelConfig;
 
-    private final Paint gapDrawingPaint;
-    private final PointF gapTopRay;
-    private final PointF gapBottomRay;
+    protected final Paint gapRayDrawingPaint;
 
-    private final Path gapPath;
     private boolean isCutGapAreaActivated;
-
-    private final List<ItemDecoration> itemDecorators = new ArrayList<>();
 
     private class AutoAngleAdjustmentScrollListener extends OnScrollListener {
 
@@ -88,55 +77,9 @@ public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
         this.computationHelper = WheelComputationHelper.getInstance();
         this.wheelConfig = computationHelper.getWheelConfig();
 
-        this.gapDrawingPaint = createGapRaysDrawingPaint();
-        this.gapTopRay = computeGapTopRayPosition();
-        this.gapBottomRay = computeGapBottomRayPosition();
-
-        this.gapPath = createGapClipPath();
+        this.gapRayDrawingPaint = createGapRaysDrawingPaint();
 
         addOnScrollListener(new AutoAngleAdjustmentScrollListener());
-    }
-
-    @Deprecated
-    public void smoothlySelectDataItem(WheelDataItem dataItemToSelect) {
-//        super.smoothScrollToPosition(getVirtualPositionForDataItem(dataItemToSelect));
-        throw new UnsupportedOperationException("Not implemented feature yet.");
-    }
-
-    @Deprecated
-    @Override
-    public void addItemDecoration(ItemDecoration decor, int index) {
-        super.addItemDecoration(decor, index);
-        itemDecorators.add(decor);
-    }
-
-    @Deprecated
-    @Override
-    public void addItemDecoration(ItemDecoration decor) {
-        super.addItemDecoration(decor);
-        itemDecorators.add(decor);
-    }
-
-    @Deprecated
-    @Override
-    public void removeItemDecoration(ItemDecoration decor) {
-        super.removeItemDecoration(decor);
-        itemDecorators.remove(decor);
-    }
-
-    @Deprecated
-    public void removeSectorRayItemDecorations() {
-        // two for looping in order to eliminate ConcurrentModificationException
-        final List<ItemDecoration> itemsToRemove = new ArrayList<>();
-        for (ItemDecoration itemDecorator : itemDecorators) {
-            if (itemDecorator instanceof WheelSectorRayItemDecoration) {
-                itemsToRemove.add(itemDecorator);
-            }
-        }
-
-        for (ItemDecoration itemDecoration : itemsToRemove) {
-            removeItemDecoration(itemDecoration);
-        }
     }
 
     public abstract void handleTapOnSectorView(View sectorViewToSelect);
@@ -221,30 +164,20 @@ public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
 
     @Override
     public void onDraw(Canvas canvas) {
-        drawHelperGapLines(canvas);
-        cutGapArea(canvas);
+        drawGapLineRay(canvas);
+        if (isCutGapAreaActivated) {
+            doCutGapArea(canvas);
+        }
         super.onDraw(canvas);
     }
-
 
     public void setIsCutGapAreaActivated(boolean isCutGapAreaActivated) {
         this.isCutGapAreaActivated = isCutGapAreaActivated;
     }
 
-    private void cutGapArea(Canvas canvas) {
-        if (isCutGapAreaActivated) {
-            canvas.clipPath(gapPath, Region.Op.DIFFERENCE);
-        }
-    }
+    protected abstract void drawGapLineRay(Canvas canvas);
 
-    private void drawHelperGapLines(Canvas canvas) {
-        final PointF circleCenterRelToRecyclerView = wheelConfig.getCircleCenterRelToRecyclerView();
-        canvas.drawLine(circleCenterRelToRecyclerView.x, circleCenterRelToRecyclerView.y,
-                gapTopRay.x, gapTopRay.y, gapDrawingPaint);
-
-        canvas.drawLine(circleCenterRelToRecyclerView.x, circleCenterRelToRecyclerView.y,
-                gapBottomRay.x, gapBottomRay.y, gapDrawingPaint);
-    }
+    protected abstract void doCutGapArea(Canvas canvas);
 
     private static Paint createGapRaysDrawingPaint() {
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -252,35 +185,6 @@ public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
         paint.setColor(Color.RED);
         paint.setStrokeWidth(8);
         return paint;
-    }
-
-    private PointF computeGapTopRayPosition() {
-        final PointF pos = CoordinatesHolder.ofPolar(2 * wheelConfig.getOuterRadius(),
-                wheelConfig.getAngularRestrictions().getGapAreaTopEdgeAngleRestrictionInRad()
-        ).toPointF();
-
-        return WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(pos);
-    }
-
-    private PointF computeGapBottomRayPosition() {
-        final PointF pos = CoordinatesHolder.ofPolar(2 * wheelConfig.getOuterRadius(),
-                wheelConfig.getAngularRestrictions().getGapAreaBottomEdgeAngleRestrictionInRad()
-        ).toPointF();
-
-        return WheelComputationHelper.fromCircleCoordsSystemToRecyclerViewCoordsSystem(pos);
-    }
-
-    private Path createGapClipPath() {
-        final Path res = new Path();
-        final PointF circleCenterRelToRecyclerView = wheelConfig.getCircleCenterRelToRecyclerView();
-
-        res.moveTo(circleCenterRelToRecyclerView.x, circleCenterRelToRecyclerView.y);
-        res.lineTo(gapTopRay.x, gapTopRay.y);
-        res.lineTo(gapBottomRay.x, gapBottomRay.y);
-        res.lineTo(circleCenterRelToRecyclerView.x, circleCenterRelToRecyclerView.y);
-        res.close();
-
-        return res;
     }
 
 }
