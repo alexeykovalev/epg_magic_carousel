@@ -74,8 +74,17 @@ public final class HorizontalCoversFlowView extends RecyclerView {
 
     private void init(Context context) {
         setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-        setAdapter(new CoversFlowAdapter(context, Collections.<CoverEntity>emptyList()));
+        setAdapter(new CoversFlowAdapter(context, Collections.<CoverEntity>emptyList(), new CoversFlowAdapter.ICoverClickListener() {
+            @Override
+            public void onCoverClick(View coverView, CoverEntity coverEntity) {
+                selectCover(coverView, coverEntity);
+            }
+        }));
         addItemDecoration(new HorizontalCoversFlowEdgeDecorator(context));
+    }
+
+    private void selectCover(View coverView, CoverEntity coverEntity) {
+
     }
 
     public void swapData(List<CoverEntity> coversData) {
@@ -85,6 +94,11 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     @Override
     public CoversFlowAdapter getAdapter() {
         return (CoversFlowAdapter) super.getAdapter();
+    }
+
+    @Override
+    public LinearLayoutManager getLayoutManager() {
+        return (LinearLayoutManager) super.getLayoutManager();
     }
 
     private void resizeCovers() {
@@ -176,4 +190,5 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         return ScrollingData.instance.isSwipeToLeft() ?
                 (childOffset < childHalfWidth) : (childOffset > childHalfWidth);
     }
+
 }

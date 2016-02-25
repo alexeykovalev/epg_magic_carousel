@@ -27,8 +27,12 @@ public final class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelI
     private final OnWheelItemClickListener itemClickListener;
     private final LayoutInflater inflater;
 
+    /**
+     * For internal use only. Don't use for passing {@link WheelDataItem}
+     * entity associated with sector.
+     */
     public interface OnWheelItemClickListener {
-        void onItemClicked(View clickedSectorView, WheelDataItem dataItem);
+        void onItemClicked(View clickedSectorView);
     }
 
     // TODO: 29.01.2016 Check for Preconditions here
@@ -99,7 +103,7 @@ public final class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelI
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    itemClickListener.onItemClicked(itemView, dataItem);
+                    itemClickListener.onItemClicked(itemView);
                 }
             });
             bigWrapperView.bindData(dataItem);

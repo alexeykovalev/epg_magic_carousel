@@ -139,7 +139,7 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         ));
         topWheelContainerView.setAdapter(createEmptyWheelAdapter(new WheelAdapter.OnWheelItemClickListener() {
             @Override
-            public void onItemClicked(View clickedSectorView, WheelDataItem dataItem) {
+            public void onItemClicked(View clickedSectorView) {
                 topWheelContainer.handleTapOnSectorView(clickedSectorView);
             }
         }));
@@ -169,7 +169,7 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         bottomWheelContainerView.setLayoutManager(bottomWheelLayoutManager);
         bottomWheelContainerView.setAdapter(createEmptyWheelAdapter(new WheelAdapter.OnWheelItemClickListener() {
             @Override
-            public void onItemClicked(View clickedSectorView, WheelDataItem dataItem) {
+            public void onItemClicked(View clickedSectorView) {
                 bottomWheelContainer.handleTapOnSectorView(clickedSectorView);
             }
         }));

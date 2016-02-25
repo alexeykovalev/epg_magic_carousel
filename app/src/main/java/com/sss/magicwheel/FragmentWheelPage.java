@@ -57,7 +57,6 @@ public final class FragmentWheelPage extends Fragment {
        /* rootView.findViewById(R.id.fragment_request_layout_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                horizontalCoversFlowView.resizeCoverOnClick();
             }
         });*/
 
@@ -97,23 +96,18 @@ public final class FragmentWheelPage extends Fragment {
 
 
     private List<CoverEntity> createSampleCoversData() {
-        List<CoverEntity> covers = new ArrayList<>();
-        covers.add(CoverEntity.offsetItem(computeLeftOffset()));
+        final List<CoverEntity> covers = new ArrayList<>();
+//        final int leftOffset = CoversFlowListMeasurements.getInstance().getLeftOffset();
+        final int leftOffset = 0;
+        final int rightOffset = CoversFlowListMeasurements.getInstance().getRightOffset();
+
+        covers.add(CoverEntity.offsetItem(leftOffset));
         for (int i = 0; i < 50; i++) {
             covers.add(CoverEntity.dataItem("Cover [" + i + "]"));
         }
-        covers.add(CoverEntity.offsetItem(computeRightOffset()));
+        covers.add(CoverEntity.offsetItem(rightOffset));
         return covers;
     }
-
-    private int computeLeftOffset() {
-        return CoversFlowListMeasurements.getInstance().getLeftOffset();
-    }
-
-    private int computeRightOffset() {
-        return CoversFlowListMeasurements.getInstance().getRightOffset();
-    }
-
 
     private List<WheelDataItem> createWheelSampleDataSet() {
         List<WheelDataItem> items = new ArrayList<>();

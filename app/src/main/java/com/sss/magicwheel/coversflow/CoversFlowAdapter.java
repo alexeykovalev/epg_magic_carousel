@@ -23,10 +23,17 @@ public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdap
 
     private final LayoutInflater inflater;
     private final List<CoverEntity> coversData;
+    private final ICoverClickListener coverClickListener;
 
-    public CoversFlowAdapter(Context context, List<CoverEntity> coversData) {
+    public interface ICoverClickListener {
+        void onCoverClick(View coverView, CoverEntity coverEntity);
+    }
+
+    // TODO: 25.02.2016 validate passed params via Guava Preconditions
+    public CoversFlowAdapter(Context context, List<CoverEntity> coversData, ICoverClickListener coverClickListener) {
         this.inflater = LayoutInflater.from(context);
         this.coversData = new ArrayList<>(coversData);
+        this.coverClickListener = coverClickListener;
     }
 
     public void swapData(List<CoverEntity> coversData) {
@@ -42,18 +49,16 @@ public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdap
 
     @Override
     public CoverViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final IHorizontalCoverView resView;
         if (viewType == REGULAR_COVER_VIEW_TYPE) {
             final HorizontalCoverView coverView = (HorizontalCoverView) inflater.inflate(R.layout.cover_item_layout, parent, false);
             coverView.restoreInitialSize(parent.getHeight());
-            resView = coverView;
+            return new CoverViewHolder(coverView, coverClickListener);
         } else if (viewType == OFFSET_COVER_VIEW_TYPE) {
-            resView = (IHorizontalCoverView) inflater.inflate(R.layout.fake_cover_layout, parent, false);
+            IHorizontalCoverView resView = (IHorizontalCoverView) inflater.inflate(R.layout.fake_cover_layout, parent, false);
+            return new CoverViewHolder(resView, null);
         } else {
             throw new IllegalStateException("Unknown viewType [" + viewType + "]");
         }
-
-        return new CoverViewHolder(resView);
     }
 
     @Override
@@ -73,14 +78,30 @@ public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdap
     static class CoverViewHolder extends RecyclerView.ViewHolder {
 
         private final IHorizontalCoverView coverView;
+        private final ICoverClickListener coverClickListener;
 
-        public CoverViewHolder(IHorizontalCoverView coverView) {
-            super((View) coverView);
+        public CoverViewHolder(IHorizontalCoverView coverView, ICoverClickListener coverClickListener) {
+            super(asView(coverView));
             this.coverView = coverView;
+            this.coverClickListener = coverClickListener;
         }
 
-        void bind(CoverEntity entityToBind) {
+        private static View asView(IHorizontalCoverView horizontalCoverView) {
+            return (View) horizontalCoverView;
+        }
+
+        void bind(final CoverEntity entityToBind) {
             coverView.bind(entityToBind);
+            // if view is Regular one and NOT offset view
+            if (coverClickListener != null) {
+                asView(coverView).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View coverView) {
+                        coverClickListener.onCoverClick(coverView, entityToBind);
+                    }
+                });
+            }
         }
     }
+
 }
