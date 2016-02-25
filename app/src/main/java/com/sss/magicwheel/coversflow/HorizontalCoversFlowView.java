@@ -44,7 +44,8 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                resizeCovers();
+                scrollToFullySelectCover();
+//                resizeCovers();
             }
         }
 
@@ -87,6 +88,19 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         getAdapter().swapData(coversData);
     }
 
+    private void scrollToFullySelectCover() {
+        final HorizontalCoverView intersectingChild = findChildIntersectingWithEdge();
+        if (intersectingChild != null) {
+            final float edgeLeftPosition = coversFlowMeasurements.getResizingEdgePosition();
+            final float childStartX = intersectingChild.getLeft();
+            final float offset = edgeLeftPosition - childStartX;
+
+            final float scrollBy = coversFlowMeasurements.getCoverDefaultWidth() / 2 - offset;
+
+            smoothScrollBy((int) scrollBy, 0);
+        }
+    }
+
     private void selectCover(HorizontalCoverView coverView, CoverEntity coverEntity) {
 
         final HorizontalCoverView intersectingChild = findChildIntersectingWithEdge();
@@ -120,7 +134,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
 
     private void resizeIntersectingChild(HorizontalCoverView intersectingChild) {
         if (intersectingChild != null) {
-            final double zoomFactor = getChildZoomFactor(intersectingChild);
+            final double zoomFactor = getChildZoomingFactor(intersectingChild);
 
             final int maxHeight = getChildMaxHeight();
             final int initialHeight = coversFlowMeasurements.getCoverDefaultHeight();
@@ -171,7 +185,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         return null;
     }
 
-    private double getChildZoomFactor(HorizontalCoverView childToZoom) {
+    private double getChildZoomingFactor(HorizontalCoverView childToZoom) {
         final float edgeLeftPosition = coversFlowMeasurements.getResizingEdgePosition();
         final float childStartX = childToZoom.getLeft();
         final float offset = edgeLeftPosition - childStartX;
