@@ -48,6 +48,9 @@ public final class HorizontalCoversFlowView extends RecyclerView {
 
     private class CoverZoomScrollListener extends OnScrollListener {
 
+        @Deprecated
+        private boolean isFirstScrolling = true;
+
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             if (newState == RecyclerView.SCROLL_STATE_IDLE) {
@@ -58,6 +61,10 @@ public final class HorizontalCoversFlowView extends RecyclerView {
 
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            if (isFirstScrolling) {
+                scrollToFullySelectCover();
+                isFirstScrolling = false;
+            }
             ScrollingData.update(dx);
             resizeCovers();
         }
