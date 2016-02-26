@@ -109,7 +109,7 @@ public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
         smoothScrollBy(0, (int) distanceToMove);
     }
 
-    private void notifyOnSectorSelectedIfNeeded() {
+    protected final void notifyOnSectorSelectedIfNeeded() {
         if (!isWheelInRotationStage()) {
             final int newlySelectedSectorAdapterPos = getNewlySelectedSectorAdapterPosition();
             if (lastlySelectedSectorAdapterPosition != newlySelectedSectorAdapterPos) {

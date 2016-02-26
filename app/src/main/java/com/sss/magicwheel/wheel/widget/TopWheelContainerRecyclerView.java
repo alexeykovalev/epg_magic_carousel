@@ -21,6 +21,16 @@ public class TopWheelContainerRecyclerView extends AbstractWheelContainerRecycle
     private final Path gapPath;
     private final PointF topRayPosition;
 
+    private final AbstractWheelLayoutManager.WheelOnStartupAnimationListener animationFinishingListener =
+            new AbstractWheelLayoutManager.WheelOnStartupAnimationListener() {
+                @Override
+                public void onAnimationUpdate(AbstractWheelLayoutManager.WheelStartupAnimationStatus animationStatus) {
+                    if (animationStatus == AbstractWheelLayoutManager.WheelStartupAnimationStatus.Finished) {
+                        notifyOnSectorSelectedIfNeeded();
+                    }
+                }
+            };
+
     public TopWheelContainerRecyclerView(Context context) {
         this(context, null);
     }
@@ -33,6 +43,13 @@ public class TopWheelContainerRecyclerView extends AbstractWheelContainerRecycle
         super(context, attrs, defStyle);
         topRayPosition = computeGapTopRayPosition();
         gapPath = createGapClipPath();
+    }
+
+    @Override
+    public void setLayoutManager(LayoutManager layout) {
+        super.setLayoutManager(layout);
+        getLayoutManager().removeWheelStartupAnimationListener(animationFinishingListener);
+        getLayoutManager().addWheelStartupAnimationListener(animationFinishingListener);
     }
 
     @Override

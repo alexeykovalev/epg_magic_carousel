@@ -18,6 +18,9 @@ import com.sss.magicwheel.wheel.rotator.ClockwiseWheelRotator;
 import com.sss.magicwheel.wheel.widget.WheelBigWrapperView;
 import com.sss.magicwheel.wheel.widget.AbstractWheelContainerRecyclerView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Alexey Kovalev
  * @since 05.02.2016.
@@ -41,7 +44,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     protected final WheelComputationHelper computationHelper;
 
     protected final WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener;
-    protected final WheelOnStartupAnimationListener startupAnimationListener;
+    private final List<WheelOnStartupAnimationListener> startupAnimationListeners = new ArrayList<>();
 
     private boolean isStartupAnimationPlayed;
 
@@ -69,8 +72,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     protected AbstractWheelLayoutManager(Context context,
                                          AbstractWheelContainerRecyclerView wheelRecyclerView,
                                          WheelComputationHelper computationHelper,
-                                         WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener,
-                                         WheelOnStartupAnimationListener startupAnimationListener) {
+                                         WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener) {
 
         this.context = context;
         this.computationHelper = computationHelper;
@@ -79,7 +81,6 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         this.angularRestrictions = wheelConfig.getAngularRestrictions();
 
         this.initialLayoutFinishingListener = stubIfNull(initialLayoutFinishingListener);
-        this.startupAnimationListener = stubIfNull(startupAnimationListener);
 
         this.layoutStartAngleInRad = computeLayoutStartAngleInRad();
         this.layoutEndAngleInRad = computeLayoutEndAngleInRad();
@@ -104,6 +105,20 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
                     public void onInitialLayoutFinished(int finishedAtAdapterPosition) {
                     }
                 };
+    }
+
+    public void addWheelStartupAnimationListener(WheelOnStartupAnimationListener animationListener) {
+        startupAnimationListeners.add(stubIfNull(animationListener));
+    }
+
+    public void removeWheelStartupAnimationListener(WheelOnStartupAnimationListener animationListener) {
+        startupAnimationListeners.remove(animationListener);
+    }
+
+    protected final void notifyOnAnimationUpdate(WheelStartupAnimationStatus animationStatus) {
+        for (WheelOnStartupAnimationListener animationListener : startupAnimationListeners) {
+            animationListener.onAnimationUpdate(animationStatus);
+        }
     }
 
     @Override
@@ -182,6 +197,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         super.onDetachedFromWindow(view, recycler);
         removeAndRecycleAllViews(recycler);
         recycler.clear();
+        startupAnimationListeners.clear();
     }
 
     @Override

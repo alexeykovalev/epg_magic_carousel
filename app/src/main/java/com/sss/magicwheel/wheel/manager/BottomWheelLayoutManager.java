@@ -20,9 +20,8 @@ public final class BottomWheelLayoutManager extends AbstractWheelLayoutManager {
     public BottomWheelLayoutManager(Context context,
                                        AbstractWheelContainerRecyclerView wheelRecyclerView,
                                        WheelComputationHelper computationHelper,
-                                       WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener,
-                                       WheelOnStartupAnimationListener startupAnimationListener) {
-        super(context, wheelRecyclerView, computationHelper, initialLayoutFinishingListener, startupAnimationListener);
+                                       WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener) {
+        super(context, wheelRecyclerView, computationHelper, initialLayoutFinishingListener);
     }
 
     @Override
@@ -111,21 +110,21 @@ public final class BottomWheelLayoutManager extends AbstractWheelLayoutManager {
 
                 final double rotationDeltaInRad = firstChildAnglePositionInRad - currentlyAnimatedAngleInRad;
                 clockwiseRotator.rotateWheelBy(rotationDeltaInRad);
-                startupAnimationListener.onAnimationUpdate(WheelStartupAnimationStatus.InProgress);
+                notifyOnAnimationUpdate(WheelStartupAnimationStatus.InProgress);
             }
         });
 
         wheelStartupAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
-                startupAnimationListener.onAnimationUpdate(WheelStartupAnimationStatus.Start);
+                notifyOnAnimationUpdate(WheelStartupAnimationStatus.Start);
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
                 setLayoutStartAngleInRad(angularRestrictions.getGapAreaBottomEdgeAngleRestrictionInRad());
                 wheelRecyclerView.setIsCutGapAreaActivated(true);
-                startupAnimationListener.onAnimationUpdate(WheelStartupAnimationStatus.Finished);
+                notifyOnAnimationUpdate(WheelStartupAnimationStatus.Finished);
             }
         });
 

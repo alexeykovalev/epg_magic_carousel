@@ -156,16 +156,15 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
     }
 
     private void initBottomWheelContainer(BottomWheelContainerRecyclerView bottomWheelContainerView) {
-        bottomWheelLayoutManager = new BottomWheelLayoutManager(
-                getContext(), bottomWheelContainer, computationHelper, null,
-                new AbstractWheelLayoutManager.WheelOnStartupAnimationListener() {
-                    @Override
-                    public void onAnimationUpdate(AbstractWheelLayoutManager.WheelStartupAnimationStatus animationStatus) {
-                        if (animationStatus == AbstractWheelLayoutManager.WheelStartupAnimationStatus.InProgress) {
-                            wheelSectorsRaysDecorationFrame.invalidate();
-                        }
-                    }
-                });
+        bottomWheelLayoutManager = new BottomWheelLayoutManager(getContext(), bottomWheelContainer, computationHelper, null);
+        bottomWheelLayoutManager.addWheelStartupAnimationListener(new AbstractWheelLayoutManager.WheelOnStartupAnimationListener() {
+            @Override
+            public void onAnimationUpdate(AbstractWheelLayoutManager.WheelStartupAnimationStatus animationStatus) {
+                if (animationStatus == AbstractWheelLayoutManager.WheelStartupAnimationStatus.InProgress) {
+                    wheelSectorsRaysDecorationFrame.invalidate();
+                }
+            }
+        });
         bottomWheelContainerView.setBottomWheelSectorTapListener(new BottomWheelContainerRecyclerView.OnBottomWheelSectorTapListener() {
             @Override
             public void onRotateWheelByAngle(double rotationAngleInRad) {
@@ -174,6 +173,7 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
                 topWheelContainer.smoothRotateWheelByAngleInRad(rotationAngleInRad, WheelRotationDirection.Anticlockwise);
             }
         });
+
         bottomWheelContainerView.setLayoutManager(bottomWheelLayoutManager);
         bottomWheelContainerView.setAdapter(createEmptyWheelAdapter(new WheelAdapter.OnWheelItemClickListener() {
             @Override

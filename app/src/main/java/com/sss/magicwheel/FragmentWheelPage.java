@@ -59,6 +59,7 @@ public final class FragmentWheelPage extends Fragment {
             @Override
             public void onDataItemSelected(WheelDataItem selectedDataItem) {
 //                Log.e("TAG", "selectedDataItem [" + selectedDataItem.getTitle() + "]");
+                showHorizontalCoversFlowView();
                 horizontalCoversFlowView.swapData(loadDataForWheelDataItem(selectedDataItem));
             }
 
@@ -67,9 +68,13 @@ public final class FragmentWheelPage extends Fragment {
                 if (wheelRotationState == WheelRotationState.InRotation) {
                     horizontalCoversFlowView.setVisibility(View.GONE);
                 } else {
-                    horizontalCoversFlowView.setVisibility(View.VISIBLE);
-                    horizontalCoversFlowView.displayWithScalingAnimation();
+                    showHorizontalCoversFlowView();
                 }
+            }
+
+            private void showHorizontalCoversFlowView() {
+                horizontalCoversFlowView.setVisibility(View.VISIBLE);
+                horizontalCoversFlowView.displayWithScalingAnimation();
             }
         });
 

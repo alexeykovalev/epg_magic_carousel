@@ -34,7 +34,7 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
                                  WheelComputationHelper computationHelper,
                                  WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener,
                                  WheelOnScrollingCallback scrollingCallback) {
-        super(context, wheelRecyclerView, computationHelper, initialLayoutFinishingListener, null);
+        super(context, wheelRecyclerView, computationHelper, initialLayoutFinishingListener);
         this.scrollingCallback = scrollingCallback;
     }
 
@@ -139,21 +139,21 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
 
                 final double rotationDeltaInRad = firstChildAnglePositionInRad - currentlyAnimatedAngleInRad;
                 clockwiseRotator.rotateWheelBy(rotationDeltaInRad);
-                startupAnimationListener.onAnimationUpdate(WheelStartupAnimationStatus.InProgress);
+                notifyOnAnimationUpdate(WheelStartupAnimationStatus.InProgress);
             }
         });
 
         startupWheelAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
-                startupAnimationListener.onAnimationUpdate(WheelStartupAnimationStatus.Start);
+                notifyOnAnimationUpdate(WheelStartupAnimationStatus.Start);
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
                 setLayoutStartAngleInRad(wheelConfig.getAngularRestrictions().getWheelLayoutStartAngleInRad());
                 wheelRecyclerView.setIsCutGapAreaActivated(true);
-                startupAnimationListener.onAnimationUpdate(WheelStartupAnimationStatus.Finished);
+                notifyOnAnimationUpdate(WheelStartupAnimationStatus.Finished);
             }
         });
 
