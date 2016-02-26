@@ -37,7 +37,7 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
 
     private int lastTouchAction;
 
-    private WheelSectorRaysDecorationFrame wheelSectorsRaysDecorationFrame;
+    private WheelSectorRaysDecorationFrameView wheelSectorsRaysDecorationFrame;
 
     /**
      * We use it as not recycler view item decoration because RecyclerView's
@@ -72,14 +72,14 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         inflate(context, R.layout.wheel_container_layout, this);
         topWheelContainer = (TopWheelContainerRecyclerView) findViewById(R.id.top_wheel_container);
         bottomWheelContainer = (BottomWheelContainerRecyclerView) findViewById(R.id.bottom_wheel_container);
-        wheelSectorsRaysDecorationFrame = (WheelSectorRaysDecorationFrame) findViewById(R.id.wheel_decoration_frame);
+        wheelSectorsRaysDecorationFrame = (WheelSectorRaysDecorationFrameView) findViewById(R.id.wheel_decoration_frame);
     }
 
-    public void addDataItemSelectionListener(OnDataItemSelectionListener listener) {
+    public void addDataItemSelectionListener(WheelListener listener) {
         topWheelContainer.addDataItemSelectionListener(listener);
     }
 
-    public void removeDataItemSelectionListener(OnDataItemSelectionListener listener) {
+    public void removeDataItemSelectionListener(WheelListener listener) {
         topWheelContainer.removeDataItemSelectionListener(listener);
     }
 
@@ -200,32 +200,5 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
     private WheelAdapter createEmptyWheelAdapter(WheelAdapter.OnWheelItemClickListener clickHandler) {
         return new WheelAdapter(getContext(), Collections.<WheelDataItem>emptyList(), clickHandler);
     }
-
-    /*public void logLastSector() {
-        final WheelBigWrapperView lastSector = (WheelBigWrapperView) topWheelContainer.getChildAt(
-                topWheelContainer.getChildCount() - 1
-        );
-
-        final AbstractWheelLayoutManager.LayoutParams lastSectorLp = AbstractWheelLayoutManager.getChildLayoutParams(lastSector);
-
-        final double gapTopRayAngle = WheelComputationHelper.radToDegree(
-                computationHelper.getWheelConfig().getAngularRestrictions().getGapAreaTopEdgeAngleRestrictionInRad()
-        );
-
-        final double lastSectorTopEdge = WheelComputationHelper.radToDegree(
-                computationHelper.getSectorAngleTopEdgeInRad(lastSectorLp.anglePositionInRad)
-        );
-        final double lastSectorBottomEdge = WheelComputationHelper.radToDegree(
-                computationHelper.getSectorAngleBottomEdgeInRad(lastSectorLp.anglePositionInRad)
-        );
-
-        Log.e("TAG", "lastSectorTitle [" + lastSector.getTitle() + "]. " +
-                "GapTop [" + gapTopRayAngle + "], " +
-                "SectorBottom [" + lastSectorBottomEdge + "], " +
-                "SectorTop [" + lastSectorTopEdge + "]"
-        );
-    }*/
-
-
 
 }
