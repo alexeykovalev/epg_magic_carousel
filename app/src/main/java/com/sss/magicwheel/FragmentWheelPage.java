@@ -58,16 +58,22 @@ public final class FragmentWheelPage extends Fragment {
         wheelOfFortuneContainerFrameView.addDataItemSelectionListener(new WheelListener() {
             @Override
             public void onDataItemSelected(WheelDataItem selectedDataItem) {
-                Log.e("TAG", "selectedDataItem [" + selectedDataItem.getTitle() + "]");
+//                Log.e("TAG", "selectedDataItem [" + selectedDataItem.getTitle() + "]");
+                horizontalCoversFlowView.swapData(loadDataForWheelDataItem(selectedDataItem));
             }
 
             @Override
             public void onWheelRotationStateChange(WheelRotationState wheelRotationState) {
-                Log.e("TAG", "wheelRotationState [" + wheelRotationState + "]");
+                if (wheelRotationState == WheelRotationState.InRotation) {
+                    horizontalCoversFlowView.setVisibility(View.GONE);
+                } else {
+                    horizontalCoversFlowView.setVisibility(View.VISIBLE);
+                    horizontalCoversFlowView.displayWithScalingAnimation();
+                }
             }
         });
 
-//        inflateCoversFlowContainer(inflater, rootView);
+        inflateCoversFlowContainer(inflater, rootView);
 
         /*rootView.findViewById(R.id.fragment_request_layout_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,6 +103,8 @@ public final class FragmentWheelPage extends Fragment {
                 R.layout.horizontal_covers_flow_list_layout, fragmentRootView, false
         );
 
+        horizontalCoversFlowView.setVisibility(View.GONE);
+
         final FrameLayout.LayoutParams coversFlowViewLp = (FrameLayout.LayoutParams) horizontalCoversFlowView.getLayoutParams();
         coversFlowViewLp.height = computeCoversFlowListHeight();
 
@@ -105,13 +113,15 @@ public final class FragmentWheelPage extends Fragment {
         horizontalCoversFlowView.setLayoutParams(coversFlowViewLp);
 
         fragmentRootView.addView(horizontalCoversFlowView);
-        horizontalCoversFlowView.swapData(createSampleCoversData());
     }
 
     private int computeCoversFlowListHeight() {
         return CoversFlowListMeasurements.getInstance().getCoverMaxHeight();
     }
 
+    private List<CoverEntity> loadDataForWheelDataItem(WheelDataItem selectedWheelDataItem) {
+        return createSampleCoversData();
+    }
 
     private List<CoverEntity> createSampleCoversData() {
         final List<CoverEntity> covers = new ArrayList<>();

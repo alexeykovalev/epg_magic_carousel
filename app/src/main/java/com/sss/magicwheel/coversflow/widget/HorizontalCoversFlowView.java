@@ -1,5 +1,7 @@
 package com.sss.magicwheel.coversflow.widget;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Rect;
 import android.support.v7.widget.LinearLayoutManager;
@@ -7,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
 
 import com.sss.magicwheel.App;
 import com.sss.magicwheel.coversflow.CoversFlowAdapter;
@@ -24,6 +27,7 @@ import java.util.List;
 public final class HorizontalCoversFlowView extends RecyclerView {
 
     private static final int HORIZONTAL_SPACING_IN_DP = 15;
+    private static final int SCALING_ANIMATION_DURATION = 300;
 
     private static class ScrollingData {
 
@@ -116,6 +120,25 @@ public final class HorizontalCoversFlowView extends RecyclerView {
 
     public void swapData(List<CoverEntity> coversData) {
         getAdapter().swapData(coversData);
+    }
+
+    public void displayWithScalingAnimation() {
+        setPivotX(getWidth() / 2);
+        setPivotY(getHeight() / 2);
+
+        final ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(this, View.SCALE_X, 0.0f, 1.0f);
+        final ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(this, View.SCALE_Y, 0.0f, 1.0f);
+
+        final LinearInterpolator interpolator = new LinearInterpolator();
+        scaleXAnimator.setInterpolator(interpolator);
+        scaleXAnimator.setDuration(SCALING_ANIMATION_DURATION);
+
+        scaleYAnimator.setInterpolator(interpolator);
+        scaleYAnimator.setDuration(SCALING_ANIMATION_DURATION);
+
+        final AnimatorSet scalingAnimator = new AnimatorSet();
+        scalingAnimator.playTogether(scaleXAnimator, scaleYAnimator);
+        scalingAnimator.start();
     }
 
     /**
