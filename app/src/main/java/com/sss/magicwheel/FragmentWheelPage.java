@@ -120,16 +120,16 @@ public final class FragmentWheelPage extends Fragment {
     }
 
     private List<CoverEntity> loadDataForWheelDataItem(WheelDataItem selectedWheelDataItem) {
-        return createSampleCoversData();
+        return createSampleCoversData(20);
     }
 
-    private List<CoverEntity> createSampleCoversData() {
+    private List<CoverEntity> createSampleCoversData(int amountOfCovers) {
         final List<CoverEntity> covers = new ArrayList<>();
         final int leftOffset = CoversFlowListMeasurements.getInstance().getLeftOffset();
         final int rightOffset = CoversFlowListMeasurements.getInstance().getRightOffset();
 
         covers.add(CoverEntity.offsetItem(leftOffset));
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < amountOfCovers; i++) {
             covers.add(CoverEntity.dataItem("Cover [" + i + "]"));
         }
         covers.add(CoverEntity.offsetItem(rightOffset));
