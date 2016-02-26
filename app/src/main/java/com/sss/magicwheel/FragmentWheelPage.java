@@ -16,7 +16,7 @@ import com.sss.magicwheel.wheel.entity.WheelConfig;
 import com.sss.magicwheel.wheel.entity.WheelDataItem;
 import com.sss.magicwheel.coversflow.widget.HorizontalCoversFlowView;
 import com.sss.magicwheel.wheel.WheelComputationHelper;
-import com.sss.magicwheel.wheel.widget.OnDataItemSelectionListener;
+import com.sss.magicwheel.wheel.widget.WheelListener;
 import com.sss.magicwheel.wheel.widget.WheelOfFortuneContainerFrameView;
 
 import java.util.ArrayList;
@@ -55,9 +55,15 @@ public final class FragmentWheelPage extends Fragment {
         wheelOfFortuneContainerFrameView = (WheelOfFortuneContainerFrameView) rootView.findViewById(R.id.wheel_of_fortune_container_frame);
         wheelOfFortuneContainerFrameView.swapData(createWheelSampleDataSet());
 
-        wheelOfFortuneContainerFrameView.addDataItemSelectionListener(new OnDataItemSelectionListener() {
+        wheelOfFortuneContainerFrameView.addDataItemSelectionListener(new WheelListener() {
             @Override
             public void onDataItemSelected(WheelDataItem selectedDataItem) {
+                Log.e("TAG", "selectedDataItem [" + selectedDataItem.getTitle() + "]");
+            }
+
+            @Override
+            public void onWheelRotationStateChange(WheelRotationState wheelRotationState) {
+                Log.e("TAG", "wheelRotationState [" + wheelRotationState + "]");
             }
         });
 

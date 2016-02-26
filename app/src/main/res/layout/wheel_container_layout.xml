@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.sss.magicwheel.wheel.widget.WheelSectorRaysDecorationFrame
+    <com.sss.magicwheel.wheel.widget.WheelSectorRaysDecorationFrameView
         android:id="@+id/wheel_decoration_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

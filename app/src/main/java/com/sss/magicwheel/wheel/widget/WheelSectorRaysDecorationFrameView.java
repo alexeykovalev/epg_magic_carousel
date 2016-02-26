@@ -17,7 +17,7 @@ import com.sss.magicwheel.wheel.manager.AbstractWheelLayoutManager;
  * @author Alexey Kovalev
  * @since 12.02.2016.
  */
-public final class WheelSectorRaysDecorationFrame extends FrameLayout {
+public final class WheelSectorRaysDecorationFrameView extends FrameLayout {
 
     private static final int DEFAULT_RAY_WIDTH = 500;
     private static final int DEFAULT_RAY_HEIGHT = 10;
@@ -36,15 +36,15 @@ public final class WheelSectorRaysDecorationFrame extends FrameLayout {
      */
     private final double bottomWheelContainerRotationRelativeToBaseLineInDegree;
 
-    public WheelSectorRaysDecorationFrame(Context context) {
+    public WheelSectorRaysDecorationFrameView(Context context) {
         this(context, null);
     }
 
-    public WheelSectorRaysDecorationFrame(Context context, AttributeSet attrs) {
+    public WheelSectorRaysDecorationFrameView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public WheelSectorRaysDecorationFrame(Context context, AttributeSet attrs, int defStyleAttr) {
+    public WheelSectorRaysDecorationFrameView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.computationHelper = WheelComputationHelper.getInstance();
         this.bottomWheelContainerRotationRelativeToBaseLineInDegree = WheelComputationHelper.radToDegree(

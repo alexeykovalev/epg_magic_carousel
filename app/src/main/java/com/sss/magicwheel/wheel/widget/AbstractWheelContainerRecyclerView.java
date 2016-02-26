@@ -36,10 +36,12 @@ public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
      */
     private int lastlySelectedSectorAdapterPosition = RecyclerView.NO_POSITION;
 
+    private WheelListener.WheelRotationState lastWheelRotationState = WheelListener.WheelRotationState.RotationStopped;
+
     protected final Paint gapRayDrawingPaint;
     private boolean isCutGapAreaActivated;
 
-    private final List<OnDataItemSelectionListener> dataItemSelectionListeners = new ArrayList<>();
+    private final List<WheelListener> dataItemSelectionListeners = new ArrayList<>();
 
     private class AutoAngleAdjustmentScrollListener extends OnScrollListener {
 
@@ -48,8 +50,9 @@ public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
             if (!isWheelInRotationStage()) {
                 final double rotateByAngleInRad = computeAdjustmentRotationAngle();
                 smoothRotateWheelByAngleInRad(rotateByAngleInRad, WheelRotationDirection.Clockwise);
-                notifyOnSectorSelectedIfNeeded();
             }
+            notifyOnWheelRotationStateChanged();
+            notifyOnSectorSelectedIfNeeded();
         }
 
         @Override
@@ -99,6 +102,7 @@ public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
 
     protected abstract void doCutGapArea(Canvas canvas);
 
+
     public void smoothRotateWheelByAngleInRad(double rotateByAngleInRad, WheelRotationDirection rotationDirection) {
         final double distanceToMove = rotationDirection.getDirectionSign()
                 * computationHelper.fromWheelRotationAngleToTraveledDistance(rotateByAngleInRad);
@@ -111,9 +115,21 @@ public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
             if (lastlySelectedSectorAdapterPosition != newlySelectedSectorAdapterPos) {
                 lastlySelectedSectorAdapterPosition = newlySelectedSectorAdapterPos;
                 final WheelDataItem selectedSectorDataItem = getAdapter().getDataItemByPosition(newlySelectedSectorAdapterPos);
-                for (OnDataItemSelectionListener listener : dataItemSelectionListeners) {
+                for (WheelListener listener : dataItemSelectionListeners) {
                     listener.onDataItemSelected(selectedSectorDataItem);
                 }
+            }
+        }
+    }
+
+    private void notifyOnWheelRotationStateChanged() {
+        WheelListener.WheelRotationState newWheelRotationState = isWheelInRotationStage() ?
+                WheelListener.WheelRotationState.InRotation : WheelListener.WheelRotationState.RotationStopped;
+
+        if (lastWheelRotationState != newWheelRotationState) {
+            lastWheelRotationState = newWheelRotationState;
+            for (WheelListener listener : dataItemSelectionListeners) {
+                listener.onWheelRotationStateChange(newWheelRotationState);
             }
         }
     }
@@ -140,64 +156,12 @@ public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
         return getScrollState() != RecyclerView.SCROLL_STATE_IDLE;
     }
 
-    public void addDataItemSelectionListener(OnDataItemSelectionListener listener) {
+    public void addDataItemSelectionListener(WheelListener listener) {
         dataItemSelectionListeners.add(listener);
     }
 
-    public void removeDataItemSelectionListener(OnDataItemSelectionListener listener) {
+    public void removeDataItemSelectionListener(WheelListener listener) {
         dataItemSelectionListeners.remove(listener);
-    }
-
-    @Deprecated
-    public void smoothScrollByAngleInRad(double absAngleInRad, WheelRotationDirection rotationDirection) {
-        // TODO: 09.02.2016 ensure absAngleInRad is positive
-        View sectorViewClosestToLayoutEndEdge = getLayoutManager().getChildClosestToLayoutEndEdge();
-        final int referenceSectorViewVirtualAdapterPosition = getChildAdapterPosition(sectorViewClosestToLayoutEndEdge);
-
-        final double sectorAngleInRad = computationHelper.getWheelConfig().getAngularRestrictions().getSectorAngleInRad();
-
-        final int positionIncrement = rotationDirection == WheelRotationDirection.Clockwise ? -1 : +1;
-
-        int virtualPositionToScroll = referenceSectorViewVirtualAdapterPosition;
-        double tmpAngleInRad = absAngleInRad;
-        while (tmpAngleInRad > 0) {
-            tmpAngleInRad -= sectorAngleInRad;
-            virtualPositionToScroll += positionIncrement;
-        }
-
-        super.smoothScrollToPosition(virtualPositionToScroll);
-    }
-
-    @Deprecated
-    private int getVirtualPositionForDataItem(WheelDataItem dataItemToSelect) {
-        final int dataItemToSelectRealPosition = getRealPositionForDataItem(dataItemToSelect);
-        final int firstChildVirtualAdapterPosition = getChildAdapterPosition(getChildAt(0));
-        final int firstChildRealAdapterPosition = getAdapter().toRealPosition(firstChildVirtualAdapterPosition);
-
-        final int positionDelta = dataItemToSelectRealPosition - firstChildRealAdapterPosition;
-        return firstChildVirtualAdapterPosition + positionDelta;
-
-//        final int realItemsCount = getAdapter().getRealItemCount();
-//        final int dataItemToSelectRealPosition = getRealPositionForDataItem(dataItemToSelect);
-//        final int firstChildVirtualAdapterPosition = getChildAdapterPosition(getChildAt(0));
-//
-//        final int chunksAmount = (firstChildVirtualAdapterPosition - WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT) / realItemsCount;
-//
-//        return
-    }
-
-    // TODO: 08.02.2016 Guava's find method has to be here
-    @Deprecated
-    private int getRealPositionForDataItem(WheelDataItem dataItemToFind) {
-        final List<WheelDataItem> dataItems = getAdapter().getData();
-        int res = 0;
-        for (WheelDataItem dataItem : dataItems) {
-            if (dataItem.equals(dataItemToFind)) {
-                break;
-            }
-            res++;
-        }
-        return res;
     }
 
     @Override
