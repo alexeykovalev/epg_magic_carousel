@@ -75,6 +75,14 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         wheelSectorsRaysDecorationFrame = (WheelSectorRaysDecorationFrame) findViewById(R.id.wheel_decoration_frame);
     }
 
+    public void addDataItemSelectionListener(OnDataItemSelectionListener listener) {
+        topWheelContainer.addDataItemSelectionListener(listener);
+    }
+
+    public void removeDataItemSelectionListener(OnDataItemSelectionListener listener) {
+        topWheelContainer.removeDataItemSelectionListener(listener);
+    }
+
     @Override
     protected void dispatchDraw(Canvas canvas) {
         wheelFrameItemDecoration.onDraw(canvas, null, null);
@@ -192,5 +200,32 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
     private WheelAdapter createEmptyWheelAdapter(WheelAdapter.OnWheelItemClickListener clickHandler) {
         return new WheelAdapter(getContext(), Collections.<WheelDataItem>emptyList(), clickHandler);
     }
+
+    /*public void logLastSector() {
+        final WheelBigWrapperView lastSector = (WheelBigWrapperView) topWheelContainer.getChildAt(
+                topWheelContainer.getChildCount() - 1
+        );
+
+        final AbstractWheelLayoutManager.LayoutParams lastSectorLp = AbstractWheelLayoutManager.getChildLayoutParams(lastSector);
+
+        final double gapTopRayAngle = WheelComputationHelper.radToDegree(
+                computationHelper.getWheelConfig().getAngularRestrictions().getGapAreaTopEdgeAngleRestrictionInRad()
+        );
+
+        final double lastSectorTopEdge = WheelComputationHelper.radToDegree(
+                computationHelper.getSectorAngleTopEdgeInRad(lastSectorLp.anglePositionInRad)
+        );
+        final double lastSectorBottomEdge = WheelComputationHelper.radToDegree(
+                computationHelper.getSectorAngleBottomEdgeInRad(lastSectorLp.anglePositionInRad)
+        );
+
+        Log.e("TAG", "lastSectorTitle [" + lastSector.getTitle() + "]. " +
+                "GapTop [" + gapTopRayAngle + "], " +
+                "SectorBottom [" + lastSectorBottomEdge + "], " +
+                "SectorTop [" + lastSectorTopEdge + "]"
+        );
+    }*/
+
+
 
 }

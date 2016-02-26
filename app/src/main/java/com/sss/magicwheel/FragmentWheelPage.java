@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.sss.magicwheel.wheel.entity.WheelConfig;
 import com.sss.magicwheel.wheel.entity.WheelDataItem;
 import com.sss.magicwheel.coversflow.widget.HorizontalCoversFlowView;
 import com.sss.magicwheel.wheel.WheelComputationHelper;
+import com.sss.magicwheel.wheel.widget.OnDataItemSelectionListener;
 import com.sss.magicwheel.wheel.widget.WheelOfFortuneContainerFrameView;
 
 import java.util.ArrayList;
@@ -53,9 +55,15 @@ public final class FragmentWheelPage extends Fragment {
         wheelOfFortuneContainerFrameView = (WheelOfFortuneContainerFrameView) rootView.findViewById(R.id.wheel_of_fortune_container_frame);
         wheelOfFortuneContainerFrameView.swapData(createWheelSampleDataSet());
 
-        inflateCoversFlowContainer(inflater, rootView);
+        wheelOfFortuneContainerFrameView.addDataItemSelectionListener(new OnDataItemSelectionListener() {
+            @Override
+            public void onDataItemSelected(WheelDataItem selectedDataItem) {
+            }
+        });
 
-       /* rootView.findViewById(R.id.fragment_request_layout_button).setOnClickListener(new View.OnClickListener() {
+//        inflateCoversFlowContainer(inflater, rootView);
+
+        /*rootView.findViewById(R.id.fragment_request_layout_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
             }

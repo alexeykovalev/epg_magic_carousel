@@ -15,6 +15,7 @@ import com.sss.magicwheel.wheel.entity.WheelDataItem;
 import com.sss.magicwheel.wheel.entity.WheelRotationDirection;
 import com.sss.magicwheel.wheel.manager.AbstractWheelLayoutManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,34 +29,26 @@ public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
     protected final WheelComputationHelper computationHelper;
     protected final WheelConfig wheelConfig;
 
-    protected final Paint gapRayDrawingPaint;
+    /**
+     * Lastly selected sector adapter position.
+     * Store it in the field in order to don't fire sector selection
+     * notification twice.
+     */
+    private int lastlySelectedSectorAdapterPosition = RecyclerView.NO_POSITION;
 
+    protected final Paint gapRayDrawingPaint;
     private boolean isCutGapAreaActivated;
+
+    private final List<OnDataItemSelectionListener> dataItemSelectionListeners = new ArrayList<>();
 
     private class AutoAngleAdjustmentScrollListener extends OnScrollListener {
 
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-//            Log.e("TAG", "class [" + getLayoutManager().getClass() + "] scrolling newState [" + newState + "], " +
-//                    "rotationDirection [" + rotationDirection + "]");
-
-            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                final AbstractWheelLayoutManager.LayoutParams closestToEndEdgeChildLp =
-                        AbstractWheelLayoutManager.getChildLayoutParams(getLayoutManager().getChildClosestToLayoutEndEdge());
-
-                final double sectorAngularPositionInRad = closestToEndEdgeChildLp.anglePositionInRad;
-                final double sectorAngleTopEdgeInRad = computationHelper.getSectorAngleTopEdgeInRad(sectorAngularPositionInRad);
-                final double sectorAngleBottomEdgeInRad = computationHelper.getSectorAngleBottomEdgeInRad(sectorAngularPositionInRad);
-
-                final double layoutEndAngleInRad = getLayoutManager().getLayoutEndAngleInRad();
-                final boolean isInSectorTopPart = layoutEndAngleInRad >= sectorAngularPositionInRad
-                        && layoutEndAngleInRad <= sectorAngleTopEdgeInRad;
-
-                final double rotateByAngleInRad = isInSectorTopPart ?
-                        (sectorAngleTopEdgeInRad - layoutEndAngleInRad) :
-                        (sectorAngleBottomEdgeInRad - layoutEndAngleInRad);
-
+            if (!isWheelInRotationStage()) {
+                final double rotateByAngleInRad = computeAdjustmentRotationAngle();
                 smoothRotateWheelByAngleInRad(rotateByAngleInRad, WheelRotationDirection.Clockwise);
+                notifyOnSectorSelectedIfNeeded();
             }
         }
 
@@ -82,12 +75,77 @@ public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
         addOnScrollListener(new AutoAngleAdjustmentScrollListener());
     }
 
+
+    private double computeAdjustmentRotationAngle() {
+        final AbstractWheelLayoutManager.LayoutParams closestToEndEdgeChildLp =
+                AbstractWheelLayoutManager.getChildLayoutParams(getLayoutManager().getChildClosestToLayoutEndEdge());
+
+        final double sectorAngularPositionInRad = closestToEndEdgeChildLp.anglePositionInRad;
+        final double sectorAngleTopEdgeInRad = computationHelper.getSectorAngleTopEdgeInRad(sectorAngularPositionInRad);
+        final double sectorAngleBottomEdgeInRad = computationHelper.getSectorAngleBottomEdgeInRad(sectorAngularPositionInRad);
+
+        final double layoutEndAngleInRad = getLayoutManager().getLayoutEndAngleInRad();
+        final boolean isInSectorTopPart = layoutEndAngleInRad >= sectorAngularPositionInRad
+                && layoutEndAngleInRad <= sectorAngleTopEdgeInRad;
+
+        return isInSectorTopPart ?
+                (sectorAngleTopEdgeInRad - layoutEndAngleInRad) :
+                (sectorAngleBottomEdgeInRad - layoutEndAngleInRad);
+    }
+
     public abstract void handleTapOnSectorView(View sectorViewToSelect);
+
+    protected abstract void drawGapLineRay(Canvas canvas);
+
+    protected abstract void doCutGapArea(Canvas canvas);
 
     public void smoothRotateWheelByAngleInRad(double rotateByAngleInRad, WheelRotationDirection rotationDirection) {
         final double distanceToMove = rotationDirection.getDirectionSign()
                 * computationHelper.fromWheelRotationAngleToTraveledDistance(rotateByAngleInRad);
         smoothScrollBy(0, (int) distanceToMove);
+    }
+
+    private void notifyOnSectorSelectedIfNeeded() {
+        if (!isWheelInRotationStage()) {
+            final int newlySelectedSectorAdapterPos = getNewlySelectedSectorAdapterPosition();
+            if (lastlySelectedSectorAdapterPosition != newlySelectedSectorAdapterPos) {
+                lastlySelectedSectorAdapterPosition = newlySelectedSectorAdapterPos;
+                final WheelDataItem selectedSectorDataItem = getAdapter().getDataItemByPosition(newlySelectedSectorAdapterPos);
+                for (OnDataItemSelectionListener listener : dataItemSelectionListeners) {
+                    listener.onDataItemSelected(selectedSectorDataItem);
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns adapter position for currently selected sector.
+     */
+    private int getNewlySelectedSectorAdapterPosition() {
+        final double gapTopEdgeAngleInRad = wheelConfig.getAngularRestrictions().getGapAreaTopEdgeAngleRestrictionInRad();
+        final View sectorClosestToTopGapEdge = getLayoutManager().getChildClosestToLayoutEndEdge();
+        final double sectorMiddleLineAnglePositionInRad =
+                AbstractWheelLayoutManager.getChildLayoutParams(sectorClosestToTopGapEdge).anglePositionInRad;
+
+        int newlySelectedSectorAdapterPos = RecyclerView.NO_POSITION;
+        if (sectorMiddleLineAnglePositionInRad > gapTopEdgeAngleInRad) { // sector is above the top gap edge
+            newlySelectedSectorAdapterPos = getChildAdapterPosition(sectorClosestToTopGapEdge) + 1;
+        } else if (sectorMiddleLineAnglePositionInRad < gapTopEdgeAngleInRad) { // sector is below the top gap edge
+            newlySelectedSectorAdapterPos = getChildAdapterPosition(sectorClosestToTopGapEdge);
+        }
+        return newlySelectedSectorAdapterPos;
+    }
+
+    private boolean isWheelInRotationStage() {
+        return getScrollState() != RecyclerView.SCROLL_STATE_IDLE;
+    }
+
+    public void addDataItemSelectionListener(OnDataItemSelectionListener listener) {
+        dataItemSelectionListeners.add(listener);
+    }
+
+    public void removeDataItemSelectionListener(OnDataItemSelectionListener listener) {
+        dataItemSelectionListeners.remove(listener);
     }
 
     @Deprecated
@@ -143,6 +201,12 @@ public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
     }
 
     @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        dataItemSelectionListeners.clear();
+    }
+
+    @Override
     public void scrollToPosition(int position) {
         throw new UnsupportedOperationException("Don't call this method directly.");
     }
@@ -164,7 +228,7 @@ public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
 
     @Override
     public void onDraw(Canvas canvas) {
-//        drawGapLineRay(canvas);
+        drawGapLineRay(canvas);
         if (isCutGapAreaActivated) {
             doCutGapArea(canvas);
         }
@@ -174,10 +238,6 @@ public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
     public void setIsCutGapAreaActivated(boolean isCutGapAreaActivated) {
         this.isCutGapAreaActivated = isCutGapAreaActivated;
     }
-
-    protected abstract void drawGapLineRay(Canvas canvas);
-
-    protected abstract void doCutGapArea(Canvas canvas);
 
     private static Paint createGapRaysDrawingPaint() {
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);

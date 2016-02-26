@@ -12,6 +12,7 @@
         android:id="@+id/fragment_request_layout_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="right"
         android:textSize="20sp"
         android:text="Request_Layout"
         android:clickable="true"

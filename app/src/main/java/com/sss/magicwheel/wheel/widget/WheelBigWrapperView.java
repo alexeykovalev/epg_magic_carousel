@@ -20,6 +20,7 @@ public final class WheelBigWrapperView extends FrameLayout {
 
     private WheelSectorWrapperView sectorWrapperView;
     private TextView titleView;
+
     private final WheelComputationHelper computationHelper;
 
     public WheelBigWrapperView(Context context) {
@@ -74,29 +75,5 @@ public final class WheelBigWrapperView extends FrameLayout {
     public String getTitle() {
         return titleView.getText().toString();
     }
-
-    // TODO: 01.02.2016 attempt to draw rays using big wrapper - problem big wrapper view has to be much more larger size than it actually is
-//    @Override
-//    protected void dispatchDraw(Canvas canvas) {
-//        WheelComputationHelper computationHelper = WheelComputationHelper.getInstance();
-//
-//        Paint paint = new Paint();
-//        paint.setColor(Color.GREEN);
-//        paint.setStrokeWidth(10);
-//        paint.setAntiAlias(true);
-//
-//
-//        Paint myPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-//        myPaint.setStyle(Paint.Style.STROKE);
-//        int strokeWidth = 20;  // or whatever
-//        myPaint.setStrokeWidth(strokeWidth);
-//        myPaint.setColor(0xffff0000);   //color.RED
-//        float radius= computationHelper.getWheelConfig().getInnerRadius();
-//
-//        super.dispatchDraw(canvas);
-//
-////        canvas.drawLine(0, getMeasuredHeight() / 2, getMeasuredWidth(), 0, paint);
-//        canvas.drawCircle(0, getMeasuredHeight() / 2, radius, myPaint);
-//    }
 
 }

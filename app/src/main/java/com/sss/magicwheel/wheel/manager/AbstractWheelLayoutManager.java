@@ -262,7 +262,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     }
 
     private double computeRotationAngleInRadForAnticlockwiseRotation(RecyclerView.State state, double angleToRotate) {
-        final View referenceChild = getChildClosestToBottom();
+        final View referenceChild = getChildClosestToLayoutEndEdge();
         final LayoutParams refChildLp = (LayoutParams) referenceChild.getLayoutParams();
         final int extraChildrenCount = state.getItemCount() - 1 - getPosition(referenceChild);
         final double lastSectorBottomEdge = computationHelper.getSectorAngleBottomEdgeInRad(refChildLp.anglePositionInRad);
@@ -287,7 +287,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     }
 
     private double computeRotationAngleInRadForClockwiseRotation(double angleToRotate) {
-        final View referenceChild = getChildClosestToTop();
+        final View referenceChild = getChildClosestToLayoutStartEdge();
         final LayoutParams refChildLp = (LayoutParams) referenceChild.getLayoutParams();
         final int extraChildrenCount = getPosition(referenceChild);
         final double firstSectorTopEdge = refChildLp.anglePositionInRad;
@@ -370,23 +370,12 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
 
     @Deprecated
     private boolean isBottomBoundsReached() {
-        View lastChild = getChildClosestToBottom();
+        View lastChild = getChildClosestToLayoutEndEdge();
         LayoutParams lastChildLp = (LayoutParams) lastChild.getLayoutParams();
         final double lastSectorBottomEdge = computationHelper.getSectorAngleBottomEdgeInRad(lastChildLp.anglePositionInRad);
 
         return wheelConfig.getAngularRestrictions().getWheelBottomEdgeAngleRestrictionInRad() - lastSectorBottomEdge <= 0;
     }
-
-    @Deprecated
-    public View getChildClosestToBottom() {
-        return getChildClosestToLayoutEndEdge();
-    }
-
-    @Deprecated
-    public View getChildClosestToTop() {
-        return getChildClosestToLayoutStartEdge();
-    }
-
 
     @Override
     public boolean canScrollVertically() {
