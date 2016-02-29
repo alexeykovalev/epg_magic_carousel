@@ -32,6 +32,11 @@ public class OffsetCoverView extends View implements IHorizontalCoverView {
     }
 
     @Override
+    public boolean isOffsetCover() {
+        return true;
+    }
+
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int resMeasureSpec = widthMeasureSpec;
         if (offsetValue != CoverEntity.NOT_DEFINED_OFFSET_VALUE) {

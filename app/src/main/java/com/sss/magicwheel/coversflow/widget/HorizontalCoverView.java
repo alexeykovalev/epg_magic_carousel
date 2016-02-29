@@ -51,6 +51,11 @@ public class HorizontalCoverView extends FrameLayout implements IHorizontalCover
                 .into(coverImage);
     }
 
+    @Override
+    public boolean isOffsetCover() {
+        return false;
+    }
+
     public void restoreInitialSize(int parentHeight) {
         final int topMarginValue = (parentHeight - coversFlowListMeasurements.getCoverDefaultHeight()) / 2;
         final MarginLayoutParams lp = coversFlowListMeasurements.safeCopyInitialLayoutParams();

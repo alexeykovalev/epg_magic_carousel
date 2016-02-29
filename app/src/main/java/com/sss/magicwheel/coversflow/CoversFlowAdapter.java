@@ -95,7 +95,7 @@ public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdap
         void bind(final CoverEntity entityToBind) {
             coverView.bind(entityToBind);
             // if view is Regular one and NOT offset view
-            if (coverClickListener != null) {
+            if (!coverView.isOffsetCover() && coverClickListener != null) {
                 asView(coverView).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View coverView) {

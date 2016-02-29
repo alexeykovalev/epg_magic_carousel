@@ -42,8 +42,7 @@ public final class CoversFlowListMeasurements {
         this.computationHelper = computationHelper;
         instance = this;
 
-        // TODO: 25.02.2016 hack for testing
-        this.maxCoverHeight = (int) (getGapBottomRayPosition().y - getGapTopRayPosition().y - 15);
+        this.maxCoverHeight = (int) (getGapBottomRayPosition().y - getGapTopRayPosition().y);
         final int coverDefaultHeight = maxCoverHeight - 2 * DEFAULT_HEIGHT_MAX_HEIGHT_DELTA;
         final int coverDefaultWidth = (int) (COVER_ASPECT_RATIO * coverDefaultHeight);
 
@@ -56,8 +55,12 @@ public final class CoversFlowListMeasurements {
                 initialCoverLayoutParams.bottomMargin
         );
 
-        this.leftOffset = (int) getGapTopRayPosition().x;
-        this.resizingEdgePosition = getGapTopRayPosition().x;
+        this.leftOffset = (int) computeCoverResizingEdgePosition();
+        this.resizingEdgePosition = computeCoverResizingEdgePosition();
+    }
+
+    private float computeCoverResizingEdgePosition() {
+        return getGapTopRayPosition().x + getCoverDefaultWidth() / 2;
     }
 
     public ViewGroup.MarginLayoutParams safeCopyInitialLayoutParams() {

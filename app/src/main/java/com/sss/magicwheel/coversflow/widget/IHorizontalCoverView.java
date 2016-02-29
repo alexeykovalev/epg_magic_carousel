@@ -9,4 +9,6 @@ import com.sss.magicwheel.coversflow.entity.CoverEntity;
 public interface IHorizontalCoverView {
 
     void bind(CoverEntity coverEntity);
+
+    boolean isOffsetCover();
 }
