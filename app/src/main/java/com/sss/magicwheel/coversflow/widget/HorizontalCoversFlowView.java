@@ -121,7 +121,9 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         getAdapter().swapData(coversData);
     }
 
-    public void displayWithScalingAnimation() {
+    public void displayWithScaleUpAnimation() {
+        setVisibility(View.VISIBLE);
+
         setPivotX(getWidth() / 2);
         setPivotY(getHeight() / 2);
 
@@ -138,6 +140,10 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         final AnimatorSet scalingAnimator = new AnimatorSet();
         scalingAnimator.playTogether(scaleXAnimator, scaleYAnimator);
         scalingAnimator.start();
+    }
+
+    public void hideWithScaleDownAnimation() {
+        setVisibility(VISIBLE);
     }
 
     /**

@@ -4,7 +4,6 @@ import android.app.Fragment;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,22 +58,16 @@ public final class FragmentWheelPage extends Fragment {
             @Override
             public void onDataItemSelected(WheelDataItem selectedDataItem) {
 //                Log.e("TAG", "selectedDataItem [" + selectedDataItem.getTitle() + "]");
-                showHorizontalCoversFlowView();
                 horizontalCoversFlowView.swapData(loadDataForWheelDataItem(selectedDataItem));
+                // TODO: 29.02.2016 most probably has to be in data loading callback
+                horizontalCoversFlowView.displayWithScaleUpAnimation();
             }
 
             @Override
             public void onWheelRotationStateChange(WheelRotationState wheelRotationState) {
                 if (wheelRotationState == WheelRotationState.InRotation) {
-                    horizontalCoversFlowView.setVisibility(View.GONE);
-                } else {
-                    showHorizontalCoversFlowView();
+                    horizontalCoversFlowView.hideWithScaleDownAnimation();
                 }
-            }
-
-            private void showHorizontalCoversFlowView() {
-                horizontalCoversFlowView.setVisibility(View.VISIBLE);
-                horizontalCoversFlowView.displayWithScalingAnimation();
             }
         });
 
