@@ -100,20 +100,19 @@ public final class HorizontalCoversFlowView extends RecyclerView {
             }
         }));
 
-//        addItemDecoration(new HorizontalCoversFlowEdgeDecorator(context));
+        addItemDecoration(new HorizontalCoversFlowEdgeDecorator(context));
+        setupCoversHorizontalSpacing((int) App.dpToPixels(HORIZONTAL_SPACING_IN_DP));
+    }
 
+    private void setupCoversHorizontalSpacing(final int horizontalSpacingValue) {
         addItemDecoration(new ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, State state) {
                 final int coverAdapterPosition = parent.getChildAdapterPosition(view);
                 // take into account right offset fake view
                 final boolean isLastItem = coverAdapterPosition == (parent.getAdapter().getItemCount() - 2);
-
-                if ((view instanceof HorizontalCoverView) && !isLastItem) {
-                    outRect.set(0, 0, (int) App.dpToPixels(HORIZONTAL_SPACING_IN_DP), 0);
-                } else {
-                    super.getItemOffsets(outRect, view, parent, state);
-                }
+                final int hSpacing = (view instanceof HorizontalCoverView) && !isLastItem ? horizontalSpacingValue : 0;
+                outRect.set(0, 0, hSpacing, 0);
             }
         });
     }
