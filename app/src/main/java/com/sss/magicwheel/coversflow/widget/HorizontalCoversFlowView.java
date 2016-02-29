@@ -1,6 +1,7 @@
 package com.sss.magicwheel.coversflow.widget;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
@@ -104,11 +105,18 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     }
 
     public void swapData(List<CoverEntity> coversData) {
+        scrollToPosition(0);
         getAdapter().swapData(coversData);
     }
 
     public void displayWithScaleUpAnimation() {
         playTogetherAnimations(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        scrollToFullySelectCover();
+                    }
+                },
                 createScalingAnimatorBetweenValues(0.0f, 1.0f),
                 createAlphaAnimatorBetweenValues(0.0f, 1.0f)
         );
@@ -118,6 +126,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     // immediately and interrupts this one
     public void hideWithScaleDownAnimation() {
         playTogetherAnimations(
+                null,
                 createScalingAnimatorBetweenValues(1.0f, 0.0f),
                 createAlphaAnimatorBetweenValues(1.0f, 0.0f)
         );
@@ -149,9 +158,12 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         return alphaAnimator;
     }
 
-    private void playTogetherAnimations(Animator... animatorsToCombine) {
+    private void playTogetherAnimations(Animator.AnimatorListener animatorListener, Animator... animatorsToCombine) {
         AnimatorSet combinedAnimators = new AnimatorSet();
         combinedAnimators.playTogether(animatorsToCombine);
+        if (animatorListener != null) {
+            combinedAnimators.addListener(animatorListener);
+        }
         combinedAnimators.start();
     }
 
@@ -215,7 +227,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         final HorizontalCoverView intersectingCoverView = findCoverIntersectingWithResizingEdge();
         float extraWidthToCompensate =
                 intersectingCoverView != null ?
-                (intersectingCoverView.getWidth() - coversFlowMeasurements.getCoverDefaultWidth()) : 0;
+                        (intersectingCoverView.getWidth() - coversFlowMeasurements.getCoverDefaultWidth()) : 0;
 
         final boolean isClickedCoverToRightOfEdge =
                 clickedCoverView.getLeft() >= resizingEdgePosition;
@@ -272,7 +284,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
             double newChildHeight = initialHeight + (maxHeight - initialHeight) * zoomFactor;
             final int newChildHeightAsInt = (int) newChildHeight;
 
-            final int topMarginValue = (getHeight() - newChildHeightAsInt ) / 2;
+            final int topMarginValue = (getHeight() - newChildHeightAsInt) / 2;
             final ViewGroup.MarginLayoutParams lp = (MarginLayoutParams) intersectingChild.getLayoutParams();
             lp.height = newChildHeightAsInt;
             lp.width = (int) (newChildHeightAsInt * CoversFlowListMeasurements.COVER_ASPECT_RATIO);
