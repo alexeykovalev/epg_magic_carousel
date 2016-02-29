@@ -1,16 +1,17 @@
 package com.sss.magicwheel.coversflow.widget;
 
+import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.TimeInterpolator;
 import android.content.Context;
 import android.graphics.Rect;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.LinearInterpolator;
+import android.view.animation.AccelerateDecelerateInterpolator;
 
 import com.sss.magicwheel.App;
 import com.sss.magicwheel.coversflow.CoversFlowAdapter;
@@ -27,8 +28,10 @@ import java.util.List;
  */
 public final class HorizontalCoversFlowView extends RecyclerView {
 
-    private static final int HORIZONTAL_SPACING_IN_DP = 50;
+    private static final int HORIZONTAL_SPACING_IN_DP = 15;
+
     private static final int SCALING_ANIMATION_DURATION = 300;
+    private static final int ALPHA_ANIMATION_DURATION = SCALING_ANIMATION_DURATION;
 
     private class CoverZoomScrollListener extends OnScrollListener {
         private boolean isFirstLaunch = true;
@@ -36,15 +39,14 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-//                scrollToFullySelectCover();
-//                resizeCovers();
+                scrollToFullySelectCover();
             }
         }
 
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             if (isFirstLaunch) {
-//                scrollToFullySelectCover();
+                scrollToFullySelectCover();
                 isFirstLaunch = false;
             }
             updateScrollingState(dx);
@@ -53,8 +55,6 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     }
 
     private final CoversFlowListMeasurements coversFlowMeasurements;
-
-    private int absScrollingDistance;
     private boolean isSwipeToLeft;
 
     public HorizontalCoversFlowView(Context context) {
@@ -101,7 +101,6 @@ public final class HorizontalCoversFlowView extends RecyclerView {
 
     private void updateScrollingState(int deltaX) {
         isSwipeToLeft = deltaX >= 0;
-        absScrollingDistance = Math.abs(deltaX);
     }
 
     public void swapData(List<CoverEntity> coversData) {
@@ -109,22 +108,29 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     }
 
     public void displayWithScaleUpAnimation() {
-        setVisibility(VISIBLE);
-        scaleBetweenValues(0.0f, 1.0f);
+        playTogetherAnimations(
+                createScalingAnimatorBetweenValues(0.0f, 1.0f),
+                createAlphaAnimatorBetweenValues(0.0f, 1.0f)
+        );
     }
 
+    // TODO: 29.02.2016 does not work properly because when we call this method displayWithScaleUpAnimation() invoked
+    // immediately and interrupts this one
     public void hideWithScaleDownAnimation() {
-        scaleBetweenValues(1.0f, 0.0f);
+        playTogetherAnimations(
+                createScalingAnimatorBetweenValues(1.0f, 0.0f),
+                createAlphaAnimatorBetweenValues(1.0f, 0.0f)
+        );
     }
 
-    private void scaleBetweenValues(float scalingStartValue, float scalingEndValue) {
+    private Animator createScalingAnimatorBetweenValues(float startScalingValue, float endScalingValue) {
         setPivotX(getWidth() / 2);
         setPivotY(getHeight() / 2);
 
-        final ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(this, View.SCALE_X, scalingStartValue, scalingEndValue);
-        final ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(this, View.SCALE_Y, scalingStartValue, scalingEndValue);
+        final ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(this, View.SCALE_X, startScalingValue, endScalingValue);
+        final ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(this, View.SCALE_Y, startScalingValue, endScalingValue);
 
-        final LinearInterpolator interpolator = new LinearInterpolator();
+        final TimeInterpolator interpolator = new AccelerateDecelerateInterpolator();
         scaleXAnimator.setInterpolator(interpolator);
         scaleXAnimator.setDuration(SCALING_ANIMATION_DURATION);
 
@@ -133,7 +139,20 @@ public final class HorizontalCoversFlowView extends RecyclerView {
 
         final AnimatorSet scalingAnimator = new AnimatorSet();
         scalingAnimator.playTogether(scaleXAnimator, scaleYAnimator);
-        scalingAnimator.start();
+        return scalingAnimator;
+    }
+
+    private Animator createAlphaAnimatorBetweenValues(float startAlphaValue, float endAlphaValue) {
+        final ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(this, View.ALPHA, startAlphaValue, endAlphaValue);
+        alphaAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        alphaAnimator.setDuration(ALPHA_ANIMATION_DURATION);
+        return alphaAnimator;
+    }
+
+    private void playTogetherAnimations(Animator... animatorsToCombine) {
+        AnimatorSet combinedAnimators = new AnimatorSet();
+        combinedAnimators.playTogether(animatorsToCombine);
+        combinedAnimators.start();
     }
 
     /**

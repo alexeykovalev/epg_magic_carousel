@@ -101,8 +101,6 @@ public final class FragmentWheelPage extends Fragment {
                 R.layout.horizontal_covers_flow_list_layout, fragmentRootView, false
         );
 
-        horizontalCoversFlowView.setVisibility(View.GONE);
-
         final FrameLayout.LayoutParams coversFlowViewLp = (FrameLayout.LayoutParams) horizontalCoversFlowView.getLayoutParams();
         coversFlowViewLp.height = computeCoversFlowListHeight();
 
