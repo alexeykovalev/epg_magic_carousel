@@ -198,19 +198,32 @@ public final class HorizontalCoversFlowView extends RecyclerView {
                 intersectingCoverView != null ?
                 (intersectingCoverView.getWidth() - coversFlowMeasurements.getCoverDefaultWidth()) : 0;
 
-        final float scrollByX = clickedCoverView.getLeft()
-                - resizingEdgePosition
-                + coversFlowMeasurements.getCoverDefaultWidth() / 2
-                - extraWidthToCompensate;
+        final boolean isClickedCoverToRightOfEdge =
+                clickedCoverView.getLeft() >= resizingEdgePosition;
 
-        Log.e("TAG", "extraWidthToCompensate [" + extraWidthToCompensate + "], " +
+        float scrollByX;
+        if (isClickedCoverToRightOfEdge) {
+            scrollByX = clickedCoverView.getLeft()
+                    - resizingEdgePosition
+                    + coversFlowMeasurements.getCoverDefaultWidth() / 2
+                    - extraWidthToCompensate;
+        } else {
+            scrollByX = resizingEdgePosition
+                    - clickedCoverView.getRight()
+                    + coversFlowMeasurements.getCoverDefaultWidth() / 2;
+
+            scrollByX = -scrollByX;
+        }
+
+        smoothScrollBy((int) scrollByX, 0);
+
+       /* Log.e("TAG", "extraWidthToCompensate [" + extraWidthToCompensate + "], " +
                 "intersectingCoverView.getWidth() [" + (intersectingCoverView != null ? intersectingCoverView.getWidth() : 0) + "], " +
                 "getCoverDefaultWidth() [" + coversFlowMeasurements.getCoverDefaultWidth() + "], " +
                 " ------------ " +
                 "resizingEdgePosition [" + resizingEdgePosition + "], " +
                 "clickedCoverView.getLeft() [" + clickedCoverView.getLeft() + "]");
-
-        smoothScrollBy((int) scrollByX, 0);
+        */
     }
 
     @Override
