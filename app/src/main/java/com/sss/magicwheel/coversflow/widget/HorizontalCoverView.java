@@ -20,6 +20,8 @@ public class HorizontalCoverView extends FrameLayout implements IHorizontalCover
     private ImageView coverImage;
     private TextView coverTitle;
 
+    private final CoversFlowListMeasurements coversFlowListMeasurements;
+
     public HorizontalCoverView(Context context) {
         this(context, null);
     }
@@ -30,6 +32,7 @@ public class HorizontalCoverView extends FrameLayout implements IHorizontalCover
 
     public HorizontalCoverView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        coversFlowListMeasurements = CoversFlowListMeasurements.getInstance();
         inflateAndBind(context);
     }
 
@@ -49,8 +52,8 @@ public class HorizontalCoverView extends FrameLayout implements IHorizontalCover
     }
 
     public void restoreInitialSize(int parentHeight) {
-        final int topMarginValue = (parentHeight - getHeight()) / 2;
-        final MarginLayoutParams lp = CoversFlowListMeasurements.getInstance().safeCopyInitialLayoutParams();
+        final int topMarginValue = (parentHeight - coversFlowListMeasurements.getCoverDefaultHeight()) / 2;
+        final MarginLayoutParams lp = coversFlowListMeasurements.safeCopyInitialLayoutParams();
         lp.topMargin = topMarginValue;
         setLayoutParams(lp);
     }

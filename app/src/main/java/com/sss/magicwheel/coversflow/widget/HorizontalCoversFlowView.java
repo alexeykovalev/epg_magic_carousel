@@ -29,27 +29,6 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     private static final int HORIZONTAL_SPACING_IN_DP = 15;
     private static final int SCALING_ANIMATION_DURATION = 300;
 
-    private static class ScrollingData {
-
-        private static ScrollingData Instance = new ScrollingData();
-
-        private int absScrollingDistance;
-        private boolean isSwipeToLeft;
-
-        private ScrollingData() {
-        }
-
-        public static ScrollingData update(int deltaX) {
-            Instance.isSwipeToLeft = deltaX >= 0;
-            Instance.absScrollingDistance = Math.abs(deltaX);
-            return Instance;
-        }
-
-        public boolean isSwipeToLeft() {
-            return Instance.isSwipeToLeft;
-        }
-    }
-
     private class CoverZoomScrollListener extends OnScrollListener {
 
         @Deprecated
@@ -66,15 +45,18 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             if (isFirstScrolling) {
-                scrollToFullySelectCover();
+//                scrollToFullySelectCover();
                 isFirstScrolling = false;
             }
-            ScrollingData.update(dx);
+            updateScrollingState(dx);
             resizeCovers();
         }
     }
 
     private final CoversFlowListMeasurements coversFlowMeasurements;
+
+    private int absScrollingDistance;
+    private boolean isSwipeToLeft;
 
     public HorizontalCoversFlowView(Context context) {
         this(context, null);
@@ -117,18 +99,30 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         });
     }
 
+    private void updateScrollingState(int deltaX) {
+        isSwipeToLeft = deltaX >= 0;
+        absScrollingDistance = Math.abs(deltaX);
+    }
+
     public void swapData(List<CoverEntity> coversData) {
         getAdapter().swapData(coversData);
     }
 
     public void displayWithScaleUpAnimation() {
-        setVisibility(View.VISIBLE);
+        setVisibility(VISIBLE);
+        scaleBetweenValues(0.0f, 1.0f);
+    }
 
+    public void hideWithScaleDownAnimation() {
+        scaleBetweenValues(1.0f, 0.0f);
+    }
+
+    private void scaleBetweenValues(float scalingStartValue, float scalingEndValue) {
         setPivotX(getWidth() / 2);
         setPivotY(getHeight() / 2);
 
-        final ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(this, View.SCALE_X, 0.0f, 1.0f);
-        final ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(this, View.SCALE_Y, 0.0f, 1.0f);
+        final ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(this, View.SCALE_X, scalingStartValue, scalingEndValue);
+        final ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(this, View.SCALE_Y, scalingStartValue, scalingEndValue);
 
         final LinearInterpolator interpolator = new LinearInterpolator();
         scaleXAnimator.setInterpolator(interpolator);
@@ -140,10 +134,6 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         final AnimatorSet scalingAnimator = new AnimatorSet();
         scalingAnimator.playTogether(scaleXAnimator, scaleYAnimator);
         scalingAnimator.start();
-    }
-
-    public void hideWithScaleDownAnimation() {
-        setVisibility(VISIBLE);
     }
 
     /**
@@ -290,7 +280,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
 
         final double zoomFactor;
         final int halfChildWidth = coversFlowMeasurements.getCoverDefaultWidth() / 2;
-        if (ScrollingData.Instance.isSwipeToLeft()) {
+        if (isSwipeToLeft) {
             if (isZoomUp(offset)) {
                 zoomFactor = offset / halfChildWidth;
             } else {
@@ -309,8 +299,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
 
     private boolean isZoomUp(float childOffset) {
         final int childHalfWidth = coversFlowMeasurements.getCoverDefaultWidth() / 2;
-        return ScrollingData.Instance.isSwipeToLeft() ?
-                (childOffset < childHalfWidth) : (childOffset > childHalfWidth);
+        return isSwipeToLeft ? (childOffset < childHalfWidth) : (childOffset > childHalfWidth);
     }
 
 }

@@ -107,7 +107,7 @@ public final class FragmentWheelPage extends Fragment {
         coversFlowViewLp.height = computeCoversFlowListHeight();
 
         // TODO: 25.02.2016 hack for testing
-        coversFlowViewLp.topMargin = (int) App.dpToPixels(10);
+//        coversFlowViewLp.topMargin = (int) App.dpToPixels(10);
         horizontalCoversFlowView.setLayoutParams(coversFlowViewLp);
 
         fragmentRootView.addView(horizontalCoversFlowView);
