@@ -52,7 +52,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     private final CoversFlowListMeasurements coversFlowMeasurements;
     private boolean isSwipeToLeftGesture;
     private boolean isAdapterDataSetChanged = true;
-
+    private View lastlyClickedCoverView;
 
     public HorizontalCoversFlowView(Context context) {
         this(context, null);
@@ -238,28 +238,33 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     }
 
     private void selectCoverOnClick(HorizontalCoverView clickedCoverView, CoverEntity coverEntity) {
-        final float resizingEdgePosition = coversFlowMeasurements.getResizingEdgePosition();
-        final HorizontalCoverView intersectingCoverView = findCoverIntersectingWithResizingEdge();
-        float extraWidthToCompensate =
-                intersectingCoverView != null ?
-                        (intersectingCoverView.getWidth() - coversFlowMeasurements.getCoverDefaultWidth()) : 0;
+        // if we do press on same cover - simply ignore it
+        if (lastlyClickedCoverView != clickedCoverView) {
+            lastlyClickedCoverView = clickedCoverView;
 
-        final boolean isClickedCoverToRightOfResizingEdge = clickedCoverView.getLeft() >= resizingEdgePosition;
-        float scrollByX;
-        if (isClickedCoverToRightOfResizingEdge) {
-            scrollByX = clickedCoverView.getLeft()
-                    - resizingEdgePosition
-                    + coversFlowMeasurements.getCoverDefaultWidth() / 2
-                    - extraWidthToCompensate;
-        } else {
-            scrollByX = resizingEdgePosition
-                    - clickedCoverView.getRight()
-                    + coversFlowMeasurements.getCoverDefaultWidth() / 2;
+            final float resizingEdgePosition = coversFlowMeasurements.getResizingEdgePosition();
+            final HorizontalCoverView intersectingCoverView = findCoverIntersectingWithResizingEdge();
+            float extraWidthToCompensate =
+                    intersectingCoverView != null ?
+                            (intersectingCoverView.getWidth() - coversFlowMeasurements.getCoverDefaultWidth()) : 0;
 
-            scrollByX = -scrollByX;
+            final boolean isClickedCoverToRightOfResizingEdge = clickedCoverView.getLeft() >= resizingEdgePosition;
+            float scrollByX;
+            if (isClickedCoverToRightOfResizingEdge) {
+                scrollByX = clickedCoverView.getLeft()
+                        - resizingEdgePosition
+                        + coversFlowMeasurements.getCoverDefaultWidth() / 2
+                        - extraWidthToCompensate;
+            } else {
+                scrollByX = resizingEdgePosition
+                        - clickedCoverView.getRight()
+                        + coversFlowMeasurements.getCoverDefaultWidth() / 2;
+
+                scrollByX = -scrollByX;
+            }
+
+            smoothScrollBy((int) scrollByX, 0);
         }
-
-        smoothScrollBy((int) scrollByX, 0);
     }
 
     @Override

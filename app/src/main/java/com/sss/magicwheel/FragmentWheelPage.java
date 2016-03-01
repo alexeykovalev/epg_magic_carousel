@@ -59,14 +59,14 @@ public final class FragmentWheelPage extends Fragment {
             public void onDataItemSelected(WheelDataItem selectedDataItem) {
 //                Log.e("TAG", "selectedDataItem [" + selectedDataItem.getTitle() + "]");
                 horizontalCoversFlowView.swapData(loadDataForWheelDataItem(selectedDataItem));
-                // TODO: 29.02.2016 most probably has to be in data loading callback
-                horizontalCoversFlowView.displayWithScaleUpAnimation();
             }
 
             @Override
             public void onWheelRotationStateChange(WheelRotationState wheelRotationState) {
                 if (wheelRotationState == WheelRotationState.InRotation) {
                     horizontalCoversFlowView.hideWithScaleDownAnimation();
+                } else if (wheelRotationState == WheelRotationState.RotationStopped) {
+                    horizontalCoversFlowView.displayWithScaleUpAnimation();
                 }
             }
         });
