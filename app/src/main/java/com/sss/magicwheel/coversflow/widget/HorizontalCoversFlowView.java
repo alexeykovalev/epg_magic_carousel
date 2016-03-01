@@ -66,7 +66,6 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         super(context, attrs, defStyleAttr);
         coversFlowMeasurements = CoversFlowListMeasurements.getInstance();
         init(context);
-        addOnScrollListener(new CoverZoomingScrollListener());
     }
 
     private void init(Context context) {
@@ -93,6 +92,8 @@ public final class HorizontalCoversFlowView extends RecyclerView {
                 isAdapterDataSetChanged = true;
             }
         });
+
+        addOnScrollListener(new CoverZoomingScrollListener());
 
 //        drawResizingEdgeInDebug();
         setupCoversHorizontalSpacing((int) App.dpToPixels(HORIZONTAL_SPACING_IN_DP));
