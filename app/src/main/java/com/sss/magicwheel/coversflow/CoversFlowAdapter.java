@@ -51,16 +51,16 @@ public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdap
 
     @Override
     public CoverViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        final IHorizontalCoverView resView;
         if (viewType == REGULAR_COVER_VIEW_TYPE) {
-            final HorizontalCoverView coverView = (HorizontalCoverView) inflater.inflate(R.layout.cover_item_layout, parent, false);
-            coverView.restoreInitialSize(parent.getHeight());
-            return new CoverViewHolder(coverView, coverClickListener);
+            resView = (HorizontalCoverView) inflater.inflate(R.layout.cover_item_layout, parent, false);
         } else if (viewType == OFFSET_COVER_VIEW_TYPE) {
-            IHorizontalCoverView resView = (IHorizontalCoverView) inflater.inflate(R.layout.fake_cover_layout, parent, false);
-            return new CoverViewHolder(resView, null);
+            resView = (IHorizontalCoverView) inflater.inflate(R.layout.fake_cover_layout, parent, false);
         } else {
             throw new IllegalStateException("Unknown viewType [" + viewType + "]");
         }
+
+        return new CoverViewHolder(resView, coverClickListener);
     }
 
     @Override
@@ -82,20 +82,19 @@ public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdap
         private final IHorizontalCoverView coverView;
         private final ICoverClickListener coverClickListener;
 
+        private static View asView(IHorizontalCoverView horizontalCoverView) {
+            return (View) horizontalCoverView;
+        }
+
         public CoverViewHolder(IHorizontalCoverView coverView, ICoverClickListener coverClickListener) {
             super(asView(coverView));
             this.coverView = coverView;
             this.coverClickListener = coverClickListener;
         }
 
-        private static View asView(IHorizontalCoverView horizontalCoverView) {
-            return (View) horizontalCoverView;
-        }
-
         void bind(final CoverEntity entityToBind) {
             coverView.bind(entityToBind);
-            // if view is Regular one and NOT offset view
-            if (!coverView.isOffsetCover() && coverClickListener != null) {
+            if (!coverView.isOffsetCover()) {
                 asView(coverView).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View coverView) {

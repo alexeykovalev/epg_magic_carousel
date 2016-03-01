@@ -17,6 +17,9 @@ public final class CoversFlowListMeasurements {
     public static final double COVER_ASPECT_RATIO = 1.5;
     private static final int DEFAULT_HEIGHT_MAX_HEIGHT_DELTA = 50;
 
+    private static final int INNER_TOP_PADDING = 15;
+    private static final int INNER_BOTTOM_PADDING = 15;
+
     private static CoversFlowListMeasurements instance;
 
     private final Context context;
@@ -42,7 +45,9 @@ public final class CoversFlowListMeasurements {
         this.computationHelper = computationHelper;
         instance = this;
 
-        this.maxCoverHeight = (int) (getGapBottomRayPosition().y - getGapTopRayPosition().y);
+        this.maxCoverHeight = (int) (
+                getGapBottomRayPosition().y - getGapTopRayPosition().y - INNER_TOP_PADDING - INNER_BOTTOM_PADDING
+        );
         final int coverDefaultHeight = maxCoverHeight - 2 * DEFAULT_HEIGHT_MAX_HEIGHT_DELTA;
         final int coverDefaultWidth = (int) (COVER_ASPECT_RATIO * coverDefaultHeight);
 

@@ -1,7 +1,6 @@
 package com.sss.magicwheel.coversflow.widget;
 
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
@@ -34,9 +33,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     private static final int SCALING_ANIMATION_DURATION = 300;
     private static final int ALPHA_ANIMATION_DURATION = SCALING_ANIMATION_DURATION;
 
-    private class CoverZoomScrollListener extends OnScrollListener {
-        private boolean isFirstLaunch = true;
-
+    private class CoverZoomingScrollListener extends OnScrollListener {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             if (newState == RecyclerView.SCROLL_STATE_IDLE) {
@@ -46,17 +43,16 @@ public final class HorizontalCoversFlowView extends RecyclerView {
 
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            if (isFirstLaunch) {
-                scrollToFullySelectCover();
-                isFirstLaunch = false;
-            }
             updateScrollingState(dx);
             resizeCovers();
         }
     }
 
+
     private final CoversFlowListMeasurements coversFlowMeasurements;
-    private boolean isSwipeToLeft;
+    private boolean isSwipeToLeftGesture;
+    private boolean isAdapterDataSetChanged = true;
+
 
     public HorizontalCoversFlowView(Context context) {
         this(context, null);
@@ -70,20 +66,40 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         super(context, attrs, defStyleAttr);
         coversFlowMeasurements = CoversFlowListMeasurements.getInstance();
         init(context);
-        addOnScrollListener(new CoverZoomScrollListener());
+        addOnScrollListener(new CoverZoomingScrollListener());
     }
 
     private void init(Context context) {
-        setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false) {
+            @Override
+            public void onLayoutChildren(Recycler recycler, State state) {
+                super.onLayoutChildren(recycler, state);
+                if (isAdapterDataSetChanged) {
+                    scrollToFullySelectCover();
+                    isAdapterDataSetChanged = false;
+                }
+            }
+        });
+
         setAdapter(new CoversFlowAdapter(context, Collections.<CoverEntity>emptyList(), new CoversFlowAdapter.ICoverClickListener() {
             @Override
             public void onCoverClick(HorizontalCoverView coverView, CoverEntity coverEntity) {
                 selectCoverOnClick(coverView, coverEntity);
             }
         }));
+        getAdapter().registerAdapterDataObserver(new AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                isAdapterDataSetChanged = true;
+            }
+        });
 
-        addItemDecoration(new HorizontalCoversFlowEdgeDecorator(context));
+//        drawResizingEdgeInDebug();
         setupCoversHorizontalSpacing((int) App.dpToPixels(HORIZONTAL_SPACING_IN_DP));
+    }
+
+    private void drawResizingEdgeInDebug() {
+        addItemDecoration(new HorizontalCoversFlowEdgeDecorator());
     }
 
     private void setupCoversHorizontalSpacing(final int horizontalSpacingValue) {
@@ -101,22 +117,20 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     }
 
     private void updateScrollingState(int deltaX) {
-        isSwipeToLeft = deltaX >= 0;
+        isSwipeToLeftGesture = deltaX >= 0;
     }
 
     public void swapData(List<CoverEntity> coversData) {
-        scrollToPosition(0);
+        goToFirstCover();
         getAdapter().swapData(coversData);
+    }
+
+    private void goToFirstCover() {
+        scrollToPosition(0);
     }
 
     public void displayWithScaleUpAnimation() {
         playTogetherAnimations(
-                new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        scrollToFullySelectCover();
-                    }
-                },
                 createScalingAnimatorBetweenValues(0.0f, 1.0f),
                 createAlphaAnimatorBetweenValues(0.0f, 1.0f)
         );
@@ -126,7 +140,6 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     // immediately and interrupts this one
     public void hideWithScaleDownAnimation() {
         playTogetherAnimations(
-                null,
                 createScalingAnimatorBetweenValues(1.0f, 0.0f),
                 createAlphaAnimatorBetweenValues(1.0f, 0.0f)
         );
@@ -158,12 +171,9 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         return alphaAnimator;
     }
 
-    private void playTogetherAnimations(Animator.AnimatorListener animatorListener, Animator... animatorsToCombine) {
+    private void playTogetherAnimations(Animator... animatorsToPlay) {
         AnimatorSet combinedAnimators = new AnimatorSet();
-        combinedAnimators.playTogether(animatorsToCombine);
-        if (animatorListener != null) {
-            combinedAnimators.addListener(animatorListener);
-        }
+        combinedAnimators.playTogether(animatorsToPlay);
         combinedAnimators.start();
     }
 
@@ -184,7 +194,12 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         }
     }
 
-    // TODO: 25.02.2016 refactor this method.
+    /**
+     * // TODO: 25.02.2016 refactor this method.
+     *
+     * Either intersecting with resizing edge cover or closest from right to resizing
+     * edge cover.
+     */
     private HorizontalCoverView findCoverClosestToResizingEdge() {
         final HorizontalCoverView intersectingCover = findCoverIntersectingWithResizingEdge();
         if (intersectingCover != null) {
@@ -229,11 +244,9 @@ public final class HorizontalCoversFlowView extends RecyclerView {
                 intersectingCoverView != null ?
                         (intersectingCoverView.getWidth() - coversFlowMeasurements.getCoverDefaultWidth()) : 0;
 
-        final boolean isClickedCoverToRightOfEdge =
-                clickedCoverView.getLeft() >= resizingEdgePosition;
-
+        final boolean isClickedCoverToRightOfResizingEdge = clickedCoverView.getLeft() >= resizingEdgePosition;
         float scrollByX;
-        if (isClickedCoverToRightOfEdge) {
+        if (isClickedCoverToRightOfResizingEdge) {
             scrollByX = clickedCoverView.getLeft()
                     - resizingEdgePosition
                     + coversFlowMeasurements.getCoverDefaultWidth() / 2
@@ -247,14 +260,6 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         }
 
         smoothScrollBy((int) scrollByX, 0);
-
-       /* Log.e("TAG", "extraWidthToCompensate [" + extraWidthToCompensate + "], " +
-                "intersectingCoverView.getWidth() [" + (intersectingCoverView != null ? intersectingCoverView.getWidth() : 0) + "], " +
-                "getCoverDefaultWidth() [" + coversFlowMeasurements.getCoverDefaultWidth() + "], " +
-                " ------------ " +
-                "resizingEdgePosition [" + resizingEdgePosition + "], " +
-                "clickedCoverView.getLeft() [" + clickedCoverView.getLeft() + "]");
-        */
     }
 
     @Override
@@ -268,36 +273,36 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     }
 
     private void resizeCovers() {
-        HorizontalCoverView intersectingChild = findCoverIntersectingWithResizingEdge();
-        resizeIntersectingChild(intersectingChild);
-        restoreOtherChildrenToInitialSize(intersectingChild);
+        HorizontalCoverView intersectingCover = findCoverIntersectingWithResizingEdge();
+        resizeIntersectingCover(intersectingCover);
+        restoreOtherCoversToInitialSize(intersectingCover);
         requestLayout();
     }
 
-    private void resizeIntersectingChild(HorizontalCoverView intersectingChild) {
-        if (intersectingChild != null) {
-            final double zoomFactor = getChildZoomingFactor(intersectingChild);
+    private void resizeIntersectingCover(HorizontalCoverView intersectingCover) {
+        if (intersectingCover != null) {
+            final double zoomFactor = getCoverZoomingFactor(intersectingCover);
 
-            final int maxHeight = coversFlowMeasurements.getCoverMaxHeight();
-            final int initialHeight = coversFlowMeasurements.getCoverDefaultHeight();
+            final int coverMaxHeight = getCoverMaxHeight();
+            final int coverInitialHeight = coversFlowMeasurements.getCoverDefaultHeight();
 
-            double newChildHeight = initialHeight + (maxHeight - initialHeight) * zoomFactor;
-            final int newChildHeightAsInt = (int) newChildHeight;
+            double newCoverHeight = coverInitialHeight + (coverMaxHeight - coverInitialHeight) * zoomFactor;
+            final int newCoverHeightAsInt = (int) newCoverHeight;
 
-            final int topMarginValue = (getHeight() - newChildHeightAsInt) / 2;
-            final ViewGroup.MarginLayoutParams lp = (MarginLayoutParams) intersectingChild.getLayoutParams();
-            lp.height = newChildHeightAsInt;
-            lp.width = (int) (newChildHeightAsInt * CoversFlowListMeasurements.COVER_ASPECT_RATIO);
+            final int topMarginValue = (getCoverMaxHeight() - newCoverHeightAsInt) / 2;
+            final ViewGroup.MarginLayoutParams lp = (MarginLayoutParams) intersectingCover.getLayoutParams();
+            lp.height = newCoverHeightAsInt;
+            lp.width = (int) (newCoverHeightAsInt * CoversFlowListMeasurements.COVER_ASPECT_RATIO);
             lp.topMargin = topMarginValue;
         }
     }
 
-    private void restoreOtherChildrenToInitialSize(HorizontalCoverView intersectingChild) {
+    private void restoreOtherCoversToInitialSize(HorizontalCoverView intersectingCover) {
         for (int i = 0; i < getChildCount(); i++) {
             final View coverView = getChildAt(i);
-            final int topMarginValue = (getHeight() - coversFlowMeasurements.getCoverDefaultHeight()) / 2;
+            final int topMarginValue = (getCoverMaxHeight() - coversFlowMeasurements.getCoverDefaultHeight()) / 2;
             final MarginLayoutParams coverViewLp = (MarginLayoutParams) coverView.getLayoutParams();
-            if (intersectingChild != coverView) {
+            if (intersectingCover != coverView) {
                 coverViewLp.height = coversFlowMeasurements.getCoverDefaultHeight();
                 coverViewLp.width = coversFlowMeasurements.getCoverDefaultWidth();
                 coverViewLp.leftMargin = coversFlowMeasurements.getCoverDefaultMargins().left;
@@ -306,52 +311,56 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         }
     }
 
+    private int getCoverMaxHeight() {
+        return getHeight();
+    }
+
     private HorizontalCoverView findCoverIntersectingWithResizingEdge() {
         final float edgeLeftPosition = coversFlowMeasurements.getResizingEdgePosition();
 
         for (int i = 0; i < getChildCount(); i++) {
-            final View child = getChildAt(i);
-            final IHorizontalCoverView horizontalCoverView = (IHorizontalCoverView) child;
+            final View coverView = getChildAt(i);
+            final IHorizontalCoverView horizontalCoverView = (IHorizontalCoverView) coverView;
 
-            final float childLeftX = child.getLeft();
-            final float childRightX = childLeftX + child.getWidth();
+            final float coverLeftX = coverView.getLeft();
+            final float coverRightX = coverLeftX + coverView.getWidth();
 
-            final boolean isIntersectingWithResizingEdge = childLeftX <= edgeLeftPosition && childRightX >= edgeLeftPosition;
+            final boolean isIntersectingWithResizingEdge = coverLeftX <= edgeLeftPosition && coverRightX >= edgeLeftPosition;
             if (!horizontalCoverView.isOffsetCover() && isIntersectingWithResizingEdge) {
-                return (HorizontalCoverView) child;
+                return (HorizontalCoverView) coverView;
             }
         }
 
         return null;
     }
 
-    private double getChildZoomingFactor(HorizontalCoverView childToZoom) {
+    private double getCoverZoomingFactor(HorizontalCoverView coverToZoom) {
         final float edgeLeftPosition = coversFlowMeasurements.getResizingEdgePosition();
-        final float childStartX = childToZoom.getLeft();
-        final float offset = edgeLeftPosition - childStartX;
+        final float coverStartX = coverToZoom.getLeft();
+        final float offset = edgeLeftPosition - coverStartX;
 
         final double zoomFactor;
-        final double halfChildWidth = coversFlowMeasurements.getCoverDefaultWidth() / 2;
-        if (isSwipeToLeft) {
+        final double halfCoverDefaultWidth = coversFlowMeasurements.getCoverDefaultWidth() / 2;
+        if (isSwipeToLeftGesture) {
             if (isZoomUp(offset)) {
-                zoomFactor = offset / halfChildWidth;
+                zoomFactor = offset / halfCoverDefaultWidth;
             } else {
-                zoomFactor = 1 - (offset - halfChildWidth) / halfChildWidth;
+                zoomFactor = 1 - (offset - halfCoverDefaultWidth) / halfCoverDefaultWidth;
             }
         } else {
             if (isZoomUp(offset)) {
-                zoomFactor = 1 - (offset - halfChildWidth) / halfChildWidth;
+                zoomFactor = 1 - (offset - halfCoverDefaultWidth) / halfCoverDefaultWidth;
             } else {
-                zoomFactor = offset / halfChildWidth;
+                zoomFactor = offset / halfCoverDefaultWidth;
             }
         }
 
         return zoomFactor;
     }
 
-    private boolean isZoomUp(float childOffset) {
-        final float childHalfWidth = coversFlowMeasurements.getCoverDefaultWidth() / 2;
-        return isSwipeToLeft ? (childOffset < childHalfWidth) : (childOffset > childHalfWidth);
+    private boolean isZoomUp(float coverOffset) {
+        final float coverHalfDefaultWidth = coversFlowMeasurements.getCoverDefaultWidth() / 2;
+        return isSwipeToLeftGesture ? (coverOffset < coverHalfDefaultWidth) : (coverOffset > coverHalfDefaultWidth);
     }
 
 }

@@ -1,11 +1,9 @@
 package com.sss.magicwheel.coversflow;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
-
 
 /**
  * @author Alexey Kovalev
@@ -13,11 +11,9 @@ import android.support.v7.widget.RecyclerView;
  */
 public class HorizontalCoversFlowEdgeDecorator extends RecyclerView.ItemDecoration {
 
-    private final Context context;
     private final Paint edgesPaint;
 
-    public HorizontalCoversFlowEdgeDecorator(Context context) {
-        this.context = context;
+    public HorizontalCoversFlowEdgeDecorator() {
         this.edgesPaint = createEdgesPaint();
     }
 
