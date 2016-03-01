@@ -22,11 +22,16 @@ import com.sss.magicwheel.wheel.manager.TopWheelLayoutManager;
 import java.util.Collections;
 import java.util.List;
 
+import static java.lang.Math.*;
+
 /**
  * @author Alexey Kovalev
  * @since 10.02.2016.
  */
 public final class WheelOfFortuneContainerFrameView extends FrameLayout {
+
+    // TODO: 01.03.2016 has to be constant from Device configuration class. Find the name of this class.
+    private static final double TOUCH_SPOT_SIZE_FOR_CLICK_EVENT = 10.0;
 
     private final WheelComputationHelper computationHelper;
 
@@ -44,6 +49,12 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
      * containers rotated in order to implement wheel startup animation.
      */
     private final WheelFrameItemDecoration wheelFrameItemDecoration;
+
+    /**
+     * For detecting taping on bottom wheel's sector.
+     */
+    private double previousTouchDownX;
+    private double previousTouchDownY;
 
     public WheelOfFortuneContainerFrameView(Context context) {
         this(context, null);
@@ -109,9 +120,12 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         switch (actionMasked) {
             case MotionEvent.ACTION_DOWN:
                 bottomWheelContainer.dispatchTouchEvent(event);
+                previousTouchDownX = event.getX();
+                previousTouchDownY = event.getY();
                 break;
             case MotionEvent.ACTION_UP:
-                if (lastTouchAction != MotionEvent.ACTION_MOVE) {
+                final double touchSpotSize = computeTouchSpotSize(event);
+                if (lastTouchAction != MotionEvent.ACTION_MOVE || (touchSpotSize <= TOUCH_SPOT_SIZE_FOR_CLICK_EVENT)) {
                     bottomWheelContainer.dispatchTouchEvent(event);
                 }
                 break;
@@ -120,6 +134,12 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         lastTouchAction = actionMasked;
         topWheelContainer.dispatchTouchEvent(event);
         return true;
+    }
+
+    private double computeTouchSpotSize(MotionEvent currentTouchEvent) {
+        final double deltaXAbs = abs(currentTouchEvent.getX() - previousTouchDownX);
+        final double deltaYAbs = abs(currentTouchEvent.getY() - previousTouchDownY);
+        return sqrt(deltaXAbs * deltaXAbs + deltaYAbs * deltaYAbs);
     }
 
     public void swapData(List<WheelDataItem> newData) {
