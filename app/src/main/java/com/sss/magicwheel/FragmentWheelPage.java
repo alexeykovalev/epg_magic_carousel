@@ -102,12 +102,14 @@ public final class FragmentWheelPage extends Fragment {
         );
 
         final FrameLayout.LayoutParams coversFlowViewLp = (FrameLayout.LayoutParams) horizontalCoversFlowView.getLayoutParams();
-        coversFlowViewLp.height = computeCoversFlowListHeight();
+        final int coversFlowListHeight = computeCoversFlowListHeight();
+        coversFlowViewLp.height = coversFlowListHeight;
 
-        // TODO: 25.02.2016 hack for testing
-//        coversFlowViewLp.topMargin = (int) App.dpToPixels(10);
+        final float topMarginAsFloat = computationHelper.getWheelConfig().getCircleCenterRelToRecyclerView().y
+                - coversFlowListHeight / 2;
+        coversFlowViewLp.topMargin = (int) topMarginAsFloat;
+
         horizontalCoversFlowView.setLayoutParams(coversFlowViewLp);
-
         fragmentRootView.addView(horizontalCoversFlowView);
     }
 
