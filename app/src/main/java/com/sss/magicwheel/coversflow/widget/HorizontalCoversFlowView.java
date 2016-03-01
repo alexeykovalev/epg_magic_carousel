@@ -36,7 +36,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     private class CoverZoomingScrollListener extends OnScrollListener {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+            if (!isCoversFlowViewInScrollingState()) {
                 scrollToFullySelectCover();
             }
         }
@@ -48,11 +48,11 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         }
     }
 
-
     private final CoversFlowListMeasurements coversFlowMeasurements;
+    private CoverEntity lastlyClickedCoverEntity;
+
     private boolean isSwipeToLeftGesture;
     private boolean isAdapterDataSetChanged = true;
-    private View lastlyClickedCoverView;
 
     public HorizontalCoversFlowView(Context context) {
         this(context, null);
@@ -115,6 +115,19 @@ public final class HorizontalCoversFlowView extends RecyclerView {
                 outRect.set(0, 0, hSpacing, 0);
             }
         });
+    }
+
+    private boolean isCoversFlowViewInScrollingState() {
+        return getScrollState() != RecyclerView.SCROLL_STATE_IDLE;
+    }
+
+    private void notifyOnCoverSelectedIfNeeded() {
+        if (!isCoversFlowViewInScrollingState()) {
+            final HorizontalCoverView intersectingCoverView = findCoverIntersectingWithResizingEdge();
+            if (intersectingCoverView != null) {
+                intersectingCoverView.onCoverSelected();
+            }
+        }
     }
 
     private void updateScrollingState(int deltaX) {
@@ -193,6 +206,8 @@ public final class HorizontalCoversFlowView extends RecyclerView {
 
             smoothScrollBy((int) scrollBy, 0);
         }
+
+        notifyOnCoverSelectedIfNeeded();
     }
 
     /**
@@ -240,8 +255,8 @@ public final class HorizontalCoversFlowView extends RecyclerView {
 
     private void selectCoverOnClick(HorizontalCoverView clickedCoverView, CoverEntity coverEntity) {
         // if we do press on same cover - simply ignore it
-        if (lastlyClickedCoverView != clickedCoverView) {
-            lastlyClickedCoverView = clickedCoverView;
+        if (lastlyClickedCoverEntity == null || !lastlyClickedCoverEntity.equals(coverEntity)) {
+            lastlyClickedCoverEntity = coverEntity;
 
             final float resizingEdgePosition = coversFlowMeasurements.getResizingEdgePosition();
             final HorizontalCoverView intersectingCoverView = findCoverIntersectingWithResizingEdge();

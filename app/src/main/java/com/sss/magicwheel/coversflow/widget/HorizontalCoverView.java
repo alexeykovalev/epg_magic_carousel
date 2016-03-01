@@ -42,6 +42,14 @@ public class HorizontalCoverView extends FrameLayout implements IHorizontalCover
         coverTitle = (TextView) findViewById(R.id.cover_title);
     }
 
+    /**
+     * Hook invoked when cover has been selected (resized to MAX size)
+     * in covers flow.
+     */
+    public void onCoverSelected() {
+
+    }
+
     @Override
     public void bind(CoverEntity entityToBind) {
         coverTitle.setText(entityToBind.getTitle());
@@ -55,5 +63,4 @@ public class HorizontalCoverView extends FrameLayout implements IHorizontalCover
     public boolean isOffsetCover() {
         return false;
     }
-
 }
