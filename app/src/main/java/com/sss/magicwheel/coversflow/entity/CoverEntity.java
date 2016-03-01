@@ -9,25 +9,41 @@ import com.sss.magicwheel.R;
 public final class CoverEntity {
 
     public static final int NOT_DEFINED_OFFSET_VALUE = Integer.MIN_VALUE;
+    private static final int NO_COVER_ID = -1;
+
+    private static final int[] COVERS_LIST_DRAWABLE = new int[] {
+            R.drawable.first_cover,
+            R.drawable.second_cover
+    };
+
+    private static int coverImageCounter;
+
+    private static int createCoverImageDrawable() {
+        int index = coverImageCounter % COVERS_LIST_DRAWABLE.length;
+        coverImageCounter++;
+        return COVERS_LIST_DRAWABLE[index];
+    }
 
     private final String title;
+    private final int coverImageDrawableId;
     private final int offsetValue;
 
     public static CoverEntity dataItem(String title) {
-        return new CoverEntity(title, NOT_DEFINED_OFFSET_VALUE);
+        return new CoverEntity(title, createCoverImageDrawable(), NOT_DEFINED_OFFSET_VALUE);
     }
 
     public static CoverEntity offsetItem(int offsetValue) {
-        return new CoverEntity("", offsetValue);
+        return new CoverEntity("", NO_COVER_ID, offsetValue);
     }
 
-    private CoverEntity(String title, int offsetValue) {
+    private CoverEntity(String title, int coverImageDrawableId, int offsetValue) {
         this.title = title;
         this.offsetValue = offsetValue;
+        this.coverImageDrawableId = coverImageDrawableId;
     }
 
     public int getImageResource() {
-        return R.drawable.second_cover;
+        return coverImageDrawableId;
     }
 
     public String getTitle() {
