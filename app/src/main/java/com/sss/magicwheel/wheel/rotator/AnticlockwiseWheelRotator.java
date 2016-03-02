@@ -10,7 +10,6 @@ import com.sss.magicwheel.wheel.WheelComputationHelper;
  * @author Alexey Kovalev
  * @since 03.02.2016.
  */
-@Deprecated
 public final class AnticlockwiseWheelRotator extends AbstractWheelRotator {
 
     public AnticlockwiseWheelRotator(AbstractWheelLayoutManager wheelLayoutManager, WheelComputationHelper computationHelper) {
@@ -19,13 +18,10 @@ public final class AnticlockwiseWheelRotator extends AbstractWheelRotator {
 
     @Override
     public void rotateWheelBy(double rotationAngleInRad) {
-//        final double halfSectorAngleInRad = computationHelper.getWheelConfig().getAngularRestrictions().getSectorAngleInRad() / 2;
         for (int i = 0; i < wheelLayoutManager.getChildCount(); i++) {
             final View sectorView = wheelLayoutManager.getChildAt(i);
             final AbstractWheelLayoutManager.LayoutParams sectorViewLp = AbstractWheelLayoutManager.getChildLayoutParams(sectorView);
             sectorViewLp.anglePositionInRad += rotationAngleInRad;
-            // we store top sector angular position
-//            sectorViewLp.anglePositionInRad += halfSectorAngleInRad;
             wheelLayoutManager.alignBigWrapperViewByAngle(sectorView, -sectorViewLp.anglePositionInRad);
         }
     }
@@ -40,6 +36,10 @@ public final class AnticlockwiseWheelRotator extends AbstractWheelRotator {
         addSectorsToBottomIfNeeded(recycler, state);
     }
 
+    /**
+     * When sectorView's bottom edge goes outside {@code layoutStartAngle}
+     * then recycle this sector.
+     */
     private void recycleSectorsFromTopIfNeeded(RecyclerView.Recycler recycler) {
         for (int i = 0; i < wheelLayoutManager.getChildCount(); i++) {
             final View sectorView = wheelLayoutManager.getChildAt(i);
@@ -48,11 +48,14 @@ public final class AnticlockwiseWheelRotator extends AbstractWheelRotator {
 
             if (sectorViewBottomEdgeAngularPosInRad > wheelLayoutManager.getLayoutStartAngleInRad()) {
                 wheelLayoutManager.removeAndRecycleViewAt(i, recycler);
-//                Log.i(TAG, "Recycle view at index [" + i + "]");
             }
         }
     }
 
+    /**
+     * Adds new sector views until lastly added sectorView's top edge be greater than
+     * {@code layoutEndEdge}
+     */
     private void addSectorsToBottomIfNeeded(RecyclerView.Recycler recycler, RecyclerView.State state) {
         final View closestToEndSectorView = wheelLayoutManager.getChildClosestToLayoutEndEdge();
         final AbstractWheelLayoutManager.LayoutParams sectorViewLp = AbstractWheelLayoutManager.getChildLayoutParams(closestToEndSectorView);
@@ -65,16 +68,8 @@ public final class AnticlockwiseWheelRotator extends AbstractWheelRotator {
         int nextChildPos = wheelLayoutManager.getPosition(closestToEndSectorView) + 1;
         int alreadyLayoutedChildrenCount = 0;
 
-//        Log.e("TAG", "addSectorsToBottomIfNeeded() " +
-//                "newSectorViewTopEdgeAngularPosInRad [" + WheelComputationHelper.radToDegree(newSectorViewTopEdgeAngularPosInRad) + "], " +
-//                "bottomEndLayoutAngleInRad [" + WheelComputationHelper.radToDegree(bottomEndLayoutAngleInRad) + "]");
-
-        while (newSectorViewTopEdgeAngularPosInRad > bottomEndLayoutAngleInRad && alreadyLayoutedChildrenCount < state.getItemCount()) {
-
-//            Log.e("TAG", "addSectorsToBottomIfNeeded() " +
-//                    "newSectorViewTopEdgeAngularPosInRad [" + WheelComputationHelper.radToDegree(newSectorViewTopEdgeAngularPosInRad) + "], " +
-//                    "bottomEndLayoutAngleInRad [" + WheelComputationHelper.radToDegree(bottomEndLayoutAngleInRad) + "]");
-
+        while (newSectorViewTopEdgeAngularPosInRad > bottomEndLayoutAngleInRad
+                && alreadyLayoutedChildrenCount < state.getItemCount()) {
             wheelLayoutManager.setupSectorForPosition(recycler, nextChildPos, newSectorViewLayoutAngle, true);
             newSectorViewLayoutAngle -= sectorAngleInRad;
             newSectorViewTopEdgeAngularPosInRad = computationHelper.getSectorAngleTopEdgeInRad(newSectorViewLayoutAngle);
