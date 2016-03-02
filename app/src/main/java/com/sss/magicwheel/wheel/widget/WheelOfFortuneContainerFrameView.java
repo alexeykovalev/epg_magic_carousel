@@ -25,6 +25,9 @@ import java.util.List;
 import static java.lang.Math.*;
 
 /**
+ * Container holding wheel's top and bottom parts and their
+ * initialization steps.
+ *
  * @author Alexey Kovalev
  * @since 10.02.2016.
  */
@@ -115,6 +118,12 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        // eat touch event if startup animation has not been finished yet
+        if (!topWheelContainer.getLayoutManager().isStartupAnimationFinished()
+                || !bottomWheelContainer.getLayoutManager().isStartupAnimationFinished()) {
+            return true;
+        }
+
         // in order to dispatch click event to sectorView inside bottom wheel
         final int actionMasked = MotionEventCompat.getActionMasked(event);
         switch (actionMasked) {

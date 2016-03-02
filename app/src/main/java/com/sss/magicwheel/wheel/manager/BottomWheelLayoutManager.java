@@ -10,6 +10,8 @@ import com.sss.magicwheel.wheel.misc.WheelComputationHelper;
 import com.sss.magicwheel.wheel.widget.AbstractWheelContainerRecyclerView;
 
 /**
+ * Does children layout for wheel's bottom part.
+ *
  * @author Alexey Kovalev
  * @since 05.02.2016.
  */

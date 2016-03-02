@@ -1,8 +1,8 @@
 package com.sss.magicwheel.wheel.manager;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
-import android.graphics.PointF;
 import android.graphics.RectF;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -22,40 +22,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Base RecyclerView's layout manager implementation intended
+ * for layout children like a sectors of the wheel.
+ *
+ * It does sectors measurements, positioning and rotation procedures required
+ * for them proper layout on wheel path.
+ *
  * @author Alexey Kovalev
  * @since 05.02.2016.
  */
 public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutManager {
 
-    private static final String TAG = AbstractWheelLayoutManager.class.getCanonicalName();
+    private static final int NOT_DEFINED_ADAPTER_POSITION = Integer.MAX_VALUE;
     private static final double NOT_DEFINED_ROTATION_ANGLE = Double.MIN_VALUE;
 
-    public static final int NOT_DEFINED_ADAPTER_POSITION = Integer.MAX_VALUE;
-//    public static final int START_LAYOUT_FROM_ADAPTER_POSITION = WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT;
-
-    protected final AbstractWheelRotator clockwiseRotator;
-    protected final AbstractWheelRotator anticlockwiseRotator;
-
-    protected final Context context;
-    protected final AbstractWheelContainerRecyclerView wheelRecyclerView;
-
-    protected final WheelConfig wheelConfig;
-    protected final WheelConfig.AngularRestrictions angularRestrictions;
-    protected final WheelComputationHelper computationHelper;
-
-    protected final WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener;
-    private final List<WheelOnStartupAnimationListener> startupAnimationListeners = new ArrayList<>();
-
-    private boolean isStartupAnimationPlayed;
-
-    private double layoutStartAngleInRad;
-    private double layoutEndAngleInRad;
-
-    private int startLayoutFromAdapterPosition = NOT_DEFINED_ADAPTER_POSITION;
-
-    public static LayoutParams getChildLayoutParams(View child) {
-        return (LayoutParams) child.getLayoutParams();
-    }
 
     public interface WheelOnInitialLayoutFinishingListener {
         void onInitialLayoutFinished(int finishedAtAdapterPosition);
@@ -69,6 +49,35 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         void onAnimationUpdate(WheelStartupAnimationStatus animationStatus);
     }
 
+
+    protected final AbstractWheelRotator clockwiseRotator;
+    protected final AbstractWheelRotator anticlockwiseRotator;
+
+    protected final Context context;
+    protected final AbstractWheelContainerRecyclerView wheelRecyclerView;
+
+    protected final WheelComputationHelper computationHelper;
+    protected final WheelConfig wheelConfig;
+    protected final WheelConfig.AngularRestrictions angularRestrictions;
+
+    protected final WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener;
+    private final List<WheelOnStartupAnimationListener> startupAnimationListeners = new ArrayList<>();
+
+    private boolean isStartupAnimationLayoutDone;
+    private boolean isStartupAnimationFinished;
+
+    private double layoutStartAngleInRad;
+    private double layoutEndAngleInRad;
+
+    private int startLayoutFromAdapterPosition = NOT_DEFINED_ADAPTER_POSITION;
+
+    public static LayoutParams getChildLayoutParams(View child) {
+        return (LayoutParams) child.getLayoutParams();
+    }
+
+    /**
+     * Available only for subclasses.
+     */
     protected AbstractWheelLayoutManager(Context context,
                                          AbstractWheelContainerRecyclerView wheelRecyclerView,
                                          WheelComputationHelper computationHelper,
@@ -89,7 +98,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         this.anticlockwiseRotator = new AnticlockwiseWheelRotator(this, computationHelper);
     }
 
-    private WheelOnStartupAnimationListener stubIfNull(WheelOnStartupAnimationListener startupAnimationListener) {
+    private static WheelOnStartupAnimationListener stubIfNull(WheelOnStartupAnimationListener startupAnimationListener) {
         return startupAnimationListener != null ? startupAnimationListener :
                 new WheelOnStartupAnimationListener() {
                     @Override
@@ -98,7 +107,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
                 };
     }
 
-    private WheelOnInitialLayoutFinishingListener stubIfNull(WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener) {
+    private static WheelOnInitialLayoutFinishingListener stubIfNull(WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener) {
         return initialLayoutFinishingListener != null ? initialLayoutFinishingListener :
                 new WheelOnInitialLayoutFinishingListener() {
                     @Override
@@ -121,11 +130,16 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         }
     }
 
+    /**
+     * In case when wheel initially appears on screen we do layout for startup animation
+     * via {@link #onLayoutChildrenForStartupAnimation(RecyclerView.Recycler, RecyclerView.State)}
+     * and in all other cases we do regular children layout
+     * via {@link #onLayoutChildrenRegular(RecyclerView.Recycler, RecyclerView.State)}
+     */
     @Override
     public final void onLayoutChildren(final RecyclerView.Recycler recycler, final RecyclerView.State state) {
         // We have nothing to show for an empty data set but clear any existing views
-        int itemCount = getItemCount();
-        if (itemCount == 0) {
+        if (getItemCount() == 0) {
             removeAndRecycleAllViews(recycler);
             return;
         }
@@ -137,18 +151,35 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         }
 
         final int lastlyLayoutedChildPos;
-        if (isStartupAnimationPlayed) {
+        if (isStartupAnimationLayoutDone) {
             lastlyLayoutedChildPos = onLayoutChildrenRegular(recycler, state);
         } else {
             lastlyLayoutedChildPos = onLayoutChildrenForStartupAnimation(recycler, state);
-            createWheelStartupAnimator(recycler, state).start();
-            isStartupAnimationPlayed = true;
+            final Animator wheelStartupAnimator = createWheelStartupAnimator(recycler, state);
+            wheelStartupAnimator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    isStartupAnimationFinished = true;
+                }
+            });
+            wheelStartupAnimator.start();
+            isStartupAnimationLayoutDone = true;
         }
 
         notifyLayoutFinishingListener(lastlyLayoutedChildPos);
     }
 
+    /**
+     * Does children layout before launching startup wheel animation.
+     * For startup animation we have to layout children in another way than
+     * we do it for regular layout in {@link #onLayoutChildrenRegular(RecyclerView.Recycler, RecyclerView.State)}
+     */
     protected abstract int onLayoutChildrenForStartupAnimation(RecyclerView.Recycler recycler, RecyclerView.State state);
+
+    /**
+     * Does regular children layout (not for startup animation). Usually this method will be invoked
+     * when wheel adapter data set has been changed or request layout procedure has been issued.
+     */
     protected abstract int onLayoutChildrenRegular(RecyclerView.Recycler recycler, RecyclerView.State state);
 
     protected abstract void notifyLayoutFinishingListener(int lastlyLayoutedChildPos);
@@ -158,6 +189,9 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     protected abstract double computeLayoutStartAngleInRad();
     protected abstract double computeLayoutEndAngleInRad();
 
+    public final boolean isStartupAnimationFinished() {
+        return isStartupAnimationFinished;
+    }
 
     // TODO: 05.02.2016 consider removing overriding
     protected int getStartLayoutFromAdapterPosition() {
@@ -188,10 +222,6 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         this.layoutStartAngleInRad = layoutStartAngleInRad;
     }
 
-    protected void setLayoutEndAngleInRad(double layoutEndAngleInRad) {
-        this.layoutEndAngleInRad = layoutEndAngleInRad;
-    }
-
     @Override
     public void onDetachedFromWindow(RecyclerView view, RecyclerView.Recycler recycler) {
         super.onDetachedFromWindow(view, recycler);
@@ -216,53 +246,17 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         return dy;
     }
 
-    @Override
-    public void scrollToPosition(int positionToScroll) {
-        throw new UnsupportedOperationException("Not implemented feature yet.");
-    }
-
-    public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
-        final double targetSeekScrollDistanceInRad = wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 10;
-        final WheelSmoothScroller wheelScroller = new WheelSmoothScroller(recyclerView.getContext(),
-                this, computationHelper, targetSeekScrollDistanceInRad) {
-            @Override
-            protected WheelRotationDirection computeRotationDirectionForPosition(int targetPosition) {
-                return AbstractWheelLayoutManager.this.detectRotationDirection(targetPosition);
-            }
-        };
-        wheelScroller.setTargetPosition(position);
-        startSmoothScroll(wheelScroller);
-    }
-
-    private WheelRotationDirection detectRotationDirection(int targetPosition) {
-        final int referenceSectorViewVirtualAdapterPosition = getPosition(getChildClosestToLayoutEndEdge());
-        return targetPosition < referenceSectorViewVirtualAdapterPosition ?
-                WheelRotationDirection.Clockwise : WheelRotationDirection.Anticlockwise;
-    }
-
-    // for y: use -1 for up direction, 1 for down direction.
-    @Deprecated
-    private PointF computeScrollVectorForPosition(int targetPosition) {
-        if (getChildCount() == 0) {
-            return null;
-        }
-        final int firstChildPos = getPosition(getChildAt(0));
-        final int direction = targetPosition < firstChildPos ? -1 : 1;
-
-        return new PointF(0, direction);
-    }
-
     private void rotateWheel(double rotationAngleInRad, WheelRotationDirection rotationDirection,
                              RecyclerView.Recycler recycler, RecyclerView.State state) {
-        final AbstractWheelRotator wheelRotator = resolveRotatorByDirection(rotationDirection);
+        final AbstractWheelRotator wheelRotator = rotationDirection == WheelRotationDirection.Clockwise ?
+                clockwiseRotator : anticlockwiseRotator;
         wheelRotator.rotateWheelBy(rotationAngleInRad);
         wheelRotator.recycleAndAddSectors(recycler, state);
     }
 
-    private AbstractWheelRotator resolveRotatorByDirection(WheelRotationDirection rotationDirection) {
-        return rotationDirection == WheelRotationDirection.Clockwise ? clockwiseRotator : anticlockwiseRotator;
-    }
 
+    // --- Due to the fact that we have infinite wheel this method for now don't required
+    // they only needed for restricting scrolling ---
     /**
      * Anticlockwise rotation will correspond to positive return type.
      */
@@ -325,6 +319,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         return res;
     }
 
+
     public final void setupSectorForPosition(RecyclerView.Recycler recycler,
                                              int positionIndex, double angularPositionInRad,
                                              boolean isAddViewToBottom) {
@@ -346,11 +341,6 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
 
         LayoutParams lp = (LayoutParams) bigWrapperView.getLayoutParams();
         lp.anglePositionInRad = angularPositionInRad;
-
-        /*Log.e(TAG,
-                "setupSectorForPosition() add viewTitle [" + getBigWrapperTitle(bigWrapperView) + "], " +
-                        "angleInRad [" + WheelComputationHelper.radToDegree(lp.anglePositionInRad) + "]"
-        );*/
 
         if (isAddViewToBottom) {
             addView(bigWrapperView);
@@ -379,18 +369,6 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
 //        }
 
         bigWrapperView.setRotation(angleInDegree);
-
-//        final String text = ((WheelBigWrapperView) bigWrapperView).getText();
-//        Log.e(TAG, "alignBigWrapperViewByAngle text [" + text + "], angleInDegree [" + angleInDegree + "]");
-    }
-
-    @Deprecated
-    private boolean isBottomBoundsReached() {
-        View lastChild = getChildClosestToLayoutEndEdge();
-        LayoutParams lastChildLp = (LayoutParams) lastChild.getLayoutParams();
-        final double lastSectorBottomEdge = computationHelper.getSectorAngleBottomEdgeInRad(lastChildLp.anglePositionInRad);
-
-        return wheelConfig.getAngularRestrictions().getWheelBottomEdgeAngleRestrictionInRad() - lastSectorBottomEdge <= 0;
     }
 
     @Override
@@ -401,6 +379,30 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     @Override
     public boolean canScrollHorizontally() {
         return false;
+    }
+
+    @Override
+    public void scrollToPosition(int positionToScroll) {
+        throw new UnsupportedOperationException("Not implemented feature yet.");
+    }
+
+    @Override
+    public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
+//        throw new UnsupportedOperationException("Not implemented feature yet.");
+
+        final double targetSeekScrollDistanceInRad = wheelConfig.getAngularRestrictions().getSectorAngleInRad() / 10;
+        final WheelSmoothScroller wheelScroller = new WheelSmoothScroller(recyclerView.getContext(),
+                this, computationHelper, targetSeekScrollDistanceInRad) {
+            @Override
+            protected WheelRotationDirection computeRotationDirectionForPosition(int targetPosition) {
+                // detect rotation direction
+                final int referenceSectorViewVirtualAdapterPosition = getPosition(getChildClosestToLayoutEndEdge());
+                return targetPosition < referenceSectorViewVirtualAdapterPosition ?
+                        WheelRotationDirection.Clockwise : WheelRotationDirection.Anticlockwise;
+            }
+        };
+        wheelScroller.setTargetPosition(position);
+        startSmoothScroll(wheelScroller);
     }
 
     @Override

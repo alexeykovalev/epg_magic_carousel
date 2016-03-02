@@ -24,14 +24,12 @@ import java.util.List;
  */
 public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
 
-    private static final String TAG = AbstractWheelContainerRecyclerView.class.getCanonicalName();
-
     protected final WheelComputationHelper computationHelper;
     protected final WheelConfig wheelConfig;
 
     /**
      * Lastly selected sector adapter position.
-     * Store it in the field in order to don't fire sector selection
+     * Store it on fields level in order to don't fire sector selection
      * notification twice.
      */
     private int lastlySelectedSectorAdapterPosition = RecyclerView.NO_POSITION;

@@ -14,6 +14,8 @@ import com.sss.magicwheel.wheel.misc.WheelComputationHelper;
 import com.sss.magicwheel.wheel.manager.AbstractWheelLayoutManager;
 
 /**
+ * Renders rays drawables on sector edges.
+ *
  * @author Alexey Kovalev
  * @since 12.02.2016.
  */

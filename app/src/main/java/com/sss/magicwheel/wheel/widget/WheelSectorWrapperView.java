@@ -14,12 +14,14 @@ import com.sss.magicwheel.wheel.entity.SectorClipAreaDescriptor;
 import com.sss.magicwheel.wheel.entity.WheelDataItem;
 
 /**
+ * Defines shape of the sector view which will be positioned on
+ * wheel. Data describing sector's shape declared in
+ * {@link SectorClipAreaDescriptor}
+ *
  * @author Alexey Kovalev
  * @since 04.12.2015.
  */
 public class WheelSectorWrapperView extends ImageView {
-
-    private static final String TAG = WheelSectorWrapperView.class.getCanonicalName();
 
     private static final int SECTOR_EDGE_DEFAULT_COLOR = Color.GRAY;
     private static final int SECTOR_EDGE_RING_THICKNESS = 35;
@@ -106,7 +108,7 @@ public class WheelSectorWrapperView extends ImageView {
         return sectorShapePath;
     }
 
-    private Path createLinearPathForClip() {
+    private Path createTrapezeAreaForClip() {
         sectorShapePath.reset();
 
         CoordinatesHolder first = sectorClipAreaDescriptor.getBottomLeftCorner();

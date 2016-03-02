@@ -14,7 +14,7 @@ import com.sss.magicwheel.wheel.misc.WheelComputationHelper;
  * @author Alexey Kovalev
  * @since 08.02.2016.
  */
-public abstract class WheelSmoothScroller extends RecyclerView.SmoothScroller {
+abstract class WheelSmoothScroller extends RecyclerView.SmoothScroller {
 
     public static final String TAG = WheelSmoothScroller.class.getCanonicalName();
 
@@ -29,10 +29,8 @@ public abstract class WheelSmoothScroller extends RecyclerView.SmoothScroller {
     private final LinearInterpolator mLinearInterpolator = new LinearInterpolator();
     private final DecelerateInterpolator decelerateInterpolator = new DecelerateInterpolator();
 
-    public WheelSmoothScroller(Context context,
-                               AbstractWheelLayoutManager layoutManager,
-                               WheelComputationHelper computationHelper,
-                               double targetSeekScrollAngleInRad) {
+    WheelSmoothScroller(Context context, AbstractWheelLayoutManager layoutManager,
+                        WheelComputationHelper computationHelper, double targetSeekScrollAngleInRad) {
 
         this.layoutManager = layoutManager;
         this.computationHelper = computationHelper;
@@ -122,7 +120,7 @@ public abstract class WheelSmoothScroller extends RecyclerView.SmoothScroller {
         // area under curve (1-(1-x)^2) can be calculated as (1 - x/3) * x * x
         // which gives 0.100028 when x = .3356
         // this is why we divide linear scrolling time with .3356
-        return  (int) Math.ceil(calculateTimeForScrolling(dx) / .3356);
+        return (int) Math.ceil(calculateTimeForScrolling(dx) / .3356);
     }
 
     /**
