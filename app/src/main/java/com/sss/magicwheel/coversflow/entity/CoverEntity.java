@@ -3,6 +3,10 @@ package com.sss.magicwheel.coversflow.entity;
 import com.sss.magicwheel.R;
 
 /**
+ * Entity holding data which will be rendered in {@link com.sss.magicwheel.coversflow.widget.HorizontalCoverView}
+ * and placed into the {@link com.sss.magicwheel.coversflow.widget.HorizontalCoversFlowView} container
+ * afterwards.
+ *
  * @author Alexey Kovalev
  * @since 22.02.2016.
  */

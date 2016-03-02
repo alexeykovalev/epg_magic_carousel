@@ -10,19 +10,19 @@ import com.sss.magicwheel.coversflow.entity.CoverEntity;
  * @author Alexey Kovalev
  * @since 24.02.2016.
  */
-public class OffsetCoverView extends View implements IHorizontalCoverView {
+public final class HorizontalOffsetView extends View implements IHorizontalCoverView {
 
     private int offsetValue = CoverEntity.NOT_DEFINED_OFFSET_VALUE;
 
-    public OffsetCoverView(Context context) {
+    public HorizontalOffsetView(Context context) {
         this(context, null);
     }
 
-    public OffsetCoverView(Context context, AttributeSet attrs) {
+    public HorizontalOffsetView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public OffsetCoverView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public HorizontalOffsetView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 

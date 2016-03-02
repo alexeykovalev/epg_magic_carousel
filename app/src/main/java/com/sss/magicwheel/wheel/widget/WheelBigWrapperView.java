@@ -58,7 +58,7 @@ public final class WheelBigWrapperView extends FrameLayout {
 
     public void bindData(WheelDataItem dataItem) {
         sectorWrapperView.bindData(dataItem);
-        titleView.setText(dataItem.getTitle());
+//        titleView.setText(dataItem.getTitle());
         loadSectorImage(dataItem.getSectorImageDrawable());
     }
 

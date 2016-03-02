@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Data set adapter for {@link com.sss.magicwheel.coversflow.widget.HorizontalCoversFlowView}
+ * container.
+ *
  * @author Alexey Kovalev
  * @since 22.02.2016.
  */
@@ -31,7 +34,6 @@ public final class CoversFlowAdapter extends RecyclerView.Adapter<CoversFlowAdap
         void onCoverClick(HorizontalCoverView coverView, CoverEntity coverEntity);
     }
 
-    // TODO: 25.02.2016 validate passed params via Guava Preconditions
     public CoversFlowAdapter(Context context, List<CoverEntity> coversData, ICoverClickListener coverClickListener) {
         this.inflater = LayoutInflater.from(context);
         this.coversData = new ArrayList<>(coversData);

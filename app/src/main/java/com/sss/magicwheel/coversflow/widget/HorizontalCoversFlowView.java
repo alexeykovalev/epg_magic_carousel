@@ -23,6 +23,17 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * Represents horizontally oriented stripe view - horizontal list,
+ * consisting of covers of two types:
+ *
+ * <ol>
+ *     <li>{@link HorizontalCoverView} - real cover which is UI presentation
+ *     of {@link CoverEntity} data item</li>
+ *     <li>{@link HorizontalOffsetView} - plays role of right and left
+ *     offsets in horizontal list. It's required for offset first and last covers
+ *     from left and right screen edges respectively</li>
+ * </ol>
+ *
  * @author Alexey Kovalev
  * @since 22.02.2016.
  */
@@ -73,6 +84,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
             @Override
             public void onLayoutChildren(Recycler recycler, State state) {
                 super.onLayoutChildren(recycler, state);
+                // when we swap data in adapter we should select default cover and make it big
                 if (isAdapterDataSetChanged) {
                     scrollToFullySelectCover();
                     isAdapterDataSetChanged = false;
@@ -151,7 +163,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     }
 
     // TODO: 29.02.2016 does not work properly because when we call this method displayWithScaleUpAnimation() invoked
-    // immediately and interrupts this one
+    // TODO: 29.02.2016 immediately and interrupts this one
     public void hideWithScaleDownAnimation() {
         playTogetherAnimations(
                 createScalingAnimatorBetweenValues(1.0f, 0.0f),

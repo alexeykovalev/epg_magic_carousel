@@ -15,7 +15,7 @@ import com.sss.magicwheel.coversflow.entity.CoverEntity;
  * @author Alexey Kovalev
  * @since 23.02.2016.
  */
-public class HorizontalCoverView extends FrameLayout implements IHorizontalCoverView {
+public final class HorizontalCoverView extends FrameLayout implements IHorizontalCoverView {
 
     private ImageView coverImage;
     private TextView coverTitle;

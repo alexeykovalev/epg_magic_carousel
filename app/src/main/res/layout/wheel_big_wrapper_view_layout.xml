@@ -12,38 +12,12 @@
         android:textSize="20sp"
         android:textColor="@android:color/darker_gray" />
 
-    <RelativeLayout
+
+    <com.sss.magicwheel.wheel.widget.WheelSectorWrapperView
+        android:id="@+id/sector_wrapper_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right">
-
-        <com.sss.magicwheel.wheel.widget.WheelSectorWrapperView
-            android:id="@+id/sector_wrapper_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:scaleType="fitXY" />
-
-        <TextView
-            android:id="@+id/channel_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="15dp"
-            android:text="SAMPLE"
-            android:textSize="20sp"
-            android:textColor="@android:color/white" />
-
-        <ImageView
-            android:id="@+id/channel_logo"
-            android:layout_width="50dp"
-            android:layout_height="30dp"
-            android:layout_marginLeft="15dp"
-            android:src="@drawable/starz_logo"
-            android:scaleType="fitXY"
-            android:layout_below="@id/channel_title"/>
-
-    </RelativeLayout>
-
+        android:layout_gravity="right"
+        android:scaleType="fitXY" />
 
 </merge>

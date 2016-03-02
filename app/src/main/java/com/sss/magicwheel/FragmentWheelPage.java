@@ -137,7 +137,7 @@ public final class FragmentWheelPage extends Fragment {
     private List<WheelDataItem> createWheelSampleDataSet() {
         List<WheelDataItem> items = new ArrayList<>();
         for (int i = 0; i < 30; i++) {
-            items.add(new WheelDataItem("item.Num [" + i + "]"));
+            items.add(new WheelDataItem(String.valueOf(i)));
         }
         return items;
     }
