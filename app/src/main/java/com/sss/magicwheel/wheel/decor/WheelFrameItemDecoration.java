@@ -7,7 +7,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.support.v7.widget.RecyclerView;
 
-import com.sss.magicwheel.wheel.WheelComputationHelper;
+import com.sss.magicwheel.wheel.misc.WheelComputationHelper;
 
 /**
  * @author Alexey Kovalev

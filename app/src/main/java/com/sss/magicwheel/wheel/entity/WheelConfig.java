@@ -4,14 +4,17 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 
 /**
+ * Retains general wheel restriction (measurements) configuration.
+ *
  * @author Alexey Kovalev
  * @since 04.12.2015.
  */
 public final class WheelConfig {
 
+    /**
+     * Angular restrictions imposed to wheel.
+     */
     public static final class AngularRestrictions {
-
-        public static final double NOT_DEFINED_ANGLE = Double.MAX_VALUE;
 
         private final double sectorAngleInRad;
         private final double sectorHalfAngleInRad;
@@ -172,10 +175,8 @@ public final class WheelConfig {
         return new RectF(-outerRadius, outerRadius, outerRadius, -outerRadius);
     }
 
-    // TODO: 03.02.2016 do we need safe copy or not is an open question
     public PointF getCircleCenterRelToRecyclerView() {
         return circleCenter;
-//        return safePointCopy(circleCenter);
     }
 
     public int getOuterRadius() {
@@ -188,18 +189,6 @@ public final class WheelConfig {
 
     public AngularRestrictions getAngularRestrictions() {
         return angularRestrictions;
-    }
-
-    @Deprecated
-//    public Rect getCircleBoundariesRelativeToCircleCenter() {
-//        return safeRectCopy(circleBoundaries);
-//    }
-
-    private static PointF safePointCopy(PointF source) {
-        PointF res = new PointF();
-        res.x = source.x;
-        res.y = source.y;
-        return res;
     }
 
     @Override

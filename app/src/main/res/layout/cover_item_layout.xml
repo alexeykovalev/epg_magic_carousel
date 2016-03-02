@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<com.sss.magicwheel.coversflow.widget.HorizontalCoverView
+<com.sss.magicwheel.wheel.coversflow.widget.HorizontalCoverView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />

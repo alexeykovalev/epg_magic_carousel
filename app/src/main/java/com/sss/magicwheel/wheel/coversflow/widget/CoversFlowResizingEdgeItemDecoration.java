@@ -1,19 +1,24 @@
-package com.sss.magicwheel.coversflow;
+package com.sss.magicwheel.wheel.coversflow.widget;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
 
+import com.sss.magicwheel.wheel.coversflow.CoversFlowListMeasurements;
+
 /**
+ * Only for DEBUG purposes.
+ * Draws red line edge where covers in covers flow container start resizing.
+ *
  * @author Alexey Kovalev
  * @since 22.02.2016.
  */
-public class HorizontalCoversFlowEdgeDecorator extends RecyclerView.ItemDecoration {
+final class CoversFlowResizingEdgeItemDecoration extends RecyclerView.ItemDecoration {
 
     private final Paint edgesPaint;
 
-    public HorizontalCoversFlowEdgeDecorator() {
+    CoversFlowResizingEdgeItemDecoration() {
         this.edgesPaint = createEdgesPaint();
     }
 

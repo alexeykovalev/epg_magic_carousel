@@ -9,7 +9,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.sss.magicwheel.wheel.WheelAdapter;
-import com.sss.magicwheel.wheel.WheelComputationHelper;
+import com.sss.magicwheel.wheel.misc.WheelComputationHelper;
 import com.sss.magicwheel.wheel.entity.WheelConfig;
 import com.sss.magicwheel.wheel.entity.WheelDataItem;
 import com.sss.magicwheel.wheel.entity.WheelRotationDirection;
@@ -192,7 +192,7 @@ public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
 
     @Override
     public void onDraw(Canvas canvas) {
-        drawGapLineRay(canvas);
+//        drawGapLineRay(canvas);
         if (isCutGapAreaActivated) {
             doCutGapArea(canvas);
         }

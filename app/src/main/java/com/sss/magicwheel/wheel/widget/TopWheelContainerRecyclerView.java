@@ -7,8 +7,8 @@ import android.graphics.PointF;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.sss.magicwheel.wheel.WheelComputationHelper;
-import com.sss.magicwheel.wheel.entity.CoordinatesHolder;
+import com.sss.magicwheel.wheel.misc.WheelComputationHelper;
+import com.sss.magicwheel.wheel.misc.CoordinatesHolder;
 import com.sss.magicwheel.wheel.entity.WheelRotationDirection;
 import com.sss.magicwheel.wheel.manager.AbstractWheelLayoutManager;
 

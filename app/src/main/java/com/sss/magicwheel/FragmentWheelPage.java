@@ -9,19 +9,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.sss.magicwheel.coversflow.CoversFlowListMeasurements;
-import com.sss.magicwheel.coversflow.entity.CoverEntity;
+import com.sss.magicwheel.wheel.coversflow.CoversFlowListMeasurements;
+import com.sss.magicwheel.wheel.coversflow.entity.CoverEntity;
 import com.sss.magicwheel.wheel.entity.WheelConfig;
 import com.sss.magicwheel.wheel.entity.WheelDataItem;
-import com.sss.magicwheel.coversflow.widget.HorizontalCoversFlowView;
-import com.sss.magicwheel.wheel.WheelComputationHelper;
+import com.sss.magicwheel.wheel.coversflow.widget.HorizontalCoversFlowView;
+import com.sss.magicwheel.wheel.misc.WheelComputationHelper;
 import com.sss.magicwheel.wheel.widget.WheelListener;
 import com.sss.magicwheel.wheel.widget.WheelOfFortuneContainerFrameView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.sss.magicwheel.wheel.WheelComputationHelper.*;
+import static com.sss.magicwheel.wheel.misc.WheelComputationHelper.*;
 
 /**
  * @author Alexey Kovalev

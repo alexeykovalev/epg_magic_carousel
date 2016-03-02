@@ -1,4 +1,4 @@
-package com.sss.magicwheel.wheel;
+package com.sss.magicwheel.wheel.misc;
 
 import android.content.Context;
 import android.graphics.Point;
@@ -6,9 +6,7 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 import android.view.WindowManager;
 
-import com.sss.magicwheel.wheel.entity.MeasurementsHolder;
 import com.sss.magicwheel.wheel.entity.WheelConfig;
-import com.sss.magicwheel.wheel.entity.CoordinatesHolder;
 import com.sss.magicwheel.wheel.entity.SectorClipAreaDescriptor;
 
 import static java.lang.Math.*;
@@ -141,8 +139,8 @@ public final class WheelComputationHelper {
         final CoordinatesHolder bottomRight = CoordinatesHolder.ofRect(sectorWrapperViewWidth, sectorWrapperViewHalfHeight + rightBaseDelta);
         final CoordinatesHolder topRightCorner = CoordinatesHolder.ofRect(sectorWrapperViewWidth, sectorWrapperViewHalfHeight - rightBaseDelta);
 
-        final SectorClipAreaDescriptor.CircleEmbracingSquaresConfig embracingSquaresConfig =
-                new SectorClipAreaDescriptor.CircleEmbracingSquaresConfig(
+        final SectorClipAreaDescriptor.WheelEmbracingSquaresConfig embracingSquaresConfig =
+                new SectorClipAreaDescriptor.WheelEmbracingSquaresConfig(
                         getOuterCircleEmbracingSquareInSectorWrapperCoordsSystem(),
                         getInnerCircleEmbracingSquareInSectorWrapperCoordsSystem()
                 );

@@ -13,7 +13,7 @@ import com.sss.magicwheel.R;
 import com.sss.magicwheel.wheel.entity.WheelDataItem;
 import com.sss.magicwheel.wheel.entity.WheelRotationDirection;
 import com.sss.magicwheel.wheel.WheelAdapter;
-import com.sss.magicwheel.wheel.WheelComputationHelper;
+import com.sss.magicwheel.wheel.misc.WheelComputationHelper;
 import com.sss.magicwheel.wheel.decor.WheelFrameItemDecoration;
 import com.sss.magicwheel.wheel.manager.AbstractWheelLayoutManager;
 import com.sss.magicwheel.wheel.manager.BottomWheelLayoutManager;

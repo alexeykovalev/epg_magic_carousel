@@ -2,18 +2,35 @@ package com.sss.magicwheel.wheel.entity;
 
 import android.graphics.RectF;
 
+import com.sss.magicwheel.wheel.misc.CoordinatesHolder;
+
 /**
+ * Stores data required for proper cutting circle's sector like shape from
+ * usual rectangle (standard view shape).
+ *
  * @author Alexey Kovalev
  * @since 05.11.2015.
  */
 public final class SectorClipAreaDescriptor {
 
-    public static final class CircleEmbracingSquaresConfig {
+    public static final class WheelEmbracingSquaresConfig {
 
+        /**
+         * Square embracing circle with {@code outerRadius} defined in
+         * {@link com.sss.magicwheel.wheel.widget.WheelSectorWrapperView}
+         * coordinates system.
+         */
         private RectF outerCircleEmbracingSquareInSectorWrapperCoordsSystem;
+
+        /**
+         * Square embracing circle with {@code innerRadius} defined in
+         * {@link com.sss.magicwheel.wheel.widget.WheelSectorWrapperView}
+         * coordinates system.
+         */
         private RectF innerCircleEmbracingSquareInSectorWrapperCoordsSystem;
 
-        public CircleEmbracingSquaresConfig(RectF outerCircleEmbracingSquareInSectorWrapperCoordsSystem, RectF innerCircleEmbracingSquareInSectorWrapperCoordsSystem) {
+        public WheelEmbracingSquaresConfig(RectF outerCircleEmbracingSquareInSectorWrapperCoordsSystem,
+                                           RectF innerCircleEmbracingSquareInSectorWrapperCoordsSystem) {
             this.outerCircleEmbracingSquareInSectorWrapperCoordsSystem = outerCircleEmbracingSquareInSectorWrapperCoordsSystem;
             this.innerCircleEmbracingSquareInSectorWrapperCoordsSystem = innerCircleEmbracingSquareInSectorWrapperCoordsSystem;
         }
@@ -28,12 +45,14 @@ public final class SectorClipAreaDescriptor {
 
         @Override
         public String toString() {
-            return "CircleEmbracingSquaresConfig{" +
+            return "WheelEmbracingSquaresConfig{" +
                     "outerCircleEmbracingSquareInSectorWrapperCoordsSystem=" + outerCircleEmbracingSquareInSectorWrapperCoordsSystem.toShortString() +
                     ", innerCircleEmbracingSquareInSectorWrapperCoordsSystem=" + innerCircleEmbracingSquareInSectorWrapperCoordsSystem.toShortString() +
                     '}';
         }
     }
+
+    // --- Defines sector TRAPEZE coordinates in WheelSectorWrapperView coordinates system ---
 
     // first
     private final CoordinatesHolder bottomLeftCorner;
@@ -44,7 +63,7 @@ public final class SectorClipAreaDescriptor {
     // fourth
     private final CoordinatesHolder topRightCorner;
 
-    private final CircleEmbracingSquaresConfig circleEmbracingSquaresConfig;
+    private final WheelEmbracingSquaresConfig wheelEmbracingSquaresConfig;
     private final float sectorTopEdgeAngleInDegree;
     private final float sectorSweepAngleInDegree;
 
@@ -52,14 +71,14 @@ public final class SectorClipAreaDescriptor {
                                     CoordinatesHolder bottomRightCorner,
                                     CoordinatesHolder topLeftCorner,
                                     CoordinatesHolder topRightCorner,
-                                    CircleEmbracingSquaresConfig circleEmbracingSquaresConfig,
+                                    WheelEmbracingSquaresConfig wheelEmbracingSquaresConfig,
                                     float sectorTopEdgeAngleInDegree,
                                     float sectorSweepAngleInDegree) {
         this.bottomLeftCorner = bottomLeftCorner;
         this.bottomRightCorner = bottomRightCorner;
         this.topLeftCorner = topLeftCorner;
         this.topRightCorner = topRightCorner;
-        this.circleEmbracingSquaresConfig = circleEmbracingSquaresConfig;
+        this.wheelEmbracingSquaresConfig = wheelEmbracingSquaresConfig;
         this.sectorTopEdgeAngleInDegree = sectorTopEdgeAngleInDegree;
         this.sectorSweepAngleInDegree = sectorSweepAngleInDegree;
     }
@@ -80,8 +99,8 @@ public final class SectorClipAreaDescriptor {
         return topRightCorner;
     }
 
-    public CircleEmbracingSquaresConfig getCircleEmbracingSquaresConfig() {
-        return circleEmbracingSquaresConfig;
+    public WheelEmbracingSquaresConfig getWheelEmbracingSquaresConfig() {
+        return wheelEmbracingSquaresConfig;
     }
 
     public float getSectorTopEdgeAngleInDegree() {
@@ -99,7 +118,7 @@ public final class SectorClipAreaDescriptor {
                 ", bottomRightCorner=" + bottomRightCorner +
                 ", topLeftCorner=" + topLeftCorner +
                 ", topRightCorner=" + topRightCorner +
-                ", circleEmbracingSquaresConfig=" + circleEmbracingSquaresConfig +
+                ", wheelEmbracingSquaresConfig=" + wheelEmbracingSquaresConfig +
                 ", sectorTopEdgeAngleInDegree=" + sectorTopEdgeAngleInDegree +
                 ", sectorSweepAngleInDegree=" + sectorSweepAngleInDegree +
                 '}';

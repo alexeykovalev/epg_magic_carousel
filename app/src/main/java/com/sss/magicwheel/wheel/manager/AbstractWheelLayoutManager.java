@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 import com.sss.magicwheel.wheel.entity.WheelConfig;
 import com.sss.magicwheel.wheel.entity.WheelRotationDirection;
-import com.sss.magicwheel.wheel.WheelComputationHelper;
+import com.sss.magicwheel.wheel.misc.WheelComputationHelper;
 import com.sss.magicwheel.wheel.rotator.AbstractWheelRotator;
 import com.sss.magicwheel.wheel.rotator.AnticlockwiseWheelRotator;
 import com.sss.magicwheel.wheel.rotator.ClockwiseWheelRotator;

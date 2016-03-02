@@ -1,4 +1,4 @@
-package com.sss.magicwheel.wheel.entity;
+package com.sss.magicwheel.wheel.misc;
 
 /**
  * @author Alexey Kovalev

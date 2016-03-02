@@ -1,4 +1,4 @@
-package com.sss.magicwheel.coversflow;
+package com.sss.magicwheel.wheel.coversflow;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -7,15 +7,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sss.magicwheel.R;
-import com.sss.magicwheel.coversflow.entity.CoverEntity;
-import com.sss.magicwheel.coversflow.widget.HorizontalCoverView;
-import com.sss.magicwheel.coversflow.widget.IHorizontalCoverView;
+import com.sss.magicwheel.wheel.coversflow.entity.CoverEntity;
+import com.sss.magicwheel.wheel.coversflow.widget.HorizontalCoverView;
+import com.sss.magicwheel.wheel.coversflow.widget.IHorizontalCoverView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Data set adapter for {@link com.sss.magicwheel.coversflow.widget.HorizontalCoversFlowView}
+ * Data set adapter for {@link com.sss.magicwheel.wheel.coversflow.widget.HorizontalCoversFlowView}
  * container.
  *
  * @author Alexey Kovalev

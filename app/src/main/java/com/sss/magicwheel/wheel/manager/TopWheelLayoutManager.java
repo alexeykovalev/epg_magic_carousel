@@ -7,7 +7,7 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 
 import com.sss.magicwheel.wheel.WheelAdapter;
-import com.sss.magicwheel.wheel.WheelComputationHelper;
+import com.sss.magicwheel.wheel.misc.WheelComputationHelper;
 import com.sss.magicwheel.wheel.widget.AbstractWheelContainerRecyclerView;
 
 /**

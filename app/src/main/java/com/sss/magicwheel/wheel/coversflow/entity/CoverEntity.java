@@ -1,10 +1,10 @@
-package com.sss.magicwheel.coversflow.entity;
+package com.sss.magicwheel.wheel.coversflow.entity;
 
 import com.sss.magicwheel.R;
 
 /**
- * Entity holding data which will be rendered in {@link com.sss.magicwheel.coversflow.widget.HorizontalCoverView}
- * and placed into the {@link com.sss.magicwheel.coversflow.widget.HorizontalCoversFlowView} container
+ * Entity holding data which will be rendered in {@link com.sss.magicwheel.wheel.coversflow.widget.HorizontalCoverView}
+ * and placed into the {@link com.sss.magicwheel.wheel.coversflow.widget.HorizontalCoversFlowView} container
  * afterwards.
  *
  * @author Alexey Kovalev

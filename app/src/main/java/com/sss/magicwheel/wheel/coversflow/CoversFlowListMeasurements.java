@@ -1,14 +1,16 @@
-package com.sss.magicwheel.coversflow;
+package com.sss.magicwheel.wheel.coversflow;
 
 import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.view.ViewGroup;
 
-import com.sss.magicwheel.wheel.WheelComputationHelper;
-import com.sss.magicwheel.wheel.entity.CoordinatesHolder;
+import com.sss.magicwheel.wheel.misc.WheelComputationHelper;
+import com.sss.magicwheel.wheel.misc.CoordinatesHolder;
 
 /**
+ * Store measurements for horizontal stripe view (covers flow).
+ *
  * @author Alexey Kovalev
  * @since 24.02.2016.
  */

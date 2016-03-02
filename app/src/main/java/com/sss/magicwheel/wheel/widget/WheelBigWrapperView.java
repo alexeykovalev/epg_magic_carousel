@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.sss.magicwheel.R;
 import com.sss.magicwheel.wheel.entity.WheelDataItem;
-import com.sss.magicwheel.wheel.WheelComputationHelper;
+import com.sss.magicwheel.wheel.misc.WheelComputationHelper;
 
 /**
  * @author Alexey Kovalev

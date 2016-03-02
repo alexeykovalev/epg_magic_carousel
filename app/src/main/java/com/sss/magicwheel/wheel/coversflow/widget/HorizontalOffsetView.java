@@ -1,10 +1,10 @@
-package com.sss.magicwheel.coversflow.widget;
+package com.sss.magicwheel.wheel.coversflow.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.sss.magicwheel.coversflow.entity.CoverEntity;
+import com.sss.magicwheel.wheel.coversflow.entity.CoverEntity;
 
 /**
  * @author Alexey Kovalev

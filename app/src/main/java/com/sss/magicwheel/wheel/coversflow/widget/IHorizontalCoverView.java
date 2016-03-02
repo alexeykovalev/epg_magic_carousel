@@ -1,6 +1,6 @@
-package com.sss.magicwheel.coversflow.widget;
+package com.sss.magicwheel.wheel.coversflow.widget;
 
-import com.sss.magicwheel.coversflow.entity.CoverEntity;
+import com.sss.magicwheel.wheel.coversflow.entity.CoverEntity;
 
 /**
  * Defines general contract for view which is going to be a coverView

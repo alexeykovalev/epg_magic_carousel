@@ -1,8 +1,11 @@
-package com.sss.magicwheel.wheel.entity;
+package com.sss.magicwheel.wheel.misc;
 
 import android.graphics.PointF;
 
 /**
+ * Convenient class for storing either rectangular or polar point's
+ * coordinates with ability to transform between this presentations.
+ *
  * @author Alexey
  * @since 05.11.2015
  */
@@ -32,7 +35,6 @@ public class CoordinatesHolder {
         return y;
     }
 
-    // todo: consider the enum Unit {Double, Float, Integer} strategy value for return types.
     public float getXAsFloat() {
         return (float) x;
     }

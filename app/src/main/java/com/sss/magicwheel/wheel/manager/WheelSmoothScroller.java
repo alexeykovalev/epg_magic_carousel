@@ -8,7 +8,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 
 import com.sss.magicwheel.wheel.entity.WheelRotationDirection;
-import com.sss.magicwheel.wheel.WheelComputationHelper;
+import com.sss.magicwheel.wheel.misc.WheelComputationHelper;
 
 /**
  * @author Alexey Kovalev

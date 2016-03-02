@@ -1,4 +1,4 @@
-package com.sss.magicwheel.coversflow.widget;
+package com.sss.magicwheel.wheel.coversflow.widget;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -14,10 +14,9 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import com.sss.magicwheel.App;
-import com.sss.magicwheel.coversflow.CoversFlowAdapter;
-import com.sss.magicwheel.coversflow.CoversFlowListMeasurements;
-import com.sss.magicwheel.coversflow.HorizontalCoversFlowEdgeDecorator;
-import com.sss.magicwheel.coversflow.entity.CoverEntity;
+import com.sss.magicwheel.wheel.coversflow.CoversFlowAdapter;
+import com.sss.magicwheel.wheel.coversflow.CoversFlowListMeasurements;
+import com.sss.magicwheel.wheel.coversflow.entity.CoverEntity;
 
 import java.util.Collections;
 import java.util.List;
@@ -112,7 +111,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     }
 
     private void drawResizingEdgeInDebug() {
-        addItemDecoration(new HorizontalCoversFlowEdgeDecorator());
+        addItemDecoration(new CoversFlowResizingEdgeItemDecoration());
     }
 
     private void setupCoversHorizontalSpacing(final int horizontalSpacingValue) {

@@ -1,4 +1,4 @@
-package com.sss.magicwheel.coversflow.widget;
+package com.sss.magicwheel.wheel.coversflow.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -8,8 +8,8 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.sss.magicwheel.R;
-import com.sss.magicwheel.coversflow.CoversFlowListMeasurements;
-import com.sss.magicwheel.coversflow.entity.CoverEntity;
+import com.sss.magicwheel.wheel.coversflow.CoversFlowListMeasurements;
+import com.sss.magicwheel.wheel.coversflow.entity.CoverEntity;
 
 /**
  * @author Alexey Kovalev

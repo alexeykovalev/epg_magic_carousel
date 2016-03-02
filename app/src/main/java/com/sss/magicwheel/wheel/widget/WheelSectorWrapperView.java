@@ -9,7 +9,7 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-import com.sss.magicwheel.wheel.entity.CoordinatesHolder;
+import com.sss.magicwheel.wheel.misc.CoordinatesHolder;
 import com.sss.magicwheel.wheel.entity.SectorClipAreaDescriptor;
 import com.sss.magicwheel.wheel.entity.WheelDataItem;
 
@@ -54,8 +54,8 @@ public class WheelSectorWrapperView extends ImageView {
 
     public void setSectorClipArea(SectorClipAreaDescriptor sectorClipAreaDescriptor) {
         this.sectorClipAreaDescriptor = sectorClipAreaDescriptor;
-        this.outerCircleEmbracingSquare = sectorClipAreaDescriptor.getCircleEmbracingSquaresConfig().getOuterCircleEmbracingSquareInSectorWrapperCoordsSystem();
-        this.innerCircleEmbracingSquare = sectorClipAreaDescriptor.getCircleEmbracingSquaresConfig().getInnerCircleEmbracingSquareInSectorWrapperCoordsSystem();
+        this.outerCircleEmbracingSquare = sectorClipAreaDescriptor.getWheelEmbracingSquaresConfig().getOuterCircleEmbracingSquareInSectorWrapperCoordsSystem();
+        this.innerCircleEmbracingSquare = sectorClipAreaDescriptor.getWheelEmbracingSquaresConfig().getInnerCircleEmbracingSquareInSectorWrapperCoordsSystem();
     }
 
     @Override

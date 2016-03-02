@@ -3,8 +3,7 @@ package com.sss.magicwheel.wheel.rotator;
 import android.support.v7.widget.RecyclerView;
 
 import com.sss.magicwheel.wheel.manager.AbstractWheelLayoutManager;
-import com.sss.magicwheel.wheel.WheelComputationHelper;
-import com.sss.magicwheel.wheel.entity.WheelRotationDirection;
+import com.sss.magicwheel.wheel.misc.WheelComputationHelper;
 
 /**
  * @author Alexey Kovalev
