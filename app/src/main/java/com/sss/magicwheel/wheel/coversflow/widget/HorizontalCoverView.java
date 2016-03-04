@@ -6,7 +6,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.sss.magicwheel.App;
 import com.sss.magicwheel.R;
 import com.sss.magicwheel.wheel.coversflow.CoversFlowListMeasurements;
 import com.sss.magicwheel.wheel.coversflow.entity.CoverEntity;
@@ -53,9 +53,10 @@ public final class HorizontalCoverView extends FrameLayout implements IHorizonta
     @Override
     public void bind(CoverEntity entityToBind) {
         coverTitle.setText(entityToBind.getTitle());
-        Picasso.with(getContext())
+        App.glide()
                 .load(entityToBind.getImageResource())
-                .resize(300, 300)
+                .override(300, 300)
+                .fitCenter()
                 .into(coverImage);
     }
 
