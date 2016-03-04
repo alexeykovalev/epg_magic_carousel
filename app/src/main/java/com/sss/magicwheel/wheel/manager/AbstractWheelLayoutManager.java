@@ -16,7 +16,6 @@ import com.sss.magicwheel.wheel.rotator.AbstractWheelRotator;
 import com.sss.magicwheel.wheel.rotator.AnticlockwiseWheelRotator;
 import com.sss.magicwheel.wheel.rotator.ClockwiseWheelRotator;
 import com.sss.magicwheel.wheel.widget.WheelBigWrapperView;
-import com.sss.magicwheel.wheel.widget.AbstractWheelContainerRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +53,6 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
     protected final AbstractWheelRotator anticlockwiseRotator;
 
     protected final Context context;
-    protected final AbstractWheelContainerRecyclerView wheelRecyclerView;
 
     protected final WheelComputationHelper computationHelper;
     protected final WheelConfig wheelConfig;
@@ -79,13 +77,11 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
      * Available only for subclasses.
      */
     protected AbstractWheelLayoutManager(Context context,
-                                         AbstractWheelContainerRecyclerView wheelRecyclerView,
                                          WheelComputationHelper computationHelper,
                                          WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener) {
 
         this.context = context;
         this.computationHelper = computationHelper;
-        this.wheelRecyclerView = wheelRecyclerView;
         this.wheelConfig = computationHelper.getWheelConfig();
         this.angularRestrictions = wheelConfig.getAngularRestrictions();
 
@@ -193,12 +189,11 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         return isStartupAnimationFinished;
     }
 
-    // TODO: 05.02.2016 consider removing overriding
-    protected int getStartLayoutFromAdapterPosition() {
+    public final int getStartLayoutFromAdapterPosition() {
         return startLayoutFromAdapterPosition;
     }
 
-    public void setStartLayoutFromAdapterPosition(int startLayoutFromAdapterPosition) {
+    public final void setStartLayoutFromAdapterPosition(int startLayoutFromAdapterPosition) {
         this.startLayoutFromAdapterPosition = startLayoutFromAdapterPosition;
     }
 

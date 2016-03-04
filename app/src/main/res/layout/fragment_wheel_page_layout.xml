@@ -16,7 +16,6 @@
         android:textSize="20sp"
         android:text="Request_Layout"
         android:clickable="true"
-        android:visibility="gone"
         />
 
 

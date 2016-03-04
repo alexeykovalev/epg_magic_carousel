@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.sss.magicwheel.wheel.WheelAdapter;
 import com.sss.magicwheel.wheel.coversflow.CoversFlowListMeasurements;
 import com.sss.magicwheel.wheel.coversflow.entity.CoverEntity;
 import com.sss.magicwheel.wheel.entity.WheelConfig;
@@ -52,9 +53,8 @@ public final class FragmentWheelPage extends Fragment {
         final ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_wheel_page_layout, container, false);
 
         wheelOfFortuneContainerFrameView = (WheelOfFortuneContainerFrameView) rootView.findViewById(R.id.wheel_of_fortune_container_frame);
-        wheelOfFortuneContainerFrameView.swapData(createWheelSampleDataSet());
 
-        wheelOfFortuneContainerFrameView.addDataItemSelectionListener(new WheelListener() {
+        wheelOfFortuneContainerFrameView.addWheelListener(new WheelListener() {
             @Override
             public void onDataItemSelected(WheelDataItem selectedDataItem) {
 //                Log.e("TAG", "selectedDataItem [" + selectedDataItem.getTitle() + "]");
@@ -73,11 +73,13 @@ public final class FragmentWheelPage extends Fragment {
 
         inflateCoversFlowContainer(inflater, rootView);
 
-        /*rootView.findViewById(R.id.fragment_request_layout_button).setOnClickListener(new View.OnClickListener() {
+        rootView.findViewById(R.id.fragment_request_layout_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                wheelOfFortuneContainerFrameView.initWheelContainers(WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT + 3);
+                wheelOfFortuneContainerFrameView.swapData(createWheelSampleDataSet());
             }
-        });*/
+        });
 
 /*
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -137,7 +139,7 @@ public final class FragmentWheelPage extends Fragment {
     private List<WheelDataItem> createWheelSampleDataSet() {
         List<WheelDataItem> items = new ArrayList<>();
         for (int i = 0; i < 30; i++) {
-            items.add(new WheelDataItem(String.valueOf(i)));
+            items.add(new WheelDataItem("Item [" + i + "]"));
         }
         return items;
     }

@@ -154,11 +154,11 @@ public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
         return getScrollState() != RecyclerView.SCROLL_STATE_IDLE;
     }
 
-    public void addDataItemSelectionListener(WheelListener listener) {
+    public void addWheelListener(WheelListener listener) {
         dataItemSelectionListeners.add(listener);
     }
 
-    public void removeDataItemSelectionListener(WheelListener listener) {
+    public void removeWheelListener(WheelListener listener) {
         dataItemSelectionListeners.remove(listener);
     }
 
@@ -197,8 +197,9 @@ public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
         super.onDraw(canvas);
     }
 
-    public void setIsCutGapAreaActivated(boolean isCutGapAreaActivated) {
+    public final void setIsCutGapAreaActivated(boolean isCutGapAreaActivated) {
         this.isCutGapAreaActivated = isCutGapAreaActivated;
+        invalidate();
     }
 
     private static Paint createGapRaysDrawingPaint() {

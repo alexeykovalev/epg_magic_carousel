@@ -23,7 +23,7 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
     /**
      * In order to make wheel infinite we have to set virtual position as start layout position.
      */
-    private static final int START_LAYOUT_FROM_ADAPTER_POSITION = WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT;
+    public static final int START_LAYOUT_FROM_ADAPTER_POSITION = WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT;
 
     private final WheelOnScrollingCallback scrollingCallback;
 
@@ -32,11 +32,10 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
     }
 
     public TopWheelLayoutManager(Context context,
-                                 AbstractWheelContainerRecyclerView wheelRecyclerView,
                                  WheelComputationHelper computationHelper,
                                  WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener,
                                  WheelOnScrollingCallback scrollingCallback) {
-        super(context, wheelRecyclerView, computationHelper, initialLayoutFinishingListener);
+        super(context, computationHelper, initialLayoutFinishingListener);
         this.scrollingCallback = scrollingCallback;
     }
 
@@ -45,11 +44,6 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
         final int scrollingDy = super.scrollVerticallyBy(dy, recycler, state);
         scrollingCallback.onScrolledBy(scrollingDy);
         return scrollingDy;
-    }
-
-    @Override
-    protected int getStartLayoutFromAdapterPosition() {
-        return START_LAYOUT_FROM_ADAPTER_POSITION;
     }
 
     @Override
@@ -154,7 +148,6 @@ public final class TopWheelLayoutManager extends AbstractWheelLayoutManager {
             @Override
             public void onAnimationEnd(Animator animation) {
                 setLayoutStartAngleInRad(wheelConfig.getAngularRestrictions().getWheelLayoutStartAngleInRad());
-                wheelRecyclerView.setIsCutGapAreaActivated(true);
                 notifyOnAnimationUpdate(WheelStartupAnimationStatus.Finished);
             }
         });

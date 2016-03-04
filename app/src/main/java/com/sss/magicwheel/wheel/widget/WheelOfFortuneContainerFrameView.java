@@ -40,8 +40,8 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
 
     private BottomWheelLayoutManager bottomWheelLayoutManager;
 
-    private TopWheelContainerRecyclerView topWheelContainer;
-    private BottomWheelContainerRecyclerView bottomWheelContainer;
+    private TopWheelContainerRecyclerView topWheelContainerView;
+    private BottomWheelContainerRecyclerView bottomWheelContainerView;
 
     private int lastTouchAction;
 
@@ -72,29 +72,31 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         computationHelper = WheelComputationHelper.getInstance();
         inflateAndBindContainerView(context);
 
-//        topWheelContainer.setVisibility(INVISIBLE);
-//        bottomWheelContainer.setVisibility(INVISIBLE);
+//        topWheelContainerView.setVisibility(INVISIBLE);
+//        bottomWheelContainerView.setVisibility(INVISIBLE);
 
-        wheelSectorsRaysDecorationFrame.setWheelContainers(topWheelContainer, bottomWheelContainer);
+        wheelSectorsRaysDecorationFrame.setWheelContainers(topWheelContainerView, bottomWheelContainerView);
         wheelFrameItemDecoration = new WheelFrameItemDecoration(getContext());
-
-        initBottomWheelContainer(bottomWheelContainer);
-        initTopWheelContainer(topWheelContainer);
     }
 
     private void inflateAndBindContainerView(Context context) {
         inflate(context, R.layout.wheel_container_layout, this);
-        topWheelContainer = (TopWheelContainerRecyclerView) findViewById(R.id.top_wheel_container);
-        bottomWheelContainer = (BottomWheelContainerRecyclerView) findViewById(R.id.bottom_wheel_container);
+        topWheelContainerView = (TopWheelContainerRecyclerView) findViewById(R.id.top_wheel_container);
+        bottomWheelContainerView = (BottomWheelContainerRecyclerView) findViewById(R.id.bottom_wheel_container);
         wheelSectorsRaysDecorationFrame = (WheelSectorRaysDecorationFrameView) findViewById(R.id.wheel_decoration_frame);
     }
 
-    public void addDataItemSelectionListener(WheelListener listener) {
-        topWheelContainer.addDataItemSelectionListener(listener);
+    public void initWheelContainers(int virtualStartupPosition) {
+        initBottomWheelContainer();
+        initTopWheelContainer(virtualStartupPosition);
     }
 
-    public void removeDataItemSelectionListener(WheelListener listener) {
-        topWheelContainer.removeDataItemSelectionListener(listener);
+    public void addWheelListener(WheelListener listener) {
+        topWheelContainerView.addWheelListener(listener);
+    }
+
+    public void removeWheelListener(WheelListener listener) {
+        topWheelContainerView.removeWheelListener(listener);
     }
 
     @Override
@@ -119,8 +121,8 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         // eat touch event if startup animation has not been finished yet
-        if (!topWheelContainer.getLayoutManager().isStartupAnimationFinished()
-                || !bottomWheelContainer.getLayoutManager().isStartupAnimationFinished()) {
+        if (!topWheelContainerView.getLayoutManager().isStartupAnimationFinished()
+                || !bottomWheelContainerView.getLayoutManager().isStartupAnimationFinished()) {
             return true;
         }
 
@@ -128,20 +130,20 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         final int actionMasked = MotionEventCompat.getActionMasked(event);
         switch (actionMasked) {
             case MotionEvent.ACTION_DOWN:
-                bottomWheelContainer.dispatchTouchEvent(event);
+                bottomWheelContainerView.dispatchTouchEvent(event);
                 previousTouchDownX = event.getX();
                 previousTouchDownY = event.getY();
                 break;
             case MotionEvent.ACTION_UP:
                 final double touchSpotSize = computeTouchSpotSize(event);
                 if (lastTouchAction != MotionEvent.ACTION_MOVE || (touchSpotSize <= TOUCH_SPOT_SIZE_FOR_CLICK_EVENT)) {
-                    bottomWheelContainer.dispatchTouchEvent(event);
+                    bottomWheelContainerView.dispatchTouchEvent(event);
                 }
                 break;
         }
 
         lastTouchAction = actionMasked;
-        topWheelContainer.dispatchTouchEvent(event);
+        topWheelContainerView.dispatchTouchEvent(event);
         return true;
     }
 
@@ -153,39 +155,52 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
 
     public void swapData(List<WheelDataItem> newData) {
         final List<WheelDataItem> unmodifiableNewData = Collections.unmodifiableList(newData);
-        topWheelContainer.getAdapter().swapData(unmodifiableNewData);
-        bottomWheelContainer.getAdapter().swapData(unmodifiableNewData);
+        topWheelContainerView.getAdapter().swapData(unmodifiableNewData);
+        bottomWheelContainerView.getAdapter().swapData(unmodifiableNewData);
 //        wheelSectorsRaysDecorationFrame.invalidate();
     }
 
-    private void initTopWheelContainer(TopWheelContainerRecyclerView topWheelContainerView) {
-        topWheelContainerView.setLayoutManager(new TopWheelLayoutManager(
-                getContext(), topWheelContainer, computationHelper,
+    private void initTopWheelContainer(int layoutStartAdapterPosition) {
+        final TopWheelLayoutManager topWheelLayoutManager = new TopWheelLayoutManager(
+                getContext(), computationHelper,
                 new AbstractWheelLayoutManager.WheelOnInitialLayoutFinishingListener() {
                     @Override
                     public void onInitialLayoutFinished(int finishedAtAdapterPosition) {
                         bottomWheelLayoutManager.setStartLayoutFromAdapterPosition(finishedAtAdapterPosition);
+                        bottomWheelLayoutManager.requestLayout();
                     }
                 },
                 new TopWheelLayoutManager.WheelOnScrollingCallback() {
                     @Override
                     public void onScrolledBy(int dy) {
-                        bottomWheelContainer.scrollBy(0, dy);
+                        bottomWheelContainerView.scrollBy(0, dy);
                     }
                 }
-        ));
+        );
+        topWheelLayoutManager.setStartLayoutFromAdapterPosition(layoutStartAdapterPosition);
+
+        topWheelContainerView.setLayoutManager(topWheelLayoutManager);
         topWheelContainerView.setAdapter(createEmptyWheelAdapter(new WheelAdapter.OnWheelItemClickListener() {
             @Override
             public void onItemClicked(View clickedSectorView) {
-                topWheelContainer.handleTapOnSectorView(clickedSectorView);
+                topWheelContainerView.handleTapOnSectorView(clickedSectorView);
             }
         }));
+        topWheelContainerView.setIsCutGapAreaActivated(true);
 
         addTopWheelItemDecorations(topWheelContainerView);
     }
 
-    private void initBottomWheelContainer(BottomWheelContainerRecyclerView bottomWheelContainerView) {
-        bottomWheelLayoutManager = new BottomWheelLayoutManager(getContext(), bottomWheelContainer, computationHelper, null);
+    private void initBottomWheelContainer() {
+        bottomWheelLayoutManager = new BottomWheelLayoutManager(getContext(), computationHelper, null);
+        bottomWheelLayoutManager.addWheelStartupAnimationListener(new AbstractWheelLayoutManager.WheelOnStartupAnimationListener() {
+            @Override
+            public void onAnimationUpdate(AbstractWheelLayoutManager.WheelStartupAnimationStatus animationStatus) {
+                if (animationStatus == AbstractWheelLayoutManager.WheelStartupAnimationStatus.Finished) {
+                    bottomWheelContainerView.setIsCutGapAreaActivated(true);
+                }
+            }
+        });
         bottomWheelLayoutManager.addWheelStartupAnimationListener(new AbstractWheelLayoutManager.WheelOnStartupAnimationListener() {
             @Override
             public void onAnimationUpdate(AbstractWheelLayoutManager.WheelStartupAnimationStatus animationStatus) {
@@ -199,7 +214,7 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
             public void onRotateWheelByAngle(double rotationAngleInRad) {
                 // dispatch rotation to top wheel because it's MASTER and bottom
                 // wheel will be rotated automatically because it's SLAVE
-                topWheelContainer.smoothRotateWheelByAngleInRad(rotationAngleInRad, WheelRotationDirection.Anticlockwise);
+                topWheelContainerView.smoothRotateWheelByAngleInRad(rotationAngleInRad, WheelRotationDirection.Anticlockwise);
             }
         });
 
@@ -207,7 +222,7 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         bottomWheelContainerView.setAdapter(createEmptyWheelAdapter(new WheelAdapter.OnWheelItemClickListener() {
             @Override
             public void onItemClicked(View clickedSectorView) {
-                bottomWheelContainer.handleTapOnSectorView(clickedSectorView);
+                bottomWheelContainerView.handleTapOnSectorView(clickedSectorView);
             }
         }));
 

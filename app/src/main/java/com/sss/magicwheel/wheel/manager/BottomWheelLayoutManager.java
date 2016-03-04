@@ -20,10 +20,9 @@ public final class BottomWheelLayoutManager extends AbstractWheelLayoutManager {
     private static final long BOTTOM_WHEEL_STARTUP_ANIMATION_DURATION = 1000;
 
     public BottomWheelLayoutManager(Context context,
-                                       AbstractWheelContainerRecyclerView wheelRecyclerView,
-                                       WheelComputationHelper computationHelper,
-                                       WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener) {
-        super(context, wheelRecyclerView, computationHelper, initialLayoutFinishingListener);
+                                    WheelComputationHelper computationHelper,
+                                    WheelOnInitialLayoutFinishingListener initialLayoutFinishingListener) {
+        super(context, computationHelper, initialLayoutFinishingListener);
     }
 
     @Override
@@ -125,7 +124,6 @@ public final class BottomWheelLayoutManager extends AbstractWheelLayoutManager {
             @Override
             public void onAnimationEnd(Animator animation) {
                 setLayoutStartAngleInRad(angularRestrictions.getGapAreaBottomEdgeAngleRestrictionInRad());
-                wheelRecyclerView.setIsCutGapAreaActivated(true);
                 notifyOnAnimationUpdate(WheelStartupAnimationStatus.Finished);
             }
         });
