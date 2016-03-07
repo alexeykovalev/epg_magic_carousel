@@ -46,7 +46,7 @@ public final class FragmentWheelPage extends Fragment {
 
         // TODO: 03.02.2016 simplify for now considering container has 0 height
 
-        WheelComputationHelper.initialize(createWheelConfig(0));
+        WheelComputationHelper.initialize(getActivity(), createWheelConfig(0));
         computationHelper = WheelComputationHelper.getInstance();
         CoversFlowListMeasurements.initialize(computationHelper, getActivity());
 
@@ -145,14 +145,12 @@ public final class FragmentWheelPage extends Fragment {
     }
 
     private WheelConfig createWheelConfig(int fragmentContainerTopEdge) {
-        final int screenHeight = WheelComputationHelper.getScreenDimensions(getActivity()).getHeight();
-        final int availableWheelRenderingHeight = (screenHeight - fragmentContainerTopEdge) / 2;
+        final int screenHeight = WheelComputationHelper.computeScreenDimensions(getActivity()).getHeight();
 
-        final int yWheelCenterPosition = availableWheelRenderingHeight;
+        final int yWheelCenterPosition = screenHeight / 2;
         final PointF circleCenter = new PointF(0, yWheelCenterPosition);
 
-        // TODO: 03.12.2015 Not good hardcoded values
-        final int outerRadius = availableWheelRenderingHeight;
+        final int outerRadius = (screenHeight - fragmentContainerTopEdge) / 2;
         final int innerRadius = outerRadius - outerRadius / 3;
 
         final double sectorAngleInRad = computeSectorAngleInRad(TOP_EDGE_ANGLE_RESTRICTION_IN_RAD, BOTTOM_EDGE_ANGLE_RESTRICTION_IN_RAD);

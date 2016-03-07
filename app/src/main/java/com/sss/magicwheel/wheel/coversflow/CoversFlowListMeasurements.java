@@ -95,7 +95,7 @@ public final class CoversFlowListMeasurements {
     }
 
     public int getRightOffset() {
-        return WheelComputationHelper.getScreenDimensions(context).getWidth() - leftOffset;
+        return computationHelper.getComputedScreenDimensions().getWidth() - leftOffset;
     }
 
     public float getResizingEdgePosition() {

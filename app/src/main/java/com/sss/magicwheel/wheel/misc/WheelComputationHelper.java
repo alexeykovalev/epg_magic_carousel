@@ -32,6 +32,8 @@ public final class WheelComputationHelper {
     private static WheelComputationHelper instance;
 
     private final WheelConfig wheelConfig;
+    private final MeasurementsHolder computedScreenDimensions;
+
     private final MeasurementsHolder sectorWrapperViewMeasurements;
     private final MeasurementsHolder bigWrapperViewMeasurements;
     private final SectorClipAreaDescriptor sectorClipArea;
@@ -44,11 +46,11 @@ public final class WheelComputationHelper {
         return instance;
     }
 
-    public static void initialize(WheelConfig wheelConfig) {
-        instance = new WheelComputationHelper(wheelConfig);
+    public static void initialize(Context context, WheelConfig wheelConfig) {
+        instance = new WheelComputationHelper(context, wheelConfig);
     }
 
-    public static MeasurementsHolder getScreenDimensions(Context context) {
+    public static MeasurementsHolder computeScreenDimensions(Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Point screenSize = new Point();
         wm.getDefaultDisplay().getSize(screenSize);
@@ -90,7 +92,7 @@ public final class WheelComputationHelper {
         );
     }
 
-    private WheelComputationHelper(WheelConfig wheelConfig) {
+    private WheelComputationHelper(Context context, WheelConfig wheelConfig) {
         this.wheelConfig = wheelConfig;
         this.sectorWrapperViewMeasurements = new MeasurementsHolder(
                 computeSectorWrapperViewWidth(),
@@ -99,8 +101,8 @@ public final class WheelComputationHelper {
         this.bigWrapperViewMeasurements = createBigWrapperViewMeasurements();
         // don't change order of this line - has to be last
         this.sectorClipArea = createSectorClipArea();
+        this.computedScreenDimensions = computeScreenDimensions(context);
     }
-
 
     /**
      * Width of the view which wraps the sector.
@@ -151,6 +153,10 @@ public final class WheelComputationHelper {
                 bottomLeftCorner, bottomRight, topLeftCorner, topRightCorner, embracingSquaresConfig,
                 sectorTopEdgeAngleInDegree, sectorSweepAngleInDegree
         );
+    }
+
+    public MeasurementsHolder getComputedScreenDimensions() {
+        return computedScreenDimensions;
     }
 
     public WheelConfig getWheelConfig() {

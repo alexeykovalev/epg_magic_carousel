@@ -73,12 +73,12 @@ public class BottomWheelContainerRecyclerView extends AbstractWheelContainerRecy
         final Path res = new Path();
         final PointF circleCenterRelToRecyclerView = wheelConfig.getCircleCenterRelToRecyclerView();
 
-        final int wheelDiameter = 2 * wheelConfig.getOuterRadius();
+        final int screenHeight = computationHelper.getComputedScreenDimensions().getHeight();
 
         res.moveTo(circleCenterRelToRecyclerView.x, circleCenterRelToRecyclerView.y);
         res.lineTo(bottomRayPosition.x, bottomRayPosition.y);
-        res.lineTo(bottomRayPosition.x, wheelDiameter);
-        res.lineTo(0, wheelDiameter);
+        res.lineTo(bottomRayPosition.x, screenHeight);
+        res.lineTo(0, screenHeight);
         res.lineTo(circleCenterRelToRecyclerView.x, circleCenterRelToRecyclerView.y);
         res.close();
 
