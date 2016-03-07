@@ -24,6 +24,11 @@ import java.util.List;
  */
 public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
 
+    /**
+     * Value between 0 for no fling, and 1 for normal fling, or more for faster fling.
+     */
+    private static final float FLING_GESTURE_VELOCITY_SCALE_DOWN_FACTOR = 0.5f;
+
     protected final WheelComputationHelper computationHelper;
     protected final WheelConfig wheelConfig;
 
@@ -160,6 +165,15 @@ public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
 
     public void removeWheelListener(WheelListener listener) {
         dataItemSelectionListeners.remove(listener);
+    }
+
+    /**
+     * Slows down usual fling gesture for RecyclerView.
+     */
+    @Override
+    public boolean fling(int velocityX, int velocityY) {
+        velocityY *= FLING_GESTURE_VELOCITY_SCALE_DOWN_FACTOR;
+        return super.fling(velocityX, velocityY);
     }
 
     @Override
