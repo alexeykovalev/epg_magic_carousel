@@ -24,7 +24,7 @@ public final class WheelSectorRaysDecorationFrameView extends FrameLayout {
     private static final int DEFAULT_RAY_WIDTH = 500;
     private static final int DEFAULT_RAY_HEIGHT = 10;
 
-    // TODO: 28.01.2016 ray with default draw does not fit exactly at sector's edge. This magic constant compensates this divergence.
+    // TODO: WheelOfFortune 28.01.2016 ray with default draw does not fit exactly at sector's edge. This magic constant compensates this divergence.
     private static final int MAGIC_CONSTANT_FOR_RAY_ALIGNMENT = 12;
 
     private final Drawable rayDrawable;

@@ -31,6 +31,7 @@ import static com.sss.magicwheel.wheel.misc.WheelComputationHelper.*;
 public final class FragmentWheelPage extends Fragment {
 
     private static final int DEFAULT_SECTOR_ANGLE_IN_DEGREE = 20;
+    private static final int POSITION_TO_START_WHEELS_LAYOUT = 3;
 
     private boolean isWheelContainerInitialized;
 
@@ -44,7 +45,7 @@ public final class FragmentWheelPage extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
 
-        // TODO: 03.02.2016 simplify for now considering container has 0 height
+        // TODO: WheelOfFortune 03.02.2016 simplify for now considering container has 0 height
 
         WheelComputationHelper.initialize(getActivity(), createWheelConfig(0));
         computationHelper = WheelComputationHelper.getInstance();
@@ -76,7 +77,7 @@ public final class FragmentWheelPage extends Fragment {
         rootView.findViewById(R.id.fragment_request_layout_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                wheelOfFortuneContainerFrameView.initWheelContainers(WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT + 3);
+                wheelOfFortuneContainerFrameView.layoutWheelContainersStartingFromPosition(POSITION_TO_START_WHEELS_LAYOUT);
                 wheelOfFortuneContainerFrameView.swapData(createWheelSampleDataSet());
             }
         });

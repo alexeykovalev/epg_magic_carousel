@@ -20,7 +20,16 @@ import java.util.List;
  */
 public final class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelItemViewHolder> {
 
-    public static final int VIRTUAL_ITEMS_COUNT = Integer.MAX_VALUE;
+    /**
+     * In order to support endless wheel scrolling we have to set up fake position
+     * from which data items will be fetched.
+     */
+    private static final int VIRTUAL_ITEMS_COUNT = Integer.MAX_VALUE;
+
+    /**
+     * In order to support endless wheel scrolling we have to set up fake position
+     * from which data items will be fetched.
+     */
     public static final int MIDDLE_VIRTUAL_ITEMS_COUNT = VIRTUAL_ITEMS_COUNT / 2;
 
     private final List<WheelDataItem> dataItems;
@@ -35,7 +44,7 @@ public final class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelI
         void onItemClicked(View clickedSectorView);
     }
 
-    // TODO: 29.01.2016 Check for Preconditions here
+    // TODO: WheelOfFortune 29.01.2016 Check for Preconditions here
     public WheelAdapter(Context context, List<WheelDataItem> dataItems, OnWheelItemClickListener itemClickListener) {
         this.inflater = LayoutInflater.from(context);
         this.dataItems = new ArrayList<>(dataItems);
@@ -48,7 +57,7 @@ public final class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.WheelI
         notifyDataSetChanged();
     }
 
-    // TODO: 29.01.2016 Optional<WheelDataItem> here
+    // TODO: WheelOfFortune 29.01.2016 Optional<WheelDataItem> here
     public WheelDataItem getDataItemByPosition(int virtualPosition) {
         return dataItems.get(toRealPosition(virtualPosition));
     }

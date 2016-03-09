@@ -69,7 +69,7 @@ public final class WheelComputationHelper {
         return Math.abs(first / second - 1) < epsilon;
     }
 
-    // TODO: 16.12.2015 to many objects allocation - reduce this amount in future
+    // TODO: WheelOfFortune 16.12.2015 to many objects allocation - reduce this amount in future
     public static RectF fromCircleCoordsSystemToRecyclerViewCoordsSystem(RectF coordinatesToTransform) {
 
         final PointF leftTopCorner = fromCircleCoordsSystemToRecyclerViewCoordsSystem(

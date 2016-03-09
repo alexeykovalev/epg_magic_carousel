@@ -33,7 +33,7 @@ import static java.lang.Math.*;
  */
 public final class WheelOfFortuneContainerFrameView extends FrameLayout {
 
-    // TODO: 01.03.2016 has to be constant from Device configuration class. Find the name of this class.
+    // TODO: WheelOfFortune 01.03.2016 has to be constant from Device configuration class. Find the name of this class.
     private static final double TOUCH_SPOT_SIZE_FOR_CLICK_EVENT = 10.0;
 
     private final WheelComputationHelper computationHelper;
@@ -86,9 +86,20 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
         wheelSectorsRaysDecorationFrame = (WheelSectorRaysDecorationFrameView) findViewById(R.id.wheel_decoration_frame);
     }
 
-    public void initWheelContainers(int virtualStartupPosition) {
+    /**
+     * This method is entry point for displaying wheels on the screen.
+     *
+     * @param startingPosition - defines startup position from which wheel's sectors
+     *                               and related to them data items will be layouted.
+     */
+    public void layoutWheelContainersStartingFromPosition(int startingPosition) {
         initBottomWheelContainer();
-        initTopWheelContainer(virtualStartupPosition);
+        // This position is virtual in terms of relative shift from
+        // {@link @WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT}
+        // So for top wheel {@link @WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT} position
+        // is treated as zero point - starting layout position.
+        final int virtualPositionToStartLayout = WheelAdapter.MIDDLE_VIRTUAL_ITEMS_COUNT + startingPosition;
+        initTopWheelContainer(virtualPositionToStartLayout);
     }
 
     public void addWheelListener(WheelListener listener) {

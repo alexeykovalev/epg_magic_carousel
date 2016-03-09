@@ -30,7 +30,7 @@ public abstract class WheelBaseItemDecoration extends RecyclerView.ItemDecoratio
     @Override
     public abstract void onDrawOver(Canvas canvas, RecyclerView wheelView, RecyclerView.State state);
 
-    // TODO: 28.01.2016 make Point instance reusing
+    // TODO: WheelOfFortune 28.01.2016 make Point instance reusing
     @Deprecated
     protected final PointF getSectorReferencePoint(View sectorView) {
         final AbstractWheelLayoutManager.LayoutParams childLp = AbstractWheelLayoutManager.getChildLayoutParams(sectorView);

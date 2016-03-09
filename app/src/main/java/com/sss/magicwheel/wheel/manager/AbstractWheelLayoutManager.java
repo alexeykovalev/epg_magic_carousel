@@ -277,7 +277,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         // compute available space
         if (extraChildrenCount == 0) { // is last child
             // if last sector's bottom edge outside bottom limit - only scroll this extra space
-            // TODO: 15.12.2015 replace with isBottomBoundsReached()
+            // TODO: WheelOfFortune 15.12.2015 replace with isBottomBoundsReached()
             if (wheelConfig.getAngularRestrictions().getWheelBottomEdgeAngleRestrictionInRad() - lastSectorBottomEdge > 0) {
                 res = Math.min(
                         angleToRotate,
@@ -358,7 +358,7 @@ public abstract class AbstractWheelLayoutManager extends RecyclerView.LayoutMana
         bigWrapperView.setPivotY(bigWrapperView.getMeasuredHeight() / 2);
         float angleInDegree = (float) WheelComputationHelper.radToDegree(angleAlignToInRad);
 
-        // TODO: 16.12.2015 ugly bug fix related to central view disappearing while scrolling
+        // TODO: WheelOfFortune 16.12.2015 ugly bug fix related to central view disappearing while scrolling
 //        if (angleInDegree > -0.1f && angleInDegree < 0.1f) {
 //            angleInDegree = 0;
 //        }

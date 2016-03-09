@@ -94,7 +94,7 @@ public final class WheelConfig {
             return gapAreaBottomEdgeAngleRestrictionInRad;
         }
 
-        // TODO: 03.02.2016 Guava toStringHelper() should be here
+        // TODO: WheelOfFortune 03.02.2016 Guava toStringHelper() should be here
         @Override
         public String toString() {
             return "AngularRestrictions{" +

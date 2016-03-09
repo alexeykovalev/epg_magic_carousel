@@ -10,7 +10,7 @@ import com.sss.magicwheel.R;
  * @author Alexey Kovalev
  * @since 22.02.2016.
  */
-// TODO: 01.03.2016 implement equals and hashCode methods
+// TODO: WheelOfFortune 01.03.2016 implement equals and hashCode methods
 public final class CoverEntity {
 
     public static final int NOT_DEFINED_OFFSET_VALUE = Integer.MIN_VALUE;

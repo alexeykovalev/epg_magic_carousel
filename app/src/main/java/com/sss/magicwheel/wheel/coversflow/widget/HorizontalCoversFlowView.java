@@ -161,8 +161,8 @@ public final class HorizontalCoversFlowView extends RecyclerView {
         );
     }
 
-    // TODO: 29.02.2016 does not work properly because when we call this method displayWithScaleUpAnimation() invoked
-    // TODO: 29.02.2016 immediately and interrupts this one
+    // TODO: WheelOfFortune 29.02.2016 does not work properly because when we call this method displayWithScaleUpAnimation() invoked
+    // TODO: WheelOfFortune 29.02.2016 immediately and interrupts this one
     public void hideWithScaleDownAnimation() {
         playTogetherAnimations(
                 createScalingAnimatorBetweenValues(1.0f, 0.0f),
@@ -222,7 +222,7 @@ public final class HorizontalCoversFlowView extends RecyclerView {
     }
 
     /**
-     * // TODO: 25.02.2016 refactor this method.
+     * // TODO: WheelOfFortune 25.02.2016 refactor this method.
      *
      * Either intersecting with resizing edge cover or closest from right to resizing
      * edge cover.

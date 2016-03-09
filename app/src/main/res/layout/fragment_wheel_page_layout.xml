@@ -14,9 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="right"
         android:textSize="20sp"
-        android:text="Request_Layout"
-        android:clickable="true"
-        />
-
+        android:text="Display wheel"
+        android:clickable="true" />
 
 </FrameLayout>
