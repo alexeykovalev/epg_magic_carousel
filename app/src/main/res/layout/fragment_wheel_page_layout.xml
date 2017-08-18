@@ -3,18 +3,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.sss.magicwheel.wheel.widget.WheelOfFortuneContainerFrameView
-        android:id="@+id/wheel_of_fortune_container_frame"
+
+    <com.magicwheel.widget.WheelOfFortuneContainerFrameView
+        android:id="@+id/channels_wheel_container_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <Button
-        android:id="@+id/fragment_request_layout_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:textSize="20sp"
-        android:text="Display wheel"
-        android:clickable="true" />
+    <!--    <tv.sss.projectplay.wheel.coversflow.widget.ChannelAssetsCoversFlowView
+            android:id="@+id/horizontal_covers_flow_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:overScrollMode="never" />-->
+
+    <ImageView
+        android:id="@+id/close_channels_wheel_page"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="top|right"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/ic_close" />
 
 </FrameLayout>
