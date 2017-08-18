@@ -5,7 +5,7 @@
 
 
     <com.magicepg.wheel.widget.WheelOfFortuneContainerFrameView
-        android:id="@+id/channels_wheel_container_frame"
+        android:id="@+id/wheel_container_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -17,7 +17,7 @@
         android:overScrollMode="never" />
 
     <ImageView
-        android:id="@+id/close_channels_wheel_page"
+        android:id="@+id/close_wheel_page_icon"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_gravity="top|right"

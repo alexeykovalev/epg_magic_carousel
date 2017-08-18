@@ -40,18 +40,18 @@ import static com.magicepg.wheel.WheelComputationHelper.WHEEL_CENTER_X_SHIFT_IN_
  * @author Alexey Kovalev
  * @since 01.02.2017
  */
-public final class FragmentChannelsWheel extends DialogFragment {
+public final class WheelFragment extends DialogFragment {
 
-    public static final String TAG = FragmentChannelsWheel.class.getCanonicalName();
+    public static final String TAG = WheelFragment.class.getCanonicalName();
 
-    @Bind(R.id.channels_wheel_container_frame)
+    @Bind(R.id.wheel_container_frame)
     WheelOfFortuneContainerFrameView wheelOfFortuneContainerFrameView;
 
     @Bind(R.id.horizontal_covers_flow_list)
     HorizontalCoversFlowView horizontalCoversFlowView;
 
-    @OnClick(R.id.close_channels_wheel_page)
-    void onCloseChannelsWheelPage() {
+    @OnClick(R.id.close_wheel_page_icon)
+    void onCloseWheelPage() {
         dismiss();
     }
 

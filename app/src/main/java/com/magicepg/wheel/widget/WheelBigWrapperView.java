@@ -61,8 +61,6 @@ public final class WheelBigWrapperView extends FrameLayout {
     public void bindData(WheelDataItem dataItem) {
         loadSectorCoverImage(dataItem);
         sectorWrapperView.setSectorLeftEdgeColor(dataItem.getLeftEdgeColor());
-        // TODO: 8/16/17 don't required probably
-//        AbstractChannelSectorDataBinder binder = AbstractChannelSectorDataBinder.bindChannelSectorData(dataItem.getChannelData(), sectorDataContainer);
     }
 
     private void loadSectorCoverImage(WheelDataItem wheelDataItem) {

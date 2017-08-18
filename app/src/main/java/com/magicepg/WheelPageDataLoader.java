@@ -22,13 +22,9 @@ import entity.Color;
  */
 public final class WheelPageDataLoader {
 
-    public static final int NOT_VALID_POSITION = Integer.MIN_VALUE;
-
     /**
-     * From this position items in channels wheel will start layout.
+     * From this position items in wheel will start layout.
      * For now it's just a plain constant but it might be computed dynamically.
-     * <p/>
-     * By default we start wheel page by displaying information from "My Channel" channel
      */
     private static final int DEFAULT_POSITION_TO_START_WHEELS_LAYOUT = 0;
 

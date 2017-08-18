@@ -27,7 +27,7 @@ public final class MainActivity extends AppCompatActivity {
     }
 
     private void showWheelPage() {
-        final DialogFragment fragmentChannelsWheel = new FragmentChannelsWheel();
-        fragmentChannelsWheel.show(getSupportFragmentManager(), FragmentChannelsWheel.TAG);
+        final DialogFragment wheelFragment = new WheelFragment();
+        wheelFragment.show(getSupportFragmentManager(), WheelFragment.TAG);
     }
 }

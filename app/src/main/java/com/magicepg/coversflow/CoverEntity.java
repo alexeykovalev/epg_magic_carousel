@@ -17,12 +17,12 @@ public final class CoverEntity {
 
     private final String title;
     private final Uri coverImageUri;
-    private final Color channelColor;
+    private final Color coverColor;
 
     public CoverEntity(String title, Uri coverImageUri, Color coverColor) {
         this.title = title;
         this.coverImageUri = coverImageUri;
-        this.channelColor = coverColor;
+        this.coverColor = coverColor;
     }
 
     public String getTitle() {
@@ -34,7 +34,7 @@ public final class CoverEntity {
     }
 
     public Color getCoverColor() {
-        return channelColor;
+        return coverColor;
     }
 
     @Override
