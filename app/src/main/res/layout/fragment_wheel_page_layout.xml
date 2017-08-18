@@ -9,12 +9,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!--    <tv.sss.projectplay.wheel.coversflow.widget.ChannelAssetsCoversFlowView
-            android:id="@+id/horizontal_covers_flow_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:overScrollMode="never" />-->
+    <com.magicepg.coversflow.widget.HorizontalCoversFlowView
+        android:id="@+id/horizontal_covers_flow_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:overScrollMode="never" />
 
     <ImageView
         android:id="@+id/close_channels_wheel_page"

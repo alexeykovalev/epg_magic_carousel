@@ -2,12 +2,15 @@ package com.magicepg;
 
 import android.net.Uri;
 
-import entity.Color;
+import com.magicepg.coversflow.CoverEntity;
+import com.magicepg.func.Consumer;
 import com.magicepg.wheel.entity.WheelDataItem;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import entity.Color;
 
 
 /**
@@ -30,15 +33,24 @@ public final class WheelPageDataLoader {
     private static final int DEFAULT_POSITION_TO_START_WHEELS_LAYOUT = 0;
 
 
-    public WheelData loadWheelData() {
+    public void loadWheelData(Consumer<WheelData> wheelDataConsumer) {
         Color redColor = Color.ofRgb(255, 0, 0);
 //        Uri sampleImageUri = Uri.parse("http://1821662466.rsc.cdn77.org/images/google_apps_education.jpg");
         Uri sampleImageUri = Uri.parse("https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/M82_HST_ACS_2006-14-a-large_web.jpg/1280px-M82_HST_ACS_2006-14-a-large_web.jpg");
         List<WheelDataItem> items = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
-            items.add(new WheelDataItem("Title_" + i, redColor, sampleImageUri));
+            items.add(new WheelDataItem("Title " + i, redColor, sampleImageUri));
         }
-        return new WheelData(items, DEFAULT_POSITION_TO_START_WHEELS_LAYOUT);
+        wheelDataConsumer.accept(new WheelData(items, DEFAULT_POSITION_TO_START_WHEELS_LAYOUT));
+    }
+
+    public void loadCoverEntitiesByWheelItem(WheelDataItem selectedWheelItem, Consumer<List<CoverEntity>> resConsumer) {
+        List<CoverEntity> res = new ArrayList<>();
+        Uri sampleImageUri = Uri.parse("https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/M82_HST_ACS_2006-14-a-large_web.jpg/1280px-M82_HST_ACS_2006-14-a-large_web.jpg");
+        for (int i = 0; i < 20; i++) {
+            res.add(new CoverEntity("Cover title " + i, sampleImageUri, Color.BLACK));
+        }
+        resConsumer.accept(res);
     }
 
     public static final class WheelData {

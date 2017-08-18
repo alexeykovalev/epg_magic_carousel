@@ -10,13 +10,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 
-import com.magicepg.wheel.entity.WheelDataItem;
+import com.magicepg.coversflow.CoverEntity;
+import com.magicepg.coversflow.CoversFlowComputationHelper;
+import com.magicepg.coversflow.widget.HorizontalCoversFlowView;
+import com.magicepg.func.Consumer;
 import com.magicepg.util.DimensionUtils;
 import com.magicepg.wheel.WheelComputationHelper;
-import com.magicepg.wheel.entity.WheelConfig;
 import com.magicepg.wheel.WheelListener;
+import com.magicepg.wheel.entity.WheelConfig;
+import com.magicepg.wheel.entity.WheelDataItem;
 import com.magicepg.wheel.widget.WheelOfFortuneContainerFrameView;
+
+import java.util.Collections;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -39,6 +47,9 @@ public final class FragmentChannelsWheel extends DialogFragment {
     @Bind(R.id.channels_wheel_container_frame)
     WheelOfFortuneContainerFrameView wheelOfFortuneContainerFrameView;
 
+    @Bind(R.id.horizontal_covers_flow_list)
+    HorizontalCoversFlowView horizontalCoversFlowView;
+
     @OnClick(R.id.close_channels_wheel_page)
     void onCloseChannelsWheelPage() {
         dismiss();
@@ -56,7 +67,7 @@ public final class FragmentChannelsWheel extends DialogFragment {
     private void initWheelComputationHelpers() {
         WheelComputationHelper.initialize(getActivity(), createWheelConfigForWheel());
         WheelComputationHelper computationHelper = WheelComputationHelper.getInstance();
-//        ChannelAssetsCoversFlowComputationHelper.initialize(computationHelper);
+        CoversFlowComputationHelper.initialize(computationHelper);
     }
 
     @Override
@@ -89,77 +100,72 @@ public final class FragmentChannelsWheel extends DialogFragment {
 
         changeHorizontalStripeViewSize();
 
-//        channelAssetsCoversFlowView.addCoverSelectionListener(new ChannelAssetsCoversFlowView.OnCoverSelectionListener() {
-//            @Override
-//            public void onCoverSelected(AssetCoverEntity coverEntity) {
-//                backgroundCoverView.swapBackgroundData(coverEntity.getCoverImageUrl().get());
-//            }
-//        });
-//
-//        channelAssetsCoversFlowView.addCoverPlayButtonClickListener(new ChannelAssetsCoversFlowView.OnCoverPlayButtonClickListener() {
-//            @Override
-//            public void onCoverClicked(AssetCoverEntity clickedCover, BEChannel associatedChannel) {
-//                Timber.d("On cover play button clicked");
+        horizontalCoversFlowView.addCoverSelectionListener(new HorizontalCoversFlowView.OnCoverSelectionListener() {
+            @Override
+            public void onCoverSelected(CoverEntity coverEntity) {
+//                backgroundCoverView.swapBackgroundData(coverEntity.getCoverImageUri().get());
+            }
+        });
+
+        horizontalCoversFlowView.addCoverPlayButtonClickListener(new HorizontalCoversFlowView.OnCoverPlayButtonClickListener() {
+            @Override
+            public void onCoverClicked(CoverEntity clickedCover) {
 //                dismiss();
-//            }
-//        });
+            }
+        });
 
         wheelOfFortuneContainerFrameView.addWheelListener(new WheelListener() {
             @Override
             public void onDataItemSelected(WheelDataItem selectedDataItem) {
-//                channelAssetsCoversFlowView.bind(WheelPageDataLoader.CoversFlowDataWrapper.DUMMY);
-                loadAssetsFlowDataForSelectedChannel(selectedDataItem);
+                horizontalCoversFlowView.bind(Collections.<CoverEntity>emptyList());
+                loadCoverEntitiesForSelectedWheelItem(selectedDataItem);
             }
 
             @Override
             public void onWheelRotationStateChange(WheelRotationState wheelRotationState) {
                 if (wheelRotationState == WheelRotationState.InRotation) {
-//                    channelAssetsCoversFlowView.hideWithScaleDownAnimation();
+                    horizontalCoversFlowView.hideWithScaleDownAnimation();
                 } else if (wheelRotationState == WheelRotationState.RotationStopped) {
-//                    channelAssetsCoversFlowView.displayWithScaleUpAnimation();
+                    horizontalCoversFlowView.displayWithScaleUpAnimation();
                 }
             }
         });
-        loadWheelChannels();
+
+        loadWheelDataItems();
     }
 
     @Override
     public void dismiss() {
-//        channelAssetsCoversFlowView.dispose();
+        horizontalCoversFlowView.dispose();
         super.dismiss();
     }
 
     private void changeHorizontalStripeViewSize() {
-//        final FrameLayout.LayoutParams coversFlowViewLp = (FrameLayout.LayoutParams) channelAssetsCoversFlowView.getLayoutParams();
-//        coversFlowViewLp.height = ChannelAssetsCoversFlowComputationHelper.getInstance().getCoverMaxHeight();
-//        channelAssetsCoversFlowView.setLayoutParams(coversFlowViewLp);
+        final FrameLayout.LayoutParams coversFlowViewLp = (FrameLayout.LayoutParams) horizontalCoversFlowView.getLayoutParams();
+        coversFlowViewLp.height = CoversFlowComputationHelper.getInstance().getCoverMaxHeight();
+        horizontalCoversFlowView.setLayoutParams(coversFlowViewLp);
     }
 
-    private void loadWheelChannels() {
-        WheelPageDataLoader.WheelData wheelData = wheelPageDataLoader.loadWheelData();
-        wheelOfFortuneContainerFrameView.swapDataAndRelayoutWheelsStartingFromPosition(
-                wheelData.getWheelDataItems(),
-                wheelData.getDataItemPositionToSelect()
-        );
+    private void loadWheelDataItems() {
+        wheelPageDataLoader.loadWheelData(new Consumer<WheelPageDataLoader.WheelData>() {
+            @Override
+            public void accept(WheelPageDataLoader.WheelData wheelData) {
+                wheelOfFortuneContainerFrameView.swapDataAndRelayoutWheelsStartingFromPosition(
+                        wheelData.getWheelDataItems(),
+                        wheelData.getDataItemPositionToSelect()
+                );
+            }
+        });
     }
 
-    private void loadAssetsFlowDataForSelectedChannel(WheelDataItem selectedDataItem) {
-//        wheelPageDataLoader.loadCoverFlowDataForSelectedChannel(selectedDataItem)
-//                .subscribe(new AbstractRxSubscriber<WheelPageDataLoader.CoversFlowDataWrapper>() {
-//                    @Override
-//                    public void onNext(WheelPageDataLoader.CoversFlowDataWrapper coversFlowDataWrapper) {
-//                        channelAssetsCoversFlowView.bind(coversFlowDataWrapper);
-//                        if (isInitialChannelSelection && coversFlowDataWrapper.isValidCoverSelectionPosition()) {
-//                            isInitialChannelSelection = false;
-//                            channelAssetsCoversFlowView.goToCoverAtPosition(coversFlowDataWrapper.getCoverPositionToSelect());
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//                        Timber.e(e, "Error occurred while loading data assets stripe.");
-//                    }
-//                });
+    private void loadCoverEntitiesForSelectedWheelItem(WheelDataItem selectedDataItem) {
+        wheelPageDataLoader.loadCoverEntitiesByWheelItem(selectedDataItem, new Consumer<List<CoverEntity>>() {
+            @Override
+            public void accept(List<CoverEntity> covers) {
+                horizontalCoversFlowView.bind(covers);
+//                horizontalCoversFlowView.goToCoverAtPosition(coversFlowDataWrapper.getCoverPositionToSelect());
+            }
+        });
     }
 
 

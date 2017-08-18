@@ -17,7 +17,7 @@ import entity.CoordinatesHolder;
  * @author Alexey Kovalev
  * @since 24.02.2017
  */
-public final class ChannelAssetsCoversFlowComputationHelper {
+public final class CoversFlowComputationHelper {
 
     public static final int ALPHA_ANIMATION_DURATION = 300;
 
@@ -27,7 +27,7 @@ public final class ChannelAssetsCoversFlowComputationHelper {
     private static final int INNER_TOP_PADDING = 15;
     private static final int INNER_BOTTOM_PADDING = 15;
 
-    private static ChannelAssetsCoversFlowComputationHelper instance;
+    private static CoversFlowComputationHelper instance;
 
     private final int maxCoverHeight;
     private final Rect coverDefaultMargins;
@@ -46,16 +46,16 @@ public final class ChannelAssetsCoversFlowComputationHelper {
     }
 
     public static void initialize(WheelComputationHelper computationHelper) {
-        instance = new ChannelAssetsCoversFlowComputationHelper(computationHelper);
+        instance = new CoversFlowComputationHelper(computationHelper);
     }
 
-    public static ChannelAssetsCoversFlowComputationHelper getInstance() {
+    public static CoversFlowComputationHelper getInstance() {
         return instance;
     }
 
     private final WheelComputationHelper computationHelper;
 
-    private ChannelAssetsCoversFlowComputationHelper(WheelComputationHelper computationHelper) {
+    private CoversFlowComputationHelper(WheelComputationHelper computationHelper) {
         this.computationHelper = computationHelper;
         instance = this;
 
