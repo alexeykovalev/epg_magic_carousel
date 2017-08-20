@@ -99,13 +99,14 @@ public final class CoverView extends FrameLayout {
      * in covers flow.
      */
     public void onCoverSelected() {
-        final Optional<Uri> coverImageUrlWrapper = entityToBind.getCoverImageUri();
-        if (coverImageUrlWrapper.isPresent()) {
+        final Optional<Uri> coverImageUriWrapper = entityToBind.getCoverImageUri();
+        if (coverImageUriWrapper.isPresent()) {
             final int coverMaxWidth = assetsComputationHelper.getCoverMaxWidth();
             final int coverMaxHeight = assetsComputationHelper.getCoverMaxHeight();
             Glide.with(getContext())
-                    .load(coverImageUrlWrapper.get())
+                    .load(coverImageUriWrapper.get())
                     .override(coverMaxWidth, coverMaxHeight)
+                    .centerCrop()
                     .into(coverImageView);
         }
     }
@@ -172,14 +173,15 @@ public final class CoverView extends FrameLayout {
         }
     }
 
-    private void loadCoverImageForWidthSize(CoverEntity entityToBind) {
-        final Optional<Uri> coverImageUrlWrapper = entityToBind.getCoverImageUri();
+    private void loadCoverImageForWidthSize(CoverEntity coverEntity) {
+        final Optional<Uri> coverImageUrlWrapper = coverEntity.getCoverImageUri();
         if (coverImageUrlWrapper.isPresent()) {
             final int coverImageWidth = assetsComputationHelper.getCoverDefaultWidth();
             final int coverImageHeight = assetsComputationHelper.getCoverDefaultHeight();
             Glide.with(getContext())
-                    .load(coverImageUrlWrapper.get())
+                    .load(coverEntity.getCoverImageUri().get())
                     .override(coverImageWidth, coverImageHeight)
+                    .centerCrop()
                     .into(coverImageView);
         }
     }

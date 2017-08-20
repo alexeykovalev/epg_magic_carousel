@@ -1,15 +1,14 @@
 package com.magicepg.wheel.widget;
 
 import android.content.Context;
-import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.bumptech.glide.Glide;
 import com.magicepg.R;
-import com.magicepg.wheel.entity.WheelDataItem;
 import com.magicepg.wheel.WheelComputationHelper;
+import com.magicepg.wheel.entity.WheelDataItem;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -64,14 +63,13 @@ public final class WheelBigWrapperView extends FrameLayout {
     }
 
     private void loadSectorCoverImage(WheelDataItem wheelDataItem) {
-        final int coverRequiredWidth = computationHelper.getSectorWrapperViewMeasurements().getWidth();
-        final int coverRequiredHeight = computationHelper.getSectorWrapperViewMeasurements().getHeight();
-
         if (wheelDataItem.hasCover()) {
-            Uri sectorCoverUrl = wheelDataItem.getCoverUri().get();
+            final int coverRequiredWidth = computationHelper.getSectorWrapperViewMeasurements().getWidth();
+            final int coverRequiredHeight = computationHelper.getSectorWrapperViewMeasurements().getHeight();
             Glide.with(getContext())
-                    .load(sectorCoverUrl)
+                    .load(wheelDataItem.getCoverUri().get())
                     .override(coverRequiredWidth, coverRequiredHeight)
+                    .fitCenter()
                     .into(sectorWrapperView);
         }
     }

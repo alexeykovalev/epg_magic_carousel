@@ -15,10 +15,11 @@
 
     <ImageView
         android:id="@+id/asset_play_button"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_centerInParent="true"
-        android:background="@drawable/ic_close" />
+        android:layout_gravity="center"
+        android:background="@drawable/ic_play_arrow" />
 
     <LinearLayout
         android:id="@+id/asset_main_content_info_container"
@@ -36,13 +37,14 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:textColor="@android:color/white"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:textStyle="italic" />
 
         <TextView
             android:id="@+id/asset_info_line_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/holo_green_dark"
+            android:textColor="@android:color/white"
             android:textSize="12sp" />
 
     </LinearLayout>
@@ -58,6 +60,7 @@
         android:maxLines="2"
         android:textAllCaps="true"
         android:textColor="@android:color/white"
-        android:textSize="15sp" />
+        android:textSize="15sp"
+        android:textStyle="italic" />
 
 </merge>
