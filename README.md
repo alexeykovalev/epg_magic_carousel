@@ -4,7 +4,7 @@ Unusual RecyclerView with custom LayoutManager
 ## Short intro, please
 This demo app unleashes not trivial usage of `RecyclerView` component
 
-The original idea behind it was to create *EPG* (Electronic Page Guide) where channel assets would be a sectors of the rotating carousel and channel's content would be scrollable horizontal stripe of assets with ability to select and playback choosen TV/VOD item
+The original idea behind it was to create *EPG* (Electronic Page Guide) where channel assets would be sectors of the rotating carousel and channel's content would be scrollable horizontal stripe of assets with ability to select and playback chosen TV/VOD item
 
 **It's worth mentioning that current implementation doesn't strictly bound to the original idea and existing 
 codebase with minor changes might be successfully applied to any `Folder-Assets` data models**
