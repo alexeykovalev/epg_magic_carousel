@@ -41,7 +41,7 @@ import static java.lang.Math.sqrt;
  * @author Alexey Kovalev
  * @since 10.02.2017
  */
-public final class WheelOfFortuneContainerFrameView extends FrameLayout {
+public final class WheelsContainerFrameView extends FrameLayout {
 
     // TODO: WheelOfFortune 01.03.2016 has to be constant from Device configuration class. Find the name of this class.
     private static final double TOUCH_SPOT_SIZE_FOR_CLICK_EVENT = 10.0;
@@ -71,15 +71,15 @@ public final class WheelOfFortuneContainerFrameView extends FrameLayout {
     private double previousTouchDownX;
     private double previousTouchDownY;
 
-    public WheelOfFortuneContainerFrameView(Context context) {
+    public WheelsContainerFrameView(Context context) {
         this(context, null);
     }
 
-    public WheelOfFortuneContainerFrameView(Context context, AttributeSet attrs) {
+    public WheelsContainerFrameView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public WheelOfFortuneContainerFrameView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public WheelsContainerFrameView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         computationHelper = WheelComputationHelper.getInstance();
         inflateAndBindContainerView(context);

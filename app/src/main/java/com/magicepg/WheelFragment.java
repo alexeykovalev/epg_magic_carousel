@@ -21,7 +21,7 @@ import com.magicepg.wheel.WheelComputationHelper;
 import com.magicepg.wheel.WheelListener;
 import com.magicepg.wheel.entity.WheelConfig;
 import com.magicepg.wheel.entity.WheelDataItem;
-import com.magicepg.wheel.widget.WheelOfFortuneContainerFrameView;
+import com.magicepg.wheel.widget.WheelsContainerFrameView;
 
 import java.util.Collections;
 import java.util.List;
@@ -45,7 +45,7 @@ public final class WheelFragment extends DialogFragment {
     public static final String TAG = WheelFragment.class.getCanonicalName();
 
     @Bind(R.id.wheel_container_frame)
-    WheelOfFortuneContainerFrameView wheelOfFortuneContainerFrameView;
+    WheelsContainerFrameView wheelsContainerFrameView;
 
     @Bind(R.id.horizontal_covers_flow_list)
     HorizontalCoversFlowView horizontalCoversFlowView;
@@ -114,7 +114,7 @@ public final class WheelFragment extends DialogFragment {
             }
         });
 
-        wheelOfFortuneContainerFrameView.addWheelListener(new WheelListener() {
+        wheelsContainerFrameView.addWheelListener(new WheelListener() {
             @Override
             public void onDataItemSelected(WheelDataItem selectedDataItem) {
                 horizontalCoversFlowView.bind(Collections.<CoverEntity>emptyList());
@@ -150,7 +150,7 @@ public final class WheelFragment extends DialogFragment {
         wheelPageDataLoader.loadWheelData(new Consumer<WheelPageDataLoader.WheelData>() {
             @Override
             public void accept(WheelPageDataLoader.WheelData wheelData) {
-                wheelOfFortuneContainerFrameView.swapDataAndRelayoutWheelsStartingFromPosition(
+                wheelsContainerFrameView.swapDataAndRelayoutWheelsStartingFromPosition(
                         wheelData.getWheelDataItems(),
                         wheelData.getDataItemPositionToSelect()
                 );

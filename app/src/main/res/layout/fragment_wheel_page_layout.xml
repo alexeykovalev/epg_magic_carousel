@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
 
-    <com.magicepg.wheel.widget.WheelOfFortuneContainerFrameView
+    <com.magicepg.wheel.widget.WheelsContainerFrameView
         android:id="@+id/wheel_container_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
