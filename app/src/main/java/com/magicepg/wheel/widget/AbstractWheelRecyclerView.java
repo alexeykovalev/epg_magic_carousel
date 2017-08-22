@@ -23,7 +23,7 @@ import java.util.List;
  * @author Alexey Kovalev
  * @since 02.02.2017
  */
-public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
+public abstract class AbstractWheelRecyclerView extends RecyclerView {
 
     /**
      * Value between 0 for no fling, and 1 for normal fling, or more for faster fling.
@@ -64,15 +64,15 @@ public abstract class AbstractWheelContainerRecyclerView extends RecyclerView {
         }
     }
 
-    public AbstractWheelContainerRecyclerView(Context context) {
+    public AbstractWheelRecyclerView(Context context) {
         this(context, null);
     }
 
-    public AbstractWheelContainerRecyclerView(Context context, AttributeSet attrs) {
+    public AbstractWheelRecyclerView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public AbstractWheelContainerRecyclerView(Context context, AttributeSet attrs, int defStyle) {
+    public AbstractWheelRecyclerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         this.computationHelper = WheelComputationHelper.getInstance();
         this.wheelConfig = computationHelper.getWheelConfig();

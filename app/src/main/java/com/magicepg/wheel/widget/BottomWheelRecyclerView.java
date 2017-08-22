@@ -15,7 +15,7 @@ import com.magicepg.wheel.WheelComputationHelper;
  * @author Alexey Kovalev
  * @since 19.02.2017
  */
-public class BottomWheelContainerRecyclerView extends AbstractWheelContainerRecyclerView {
+public class BottomWheelRecyclerView extends AbstractWheelRecyclerView {
 
     private final Path gapPath;
     private final PointF bottomRayPosition;
@@ -26,15 +26,15 @@ public class BottomWheelContainerRecyclerView extends AbstractWheelContainerRecy
 
     private OnBottomWheelSectorTapListener bottomWheelSectorTapListener;
 
-    public BottomWheelContainerRecyclerView(Context context) {
+    public BottomWheelRecyclerView(Context context) {
         this(context, null);
     }
 
-    public BottomWheelContainerRecyclerView(Context context, AttributeSet attrs) {
+    public BottomWheelRecyclerView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public BottomWheelContainerRecyclerView(Context context, AttributeSet attrs, int defStyle) {
+    public BottomWheelRecyclerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         bottomRayPosition = computeGapBottomRayPosition();
         gapPath = createGapClipPath();

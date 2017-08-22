@@ -49,10 +49,10 @@ public final class WheelsContainerFrameView extends FrameLayout {
     private final WheelComputationHelper computationHelper;
 
     @Bind(R.id.top_wheel_container)
-    TopWheelContainerRecyclerView topWheelContainerView;
+    TopWheelRecyclerView topWheelContainerView;
 
     @Bind(R.id.bottom_wheel_container)
-    BottomWheelContainerRecyclerView bottomWheelContainerView;
+    BottomWheelRecyclerView bottomWheelContainerView;
 
     @Bind(R.id.wheel_decoration_frame)
     WheelSectorRaysDecorationFrameView wheelSectorsRaysDecorationFrame;
@@ -249,7 +249,7 @@ public final class WheelsContainerFrameView extends FrameLayout {
                 }
             }
         });
-        bottomWheelContainerView.setBottomWheelSectorTapListener(new BottomWheelContainerRecyclerView.OnBottomWheelSectorTapListener() {
+        bottomWheelContainerView.setBottomWheelSectorTapListener(new BottomWheelRecyclerView.OnBottomWheelSectorTapListener() {
             @Override
             public void onRotateWheelByAngle(double rotationAngleInRad) {
                 // dispatch rotation to top wheel because it's MASTER and bottom

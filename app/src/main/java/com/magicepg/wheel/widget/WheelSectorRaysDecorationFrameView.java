@@ -43,8 +43,8 @@ public final class WheelSectorRaysDecorationFrameView extends FrameLayout {
     private final Paint rayPaint;
     private final int rayWidth;
 
-    private AbstractWheelContainerRecyclerView topWheelContainerView;
-    private AbstractWheelContainerRecyclerView bottomWheelContainerView;
+    private AbstractWheelRecyclerView topWheelContainerView;
+    private AbstractWheelRecyclerView bottomWheelContainerView;
 
     /**
      * Baseline - is wheel middle line starting from wheel center which goes
@@ -82,8 +82,8 @@ public final class WheelSectorRaysDecorationFrameView extends FrameLayout {
         return paint;
     }
 
-    public void setWheelContainers(final AbstractWheelContainerRecyclerView topWheelContainerView,
-                                   final AbstractWheelContainerRecyclerView bottomWheelContainer) {
+    public void setWheelContainers(final AbstractWheelRecyclerView topWheelContainerView,
+                                   final AbstractWheelRecyclerView bottomWheelContainer) {
 
         this.topWheelContainerView = topWheelContainerView;
         this.bottomWheelContainerView = bottomWheelContainer;

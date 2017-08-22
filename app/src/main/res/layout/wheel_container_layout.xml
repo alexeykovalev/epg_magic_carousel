@@ -3,12 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.magicepg.wheel.widget.BottomWheelContainerRecyclerView
+    <com.magicepg.wheel.widget.BottomWheelRecyclerView
         android:id="@+id/bottom_wheel_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.magicepg.wheel.widget.TopWheelContainerRecyclerView
+    <com.magicepg.wheel.widget.TopWheelRecyclerView
         android:id="@+id/top_wheel_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
