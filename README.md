@@ -1,5 +1,5 @@
 # Magic EPG
-Unusual RecyclerView with custom LayoutManager
+Awesome RecyclerView with custom LayoutManager
 
 ## Short intro, please
 This demo app unleashes not trivial usage of `RecyclerView` component
